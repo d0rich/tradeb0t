@@ -1,14 +1,19 @@
 import {IExchangeTrader} from "../interfaces";
-import {ExchangeWatcher, ExchangeAnalyzer} from "./";
+import {ExchangeWatcher} from "./";
 import {api} from "../../config/ExchangeApi";
 import {OrderOptions} from "../types";
+import {TradeBot} from "../TradeBot";
 const schedule = require('node-schedule');
 
 export class ExchangeTrader implements IExchangeTrader{
-    watcher: ExchangeWatcher;
+    _tradebot: TradeBot;
 
-    setExchangeWatcher(exchangeWatcher: ExchangeWatcher) {
-        this.watcher = exchangeWatcher
+    constructor(tradebot: TradeBot) {
+        this._tradebot = tradebot
+    }
+
+    get watcher(): ExchangeWatcher {
+        return this._tradebot.watcher
     }
 
     scheduleAction(action: Function, date: Date) {

@@ -7,7 +7,7 @@ try {
 const openAPI = new OpenAPI({
     apiURL: 'https://api-invest.tinkoff.ru/openapi/sandbox',
     socketURL: 'wss://api-invest.tinkoff.ru/openapi/md/v1/md-openapi/ws',
-    secretToken: process.env.TINKOFF_SANDBOX_API_KEY
+    secretToken: process.env.TINKOFF_SANDBOX_API_KEY || ''
 })
 
 !(async function run() {

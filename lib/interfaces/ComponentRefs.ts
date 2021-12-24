@@ -1,16 +1,18 @@
 import {ExchangeTrader, ExchangeAnalyzer, ExchangeWatcher} from "../components";
+import {TradeBot} from "../TradeBot";
 
-export interface IWatcherRef {
-    watcher: ExchangeWatcher
-    setExchangeWatcher(exchangeWatcher: ExchangeWatcher)
+export interface ITradeBotRef{
+    _tradebot: TradeBot
 }
 
-export interface IAnalyzerRef {
-    analyzer: ExchangeAnalyzer
-    setExchangeAnalyzer(exchangeAnalyzer: ExchangeAnalyzer)
+export interface IWatcherRef extends ITradeBotRef{
+    get watcher(): ExchangeWatcher
 }
 
-export interface ITraderRef {
-    trader: ExchangeTrader
-    setExchangeTrader(exchangeTrader: ExchangeTrader)
+export interface IAnalyzerRef extends ITradeBotRef{
+    get analyzer(): ExchangeAnalyzer
+}
+
+export interface ITraderRef extends ITradeBotRef{
+    get trader(): ExchangeTrader
 }

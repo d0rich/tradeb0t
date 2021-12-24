@@ -1,17 +1,20 @@
 import {IExchangeWatcher} from "../interfaces";
 import {ExchangeAnalyzer, ExchangeTrader} from "./index";
-import {api} from "../../config/ExchangeApi";
+import {TradeBot} from "../TradeBot";
 
 export class ExchangeWatcher implements IExchangeWatcher{
-    analyzer: ExchangeAnalyzer;
-    trader: ExchangeTrader;
+    _tradebot: TradeBot;
 
-    setExchangeAnalyzer(exchangeAnalyzer: ExchangeAnalyzer) {
-        this.analyzer = exchangeAnalyzer
+    constructor(tradebot: TradeBot) {
+        this._tradebot = tradebot
     }
 
-    setExchangeTrader(exchangeTrader: ExchangeTrader) {
-        this.trader = exchangeTrader
+    get analyzer(): ExchangeAnalyzer {
+        return this._tradebot.analyzer
+    }
+
+    get trader(): ExchangeTrader {
+        return this._tradebot.trader
     }
 
     getRate(ticker: string) {
@@ -19,5 +22,4 @@ export class ExchangeWatcher implements IExchangeWatcher{
 
     receiveOrderData(data: any) {
     }
-
 }
