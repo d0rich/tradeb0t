@@ -1,0 +1,21 @@
+{
+  "name": "trade-bot--demo",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": {
+    "name": "Nikolay Dorofeev",
+    "email": "d.orich@yandex.com",
+    "url": "https://d0rich.github.io/"
+  },
+  "contributors": [
+    {
+      "name": "Nadezhda Khromova"
+    }
+  ],
+  "license": "MIT"
+}
