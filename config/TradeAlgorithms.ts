@@ -25,7 +25,7 @@ export class TradeAlgorithms{
         lotsInOrders.forEach((lots, index) => {
             this.trader.scheduleOrder(
                 {...order, lots},
-                new Date(date.getTime() + 60000 * minutes/(parts - 1) * index)
+                new Date(date.getTime() + 10_000 + 60_000 * minutes/(parts - 1) * index)
             )
         })
     }
@@ -43,6 +43,6 @@ export class TradeAlgorithms{
                 }
             }
         }
-        this._analyzer.trader.scheduleAction(hits, new Date(time.getTime() - 60000 * 2))
+        this._analyzer.trader.scheduleAction(hits, new Date(time.getTime() - 60_000 * 2))
     }
 }
