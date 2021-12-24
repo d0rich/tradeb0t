@@ -1,7 +1,9 @@
 import {IAnalyzerRef, IWatcherRef, ITraderRef} from "./ComponentRefs";
 import {OrderOptions} from "../types";
+import {TradeAlgorithms} from "../../config/TradeAlgorithms";
 
 export interface IExchangeAnalyzer extends IWatcherRef, ITraderRef{
+    tradeAlgos: TradeAlgorithms;
 }
 
 export interface IExchangeWatcher extends ITraderRef, IAnalyzerRef{
