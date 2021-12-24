@@ -11,7 +11,6 @@ export class TradeBot implements ITraderRef, IAnalyzerRef, IWatcherRef{
         this.setExchangeTrader(new ExchangeTrader())
         this.setExchangeWatcher(new ExchangeWatcher())
 
-        this.trader.setExchangeAnalyzer(this.analyzer)
         this.trader.setExchangeWatcher(this.watcher)
 
         this.watcher.setExchangeAnalyzer(this.analyzer)

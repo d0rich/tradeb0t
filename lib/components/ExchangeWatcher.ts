@@ -1,5 +1,6 @@
 import {IExchangeWatcher} from "../interfaces";
 import {ExchangeAnalyzer, ExchangeTrader} from "./index";
+import {api} from "../../config/ExchangeApi";
 
 export class ExchangeWatcher implements IExchangeWatcher{
     analyzer: ExchangeAnalyzer;
@@ -11,6 +12,12 @@ export class ExchangeWatcher implements IExchangeWatcher{
 
     setExchangeTrader(exchangeTrader: ExchangeTrader) {
         this.trader = exchangeTrader
+    }
+
+    getRate(ticker: string) {
+    }
+
+    receiveOrderData(data: any) {
     }
 
 }

@@ -4,8 +4,15 @@ try {
     require('dotenv').config()
 }catch (e){}
 
-export const openAPI = new OpenAPI({
+const openAPI = new OpenAPI({
     apiURL: 'https://api-invest.tinkoff.ru/openapi/sandbox',
     socketURL: 'wss://api-invest.tinkoff.ru/openapi/md/v1/md-openapi/ws',
     secretToken: process.env.TINKOFF_SANDBOX_API_KEY
 })
+
+!(async function run() {
+    await openAPI.sandboxClear()
+    await openAPI.setCurrenciesBalance({ currency: 'RUB', balance: 1_000_000 })
+})();
+
+export const api = openAPI
