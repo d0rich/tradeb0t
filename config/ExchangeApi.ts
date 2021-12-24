@@ -12,7 +12,7 @@ const openAPI = new OpenAPI({
 
 !(async function run() {
     await openAPI.sandboxClear()
-    await openAPI.setCurrenciesBalance({ currency: 'RUB', balance: 1_000_000 })
+    await openAPI.setCurrenciesBalance({ currency: 'USD', balance: 1_000_000 })
 })();
 
 export const api = openAPI
