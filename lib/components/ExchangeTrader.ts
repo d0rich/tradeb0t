@@ -27,7 +27,16 @@ export class ExchangeTrader implements IExchangeTrader{
     }
 
     async sendOrder({operation, ticker, lots, price}: OrderOptions) {
-        await api.limitOrder({figi: ticker, operation, lots, price})
+        console.log(`${new Date().toISOString()} Sending order: `, {operation, ticker, lots, price})
+        try {
+            // @ts-ignore
+            const { figi } = await api.searchOne({ ticker });
+            const response = await api.limitOrder({figi, operation, lots, price})
+            console.log(response)
+        } catch (e: any) {
+            console.error(e)
+        }
+
     }
 
 }
