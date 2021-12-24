@@ -1,4 +1,4 @@
-import {ExchangeAnalyzer} from "../lib/components";
+import {ExchangeAnalyzer, ExchangeTrader, ExchangeWatcher} from "../lib/components";
 import {OrderOptions} from "../lib/types";
 
 export class TradeAlgorithms{
@@ -7,6 +7,9 @@ export class TradeAlgorithms{
     constructor(analyzer: ExchangeAnalyzer) {
         this._analyzer = analyzer
     }
+
+    get trader(): ExchangeTrader {return this._analyzer.trader}
+    get watcher():ExchangeWatcher {return this._analyzer.watcher}
 
     slicing(order: OrderOptions, parts: number, minutes: number){
         const lotsInOrder = Math.ceil(order.lots/parts)
@@ -20,7 +23,7 @@ export class TradeAlgorithms{
         lotsInOrders.push(lastLots)
         const date = new Date()
         lotsInOrders.forEach((lots, index) => {
-            this._analyzer.trader.scheduleOrder(
+            this.trader.scheduleOrder(
                 {...order, lots},
                 new Date(date.getTime() + 60000 * minutes/(parts - 1) * index)
             )
@@ -32,7 +35,7 @@ export class TradeAlgorithms{
             let success = false
             while (!success) {
                 try {
-                    await this._analyzer.trader.sendOrder(order)
+                    await this.trader.sendOrder(order)
                     success = true
                 }
                 catch (e) {
