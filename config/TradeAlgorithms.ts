@@ -2,14 +2,14 @@ import {ExchangeAnalyzer, ExchangeTrader, ExchangeWatcher} from "../robot/compon
 import {OrderOptions} from "../robot/types";
 
 export class TradeAlgorithms{
-    _analyzer: ExchangeAnalyzer;
+    private _analyzer: ExchangeAnalyzer;
 
     constructor(analyzer: ExchangeAnalyzer) {
         this._analyzer = analyzer
     }
 
     get trader(): ExchangeTrader {return this._analyzer.trader}
-    get watcher():ExchangeWatcher {return this._analyzer.watcher}
+    get watcher(): ExchangeWatcher {return this._analyzer.watcher}
 
     slicing(order: OrderOptions, parts: number, minutes: number){
         const lotsInOrder = Math.ceil(order.lots/parts)

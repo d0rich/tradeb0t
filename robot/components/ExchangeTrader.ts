@@ -6,7 +6,7 @@ import {TradeBot} from "../TradeBot";
 const schedule = require('node-schedule');
 
 export class ExchangeTrader implements IExchangeTrader{
-    _tradebot: TradeBot;
+    private _tradebot: TradeBot;
 
     constructor(tradebot: TradeBot) {
         this._tradebot = tradebot

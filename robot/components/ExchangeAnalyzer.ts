@@ -4,8 +4,8 @@ import {TradeAlgorithms} from "../../config/TradeAlgorithms";
 import {TradeBot} from "../TradeBot";
 
 export class ExchangeAnalyzer implements IExchangeAnalyzer{
-    _tradebot: TradeBot;
-    tradeAlgos: TradeAlgorithms = new TradeAlgorithms(this);
+    private _tradebot: TradeBot;
+    private _tradeAlgos: TradeAlgorithms = new TradeAlgorithms(this);
 
     constructor(tradebot: TradeBot) {
         this._tradebot = tradebot
@@ -17,5 +17,9 @@ export class ExchangeAnalyzer implements IExchangeAnalyzer{
 
     get watcher(): ExchangeWatcher {
         return this._tradebot.watcher
+    }
+
+    get tradeAlgos(): TradeAlgorithms {
+        return this._tradeAlgos
     }
 }

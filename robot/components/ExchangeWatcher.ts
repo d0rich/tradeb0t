@@ -3,7 +3,7 @@ import {ExchangeAnalyzer, ExchangeTrader} from "./index";
 import {TradeBot} from "../TradeBot";
 
 export class ExchangeWatcher implements IExchangeWatcher{
-    _tradebot: TradeBot;
+    private _tradebot: TradeBot;
 
     constructor(tradebot: TradeBot) {
         this._tradebot = tradebot
