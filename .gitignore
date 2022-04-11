@@ -123,3 +123,10 @@ dist
 .idea
 *.iml
 gen
+
+### SQLite databases
+*.db
+*.db-journal
+
+### Prisma migrations
+prisma/migrations

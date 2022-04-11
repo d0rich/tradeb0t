@@ -8,5 +8,7 @@ export const tradeBot = new TradeBot()
 import {apiRouter} from "./api";
 app.use('/api', apiRouter)
 
-app.listen(4268)
-console.info('We are online on http://localhost:4268/')
+app.listen(4268, () => {
+  console.info('We are online on http://localhost:4268/')
+})
+

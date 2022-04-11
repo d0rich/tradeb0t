@@ -7,6 +7,8 @@ router.get('/', function (req, res) {
 })
 
 import {algosRouter} from "./algorithms.router";
+import { stateRouter } from "./state.router";
 router.use('/algos', algosRouter)
+router.use('/state', stateRouter)
 
 export const apiRouter = router
