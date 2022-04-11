@@ -1,5 +1,5 @@
-import {ExchangeAnalyzer, ExchangeTrader, ExchangeWatcher} from "../lib/components";
-import {OrderOptions} from "../lib/types";
+import {ExchangeAnalyzer, ExchangeTrader, ExchangeWatcher} from "../robot/components";
+import {OrderOptions} from "../robot/types";
 
 export class TradeAlgorithms{
     _analyzer: ExchangeAnalyzer;
