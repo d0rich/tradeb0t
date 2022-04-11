@@ -11,6 +11,51 @@ datasource db {
 }
 
 model Currency {
-  name    String
-  ticket  String @unique
+  name                String
+  ticket              String  @id
+
+  securities          Security[]
+}
+
+model Security {
+  name                String
+  ticket              String  @id
+  price               Float
+
+  currency_ticket     String 
+
+  currency            Currency  @relation(fields: [currency_ticket], references: [ticket])
+  followed_securities FollowedSecurity[]
+  portfolio_lines     Portfolio[]
+  transactions        TransactionsHistory[]
+}
+
+model FollowedSecurity {
+  security_ticket     String  @id
+  followed_since      DateTime
+
+  security            Security @relation(fields: [security_ticket], references: [ticket])
+}
+
+model Portfolio {
+  security_ticket     String
+  amount              Int
+  buy_price           Float
+  buy_date            DateTime  @default(now())
+
+  security            Security @relation(fields: [security_ticket], references: [ticket])
+
+  @@id([security_ticket, buy_date])
+}
+
+model TransactionsHistory {
+  security_ticket     String
+  transaction_type    String
+  amount              Int
+  price               Float
+  date                DateTime  @default(now())
+
+  security            Security @relation(fields: [security_ticket], references: [ticket])
+
+  @@id([security_ticket, date])
 }
