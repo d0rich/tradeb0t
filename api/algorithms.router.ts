@@ -1,6 +1,6 @@
 import {Router} from "express";
 import {tradeBot} from "../index";
-import {OrderOptions} from "../robot/types";
+import {OrderOptions} from "../bot/types";
 
 const router = Router();
 

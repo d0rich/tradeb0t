@@ -2,7 +2,7 @@ const express = require('express')
 const app = express()
 app.use(express.json())
 
-import {TradeBot} from "./robot/TradeBot";
+import {TradeBot} from "./bot/TradeBot";
 export const tradeBot = new TradeBot()
 
 import {apiRouter} from "./api";

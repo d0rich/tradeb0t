@@ -1,5 +1,5 @@
 import {IExchangeAnalyzer} from "../interfaces";
-import {ExchangeTrader, ExchangeWatcher} from "./";
+import {ExchangeTrader, ExchangeWatcher} from ".";
 import {TradeAlgorithms} from "../../config/TradeAlgorithms";
 import {TradeBot} from "../TradeBot";
 
