@@ -1,4 +1,4 @@
-import {ExchangeAnalyzer, ExchangeTrader, ExchangeWatcher} from "./components";
+import {ExchangeAnalyzer, ExchangeTrader, ExchangeWatcher} from "./modules";
 
 export class TradeBot {
     analyzer: ExchangeAnalyzer = new ExchangeAnalyzer(this);

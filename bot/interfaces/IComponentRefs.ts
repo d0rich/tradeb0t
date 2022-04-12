@@ -1,4 +1,4 @@
-import {ExchangeTrader, ExchangeAnalyzer, ExchangeWatcher} from "../components";
+import {ExchangeTrader, ExchangeAnalyzer, ExchangeWatcher} from "../modules";
 
 export interface IWatcherRef{
     get watcher(): ExchangeWatcher

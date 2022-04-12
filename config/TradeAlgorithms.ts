@@ -1,4 +1,4 @@
-import {ExchangeAnalyzer, ExchangeTrader, ExchangeWatcher} from "../bot/components";
+import {ExchangeAnalyzer, ExchangeTrader, ExchangeWatcher} from "../bot/modules";
 import {OrderOptions} from "../bot/types";
 
 export class TradeAlgorithms{
