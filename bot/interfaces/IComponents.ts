@@ -1,4 +1,4 @@
-import {IAnalyzerRef, IWatcherRef, ITraderRef} from "./ComponentRefs";
+import {IAnalyzerRef, IWatcherRef, ITraderRef} from "./IComponentRefs";
 import {OrderOptions} from "../types";
 import {TradeAlgorithms} from "../../config/TradeAlgorithms";
 
