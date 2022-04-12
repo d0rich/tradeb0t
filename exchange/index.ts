@@ -1,9 +1,12 @@
 import OpenAPI from '@tinkoff/invest-openapi-js-sdk';
 
 import { IExchangeAccount, IExchangeInfo, IExchangeTrade } from "./interfaces";
+import { InfoModule, TradeModule } from './modules';
 
-export class ExchangeApi implements IExchangeAccount, IExchangeInfo, IExchangeTrade {
+export class ExchangeApi implements IExchangeAccount {
   private readonly _api: OpenAPI
+  private readonly _tradeModule: TradeModule
+  private readonly _infoModule: InfoModule
   private _isAccountInitialized: boolean = false
 
   constructor(token: string){
@@ -12,6 +15,8 @@ export class ExchangeApi implements IExchangeAccount, IExchangeInfo, IExchangeTr
         socketURL: 'wss://api-invest.tinkoff.ru/openapi/md/v1/md-openapi/ws',
         secretToken: token
     })
+    this._infoModule = new InfoModule(this)
+    this._tradeModule = new TradeModule(this)
     this.initAccount()
   }
 
@@ -22,24 +27,13 @@ export class ExchangeApi implements IExchangeAccount, IExchangeInfo, IExchangeTr
   }
   
   public get isAccountInitialized(): boolean { return this._isAccountInitialized }
+  public get tradeModule(): TradeModule { return this._tradeModule }
+  public get infoModule(): InfoModule { return this._infoModule }
+  
   public async getMetaInfo(): Promise<any> {
-    throw new Error("Method not implemented.");
+    throw new Error('Method not implemented.');
   }
   public async getPortfolio(): Promise<any> {
-    throw new Error("Method not implemented.");
+    throw new Error('Method not implemented.');
   }
-
-  public async sell(): Promise<any> {
-    throw new Error("Method not implemented.");
-  }
-  public async buy(): Promise<any> {
-    throw new Error("Method not implemented.");
-  }
-  public async sellOrCancel(): Promise<any> {
-    throw new Error("Method not implemented.");
-  }
-  public async buyOrCancel(): Promise<any> {
-    throw new Error("Method not implemented.");
-  }
-  
 }
