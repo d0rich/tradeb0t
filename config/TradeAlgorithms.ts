@@ -1,5 +1,5 @@
 import {ExchangeAnalyzer, ExchangeTrader, ExchangeWatcher} from "../bot/modules";
-import {OrderOptions} from "../bot/types";
+import {OrderOptions} from "../types";
 
 export class TradeAlgorithms{
     private _analyzer: ExchangeAnalyzer;
