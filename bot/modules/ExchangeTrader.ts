@@ -1,7 +1,6 @@
 import {IExchangeTrader} from "../interfaces";
 import {ExchangeWatcher} from ".";
-import {api} from "../../config/ExchangeApi";
-import {OrderOptions} from "../../types";
+import {OrderDetails, OrderOptions} from "../../types";
 import {TradeBot} from "../TradeBot";
 const schedule = require('node-schedule');
 
@@ -22,21 +21,43 @@ export class ExchangeTrader implements IExchangeTrader{
 
     scheduleOrder(order: OrderOptions, date: Date) {
         schedule.scheduleJob(date, async () => {
-            await this.sendOrder(order)
+            switch (order.operation) {
+                case 'Buy':
+                    await this.buy(order)
+                    break;
+                case 'Sell':
+                    await this.sell(order)
+                    break
+                default:
+                    await this.buy(order)
+                    break;
+            }
         })
     }
 
-    async sendOrder({operation, ticker, lots, price}: OrderOptions) {
-        console.log(`${new Date().toISOString()} Sending order: `, {operation, ticker, lots, price})
+    async sell({ ticker, lots, price }: OrderDetails) {
+        console.log(`${new Date().toISOString()} Sending order: `, {operation: 'Sell', ticker, lots, price})
         try {
-            // @ts-ignore
-            const { figi } = await api.searchOne({ ticker });
-            const response = await api.limitOrder({figi, operation, lots, price})
-            console.log(response)
+            const order = await this._tradebot.exchangeApi.tradeModule.sell({ ticker, lots, price })
+            console.log(order)
         } catch (e: any) {
             console.error(e)
         }
-
+    }
+    async buy({ ticker, lots, price }: OrderDetails) {
+        console.log(`${new Date().toISOString()} Sending order: `, {operation: 'Buy', ticker, lots, price})
+        try {
+            const order = await this._tradebot.exchangeApi.tradeModule.buy({ ticker, lots, price })
+            console.log(order)
+        } catch (e: any) {
+            console.error(e)
+        }
+    }
+    async sellOrCancel() {
+        throw new Error("Method not implemented.");
+    }
+    async buyOrCancel() {
+        throw new Error("Method not implemented.");
     }
 
 }

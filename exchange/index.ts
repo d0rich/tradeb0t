@@ -29,6 +29,7 @@ export class ExchangeApi implements IExchangeAccount {
   public get isAccountInitialized(): boolean { return this._isAccountInitialized }
   public get tradeModule(): TradeModule { return this._tradeModule }
   public get infoModule(): InfoModule { return this._infoModule }
+  public get api(): OpenAPI { return this._api }
   
   public async getMetaInfo(): Promise<any> {
     throw new Error('Method not implemented.');

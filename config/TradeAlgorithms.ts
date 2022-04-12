@@ -30,19 +30,19 @@ export class TradeAlgorithms{
         })
     }
 
-    hammer(order: OrderOptions, time: Date){
-        const hits = async () => {
-            let success = false
-            while (!success) {
-                try {
-                    await this.trader.sendOrder(order)
-                    success = true
-                }
-                catch (e) {
-                    success = false
-                }
-            }
-        }
-        this._analyzer.trader.scheduleAction(hits, new Date(time.getTime() - 60_000 * 2))
-    }
+    // hammer(order: OrderOptions, time: Date){
+    //     const hits = async () => {
+    //         let success = false
+    //         while (!success) {
+    //             try {
+    //                 await this.trader.sendOrder(order)
+    //                 success = true
+    //             }
+    //             catch (e) {
+    //                 success = false
+    //             }
+    //         }
+    //     }
+    //     this._analyzer.trader.scheduleAction(hits, new Date(time.getTime() - 60_000 * 2))
+    // }
 }

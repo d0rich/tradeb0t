@@ -4,3 +4,9 @@ export type OrderOptions = {
     lots: number
     price: number
 }
+
+export type OrderDetails = {
+    ticker: string
+    lots: number
+    price: number
+}

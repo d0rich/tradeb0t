@@ -1,4 +1,6 @@
+import { PlacedLimitOrder } from "@tinkoff/invest-openapi-js-sdk";
 import { ExchangeApi } from "..";
+import { OrderDetails } from "../../types";
 import { IExchangeApiRef, IExchangeTrade } from "../interfaces";
 
 export class TradeModule implements IExchangeTrade, IExchangeApiRef {
@@ -12,19 +14,25 @@ export class TradeModule implements IExchangeTrade, IExchangeApiRef {
     return this._exchangeApi
   }
 
-  sell(): Promise<any> {
-    throw new Error("Method not implemented.");
+  public async sell({ ticker, lots, price }: OrderDetails): Promise<PlacedLimitOrder> {
+    // @ts-ignore
+    const { figi } = await this.exchangeApi.api.searchOne({ ticker });
+    const placedOrder = await this.exchangeApi.api.limitOrder({figi, operation: 'Sell', lots, price})
+    return placedOrder
   }
 
-  buy(): Promise<any> {
-    throw new Error("Method not implemented.");
+  public async buy({ ticker, lots, price }: OrderDetails): Promise<PlacedLimitOrder> {
+    // @ts-ignore
+    const { figi } = await this.exchangeApi.api.searchOne({ ticker });
+    const placedOrder = await this.exchangeApi.api.limitOrder({figi, operation: 'Buy', lots, price})
+    return placedOrder
   }
 
-  sellOrCancel(): Promise<any> {
+  public async sellOrCancel(): Promise<any> {
     throw new Error("Method not implemented.");
   }
   
-  buyOrCancel(): Promise<any> {
+  public async buyOrCancel(): Promise<any> {
     throw new Error("Method not implemented.");
   }
 
