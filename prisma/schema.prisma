@@ -12,50 +12,50 @@ datasource db {
 
 model Currency {
   name                String
-  ticket              String  @id
+  ticker              String  @id
 
   securities          Security[]
 }
 
 model Security {
   name                String
-  ticket              String  @id
+  ticker              String  @id
   price               Float
 
-  currency_ticket     String 
+  currency_ticker     String 
 
-  currency            Currency  @relation(fields: [currency_ticket], references: [ticket])
+  currency            Currency  @relation(fields: [currency_ticker], references: [ticker])
   followed_securities FollowedSecurity[]
   portfolio_lines     Portfolio[]
   transactions        TransactionsHistory[]
 }
 
 model FollowedSecurity {
-  security_ticket     String  @id
+  security_ticker     String  @id
   followed_since      DateTime
 
-  security            Security @relation(fields: [security_ticket], references: [ticket])
+  security            Security @relation(fields: [security_ticker], references: [ticker])
 }
 
 model Portfolio {
-  security_ticket     String
+  security_ticker     String
   amount              Int
   buy_price           Float
   buy_date            DateTime  @default(now())
 
-  security            Security @relation(fields: [security_ticket], references: [ticket])
+  security            Security @relation(fields: [security_ticker], references: [ticker])
 
-  @@id([security_ticket, buy_date])
+  @@id([security_ticker, buy_date])
 }
 
 model TransactionsHistory {
-  security_ticket     String
+  security_ticker     String
   transaction_type    String
   amount              Int
   price               Float
   date                DateTime  @default(now())
 
-  security            Security @relation(fields: [security_ticket], references: [ticket])
+  security            Security @relation(fields: [security_ticker], references: [ticker])
 
-  @@id([security_ticket, date])
+  @@id([security_ticker, date])
 }
