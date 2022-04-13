@@ -1,5 +1,5 @@
 import {ExchangeAnalyzer, ExchangeTrader, ExchangeWatcher} from "../bot/modules";
-import {OrderOptions} from "../types";
+import {OperationTypes, OrderDetails} from "../types";
 
 export class TradeAlgorithms{
     private _analyzer: ExchangeAnalyzer;
@@ -11,7 +11,7 @@ export class TradeAlgorithms{
     get trader(): ExchangeTrader {return this._analyzer.trader}
     get watcher(): ExchangeWatcher {return this._analyzer.watcher}
 
-    slicing(order: OrderOptions, parts: number, minutes: number){
+    slicing(order: OrderDetails, parts: number, minutes: number){
         const lotsInOrder = Math.ceil(order.lots/parts)
         const lastLots = order.lots - lotsInOrder * (parts - 1)
         const lotsInOrders: number[] = []

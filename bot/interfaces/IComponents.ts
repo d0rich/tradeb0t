@@ -1,7 +1,6 @@
 import {IAnalyzerRef, IWatcherRef, ITraderRef} from "./IComponentRefs";
-import {OrderDetails, OrderOptions} from "../../types";
+import {OperationTypes, OrderDetails} from "../../types";
 import {TradeAlgorithms} from "../../config/TradeAlgorithms";
-
 export interface IExchangeAnalyzer extends IWatcherRef, ITraderRef{
     get tradeAlgos(): TradeAlgorithms;
 }
@@ -12,10 +11,7 @@ export interface IExchangeWatcher extends ITraderRef, IAnalyzerRef{
 }
 
 export interface IExchangeTrader extends IWatcherRef{
-    sell({ ticker, lots, price }: OrderDetails)
-    buy({ ticker, lots, price }: OrderDetails)
-    sellOrCancel()
-    buyOrCancel()
-    scheduleOrder(order: OrderOptions, date: Date)
+    sendOrder({ ticker, lots, price }: OrderDetails, operation: OperationTypes)
+    scheduleOrder(order: OrderDetails, date: Date)
     scheduleAction(action: Function, date: Date)
 }

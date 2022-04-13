@@ -1,11 +1,11 @@
 import {Router} from "express";
 import {tradeBot} from "../index";
-import {OrderOptions} from "../types";
+import {OrderDetails} from "../types";
 
 const router = Router();
 
 router.post('/slicing', ((req, res) => {
-    const bigOrder: OrderOptions = req.body['order']
+    const bigOrder: OrderDetails = req.body['order']
     const parts: number = req.body['parts']
     const minutes: number = req.body['minutes']
     tradeBot.analyzer.tradeAlgos.slicing(bigOrder, parts, minutes )

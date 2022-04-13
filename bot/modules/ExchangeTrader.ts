@@ -1,6 +1,6 @@
 import {IExchangeTrader} from "../interfaces";
 import {ExchangeWatcher} from ".";
-import {OrderDetails, OrderOptions} from "../../types";
+import {OperationTypes, OrderDetails} from "../../types";
 import {TradeBot} from "../TradeBot";
 const schedule = require('node-schedule');
 
@@ -19,45 +19,38 @@ export class ExchangeTrader implements IExchangeTrader{
         schedule.scheduleJob(date, action)
     }
 
-    scheduleOrder(order: OrderOptions, date: Date) {
+    scheduleOrder(order: OrderDetails, date: Date) {
         schedule.scheduleJob(date, async () => {
-            switch (order.operation) {
-                case 'Buy':
-                    await this.buy(order)
-                    break;
-                case 'Sell':
-                    await this.sell(order)
-                    break
-                default:
-                    await this.buy(order)
-                    break;
-            }
+            this.sendOrder(order)
         })
     }
 
-    async sell({ ticker, lots, price }: OrderDetails) {
-        console.log(`${new Date().toISOString()} Sending order: `, {operation: 'Sell', ticker, lots, price})
+    async sendOrder({ ticker, lots, price, operation }: OrderDetails) {
+        console.log(`${new Date().toISOString()} Sending order: `, {operation, ticker, lots, price})
         try {
-            const order = await this._tradebot.exchangeApi.tradeModule.sell({ ticker, lots, price })
+            let order
+            switch (operation){
+                case OperationTypes.buy:
+                    order = await this._tradebot.exchangeApi.tradeModule.buy({ ticker, lots, price, operation })
+                    console.log(order)
+                    break
+                case OperationTypes.buyOrCancel:
+                    order = await this._tradebot.exchangeApi.tradeModule.buyOrCancel()
+                    break
+                case OperationTypes.sell:
+                    order = await this._tradebot.exchangeApi.tradeModule.sell({ ticker, lots, price, operation })
+                    break
+                case OperationTypes.sellOrCancel:
+                    order = await this._tradebot.exchangeApi.tradeModule.sellOrCancel()
+                    break
+                default:
+                    throw new Error('Incorrect operation type')
+                    break
+            }
             console.log(order)
         } catch (e: any) {
             console.error(e)
         }
-    }
-    async buy({ ticker, lots, price }: OrderDetails) {
-        console.log(`${new Date().toISOString()} Sending order: `, {operation: 'Buy', ticker, lots, price})
-        try {
-            const order = await this._tradebot.exchangeApi.tradeModule.buy({ ticker, lots, price })
-            console.log(order)
-        } catch (e: any) {
-            console.error(e)
-        }
-    }
-    async sellOrCancel() {
-        throw new Error("Method not implemented.");
-    }
-    async buyOrCancel() {
-        throw new Error("Method not implemented.");
     }
 
 }
