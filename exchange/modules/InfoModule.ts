@@ -1,14 +1,14 @@
-import { ExchangeApi } from "..";
-import { IExchangeApiRef, IExchangeInfo } from "../interfaces";
+import { ExchangeClient } from "..";
+import { IExchangeClientRef, IExchangeInfo } from "../interfaces";
 
-export class InfoModule implements IExchangeInfo, IExchangeApiRef {
-  private readonly _exchangeApi: ExchangeApi
+export class InfoModule implements IExchangeInfo, IExchangeClientRef {
+  private readonly _exchangeApi: ExchangeClient
 
-  constructor(exchangeApi: ExchangeApi){
+  constructor(exchangeApi: ExchangeClient){
     this._exchangeApi = exchangeApi
   }
 
-  get exchangeApi(): ExchangeApi {
+  get exchangeApi(): ExchangeClient {
     return this._exchangeApi
   }
 }

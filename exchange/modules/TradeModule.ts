@@ -1,27 +1,27 @@
-import { PlacedLimitOrder } from "@tinkoff/invest-openapi-js-sdk";
-import { ExchangeApi } from "..";
+import { ExchangeClient } from "..";
 import { OrderDetails } from "../../types";
-import { IExchangeApiRef, IExchangeTrade } from "../interfaces";
+import { PlacedOrder } from "../../types/ExchangeApi.t";
+import { IExchangeClientRef, IExchangeTrade } from "../interfaces";
 
-export class TradeModule implements IExchangeTrade, IExchangeApiRef {
-  private readonly _exchangeApi: ExchangeApi
+export class TradeModule implements IExchangeTrade, IExchangeClientRef {
+  private readonly _exchangeApi: ExchangeClient
 
-  constructor(exchangeApi: ExchangeApi){
+  constructor(exchangeApi: ExchangeClient){
     this._exchangeApi = exchangeApi
   }
 
-  get exchangeApi(): ExchangeApi {
+  get exchangeApi(): ExchangeClient {
     return this._exchangeApi
   }
 
-  public async sell({ ticker, lots, price }: OrderDetails): Promise<PlacedLimitOrder> {
+  public async sell({ ticker, lots, price }: OrderDetails): Promise<PlacedOrder> {
     // @ts-ignore
     const { figi } = await this.exchangeApi.api.searchOne({ ticker });
     const placedOrder = await this.exchangeApi.api.limitOrder({figi, operation: 'Sell', lots, price})
     return placedOrder
   }
 
-  public async buy({ ticker, lots, price }: OrderDetails): Promise<PlacedLimitOrder> {
+  public async buy({ ticker, lots, price }: OrderDetails): Promise<PlacedOrder> {
     // @ts-ignore
     const { figi } = await this.exchangeApi.api.searchOne({ ticker });
     const placedOrder = await this.exchangeApi.api.limitOrder({figi, operation: 'Buy', lots, price})

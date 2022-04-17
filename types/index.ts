@@ -1,3 +1,5 @@
+export * from './ExchangeApi.t'
+
 export type OrderDetails = {
     operation: OperationTypes
     ticker: string

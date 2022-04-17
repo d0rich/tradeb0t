@@ -1,10 +1,11 @@
 import OpenAPI from '@tinkoff/invest-openapi-js-sdk';
+import { ExchangeApi } from '../types/ExchangeApi.t';
 
 import { IExchangeAccount, IExchangeInfo, IExchangeTrade } from "./interfaces";
 import { InfoModule, TradeModule } from './modules';
 
-export class ExchangeApi implements IExchangeAccount {
-  private readonly _api: OpenAPI
+export class ExchangeClient implements IExchangeAccount {
+  private readonly _api: ExchangeApi
   private readonly _tradeModule: TradeModule
   private readonly _infoModule: InfoModule
   private _isAccountInitialized: boolean = false
@@ -29,7 +30,7 @@ export class ExchangeApi implements IExchangeAccount {
   public get isAccountInitialized(): boolean { return this._isAccountInitialized }
   public get tradeModule(): TradeModule { return this._tradeModule }
   public get infoModule(): InfoModule { return this._infoModule }
-  public get api(): OpenAPI { return this._api }
+  public get api(): ExchangeApi { return this._api }
   
   public async getMetaInfo(): Promise<any> {
     throw new Error('Method not implemented.');

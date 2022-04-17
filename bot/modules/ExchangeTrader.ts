@@ -31,17 +31,17 @@ export class ExchangeTrader implements IExchangeTrader{
             let order
             switch (operation){
                 case OperationTypes.buy:
-                    order = await this._tradebot.exchangeApi.tradeModule.buy({ ticker, lots, price, operation })
+                    order = await this._tradebot.exchangeClient.tradeModule.buy({ ticker, lots, price, operation })
                     console.log(order)
                     break
                 case OperationTypes.buyOrCancel:
-                    order = await this._tradebot.exchangeApi.tradeModule.buyOrCancel()
+                    order = await this._tradebot.exchangeClient.tradeModule.buyOrCancel()
                     break
                 case OperationTypes.sell:
-                    order = await this._tradebot.exchangeApi.tradeModule.sell({ ticker, lots, price, operation })
+                    order = await this._tradebot.exchangeClient.tradeModule.sell({ ticker, lots, price, operation })
                     break
                 case OperationTypes.sellOrCancel:
-                    order = await this._tradebot.exchangeApi.tradeModule.sellOrCancel()
+                    order = await this._tradebot.exchangeClient.tradeModule.sellOrCancel()
                     break
                 default:
                     throw new Error('Incorrect operation type')
