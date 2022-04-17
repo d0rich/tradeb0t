@@ -32,7 +32,6 @@ export class ExchangeTrader implements IExchangeTrader{
             switch (operation){
                 case OperationTypes.buy:
                     order = await this._tradebot.exchangeClient.tradeModule.buy({ ticker, lots, price, operation })
-                    console.log(order)
                     break
                 case OperationTypes.buyOrCancel:
                     order = await this._tradebot.exchangeClient.tradeModule.buyOrCancel()
