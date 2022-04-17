@@ -6,7 +6,8 @@
   "scripts": {
     "start": "ts-node index.ts",
     "dev": "nodemon index.ts",
-    "db-update": "npx prisma migrate dev --name ''"
+    "db-update": "npx prisma migrate dev --name ''",
+    "test": "ts-node ./test/index.ts"
   },
   "keywords": [],
   "author": {
