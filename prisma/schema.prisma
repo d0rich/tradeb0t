@@ -26,8 +26,8 @@ model Security {
 
   currency            Currency  @relation(fields: [currency_ticker], references: [ticker])
   followed_securities FollowedSecurity[]
-  portfolio_lines     Portfolio[]
-  transactions        TransactionsHistory[]
+  portfolio_lines     PortfolioPosition[]
+  transactions        TransactionHistoryNote[]
 }
 
 model FollowedSecurity {
@@ -37,10 +37,10 @@ model FollowedSecurity {
   security            Security @relation(fields: [security_ticker], references: [ticker])
 }
 
-model Portfolio {
+model PortfolioPosition {
   security_ticker     String
   amount              Int
-  buy_price           Float
+  buy_price           Float?
   buy_date            DateTime  @default(now())
 
   security            Security @relation(fields: [security_ticker], references: [ticker])
@@ -48,7 +48,7 @@ model Portfolio {
   @@id([security_ticker, buy_date])
 }
 
-model TransactionsHistory {
+model TransactionHistoryNote {
   security_ticker     String
   transaction_type    String
   amount              Int
