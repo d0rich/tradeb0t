@@ -23,7 +23,8 @@ import { OperationTypes } from "../types";
   console.info(`${new Date()} Starting tests...`)
 
   await tradeBot.trader.sendOrder({ ticker: 'AAPL', lots: 5, operation: OperationTypes.buy, price: 200 })
-  await tradeBot.trader.sendOrder({ ticker: 'AAPL', lots: 5, operation: OperationTypes.sell, price: 100 })
-
+  await tradeBot.trader.sendOrder({ ticker: 'AAPL', lots: 5, operation: OperationTypes.buy, price: 300 })
+  await tradeBot.trader.sendOrder({ ticker: 'AAPL', lots: 2, operation: OperationTypes.sell, price: 100 })
+  console.table((await tradeBot.watcher.getPortfolio()).positions)
 })()
 

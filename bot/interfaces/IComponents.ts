@@ -1,5 +1,5 @@
 import {IAnalyzerRef, IWatcherRef, ITraderRef} from "./IComponentRefs";
-import {OperationTypes, OrderDetails} from "../../types";
+import {OperationTypes, OrderDetails, R_Portfolio} from "../../types";
 import {TradeAlgorithms} from "../../config/TradeAlgorithms";
 export interface IExchangeAnalyzer extends IWatcherRef, ITraderRef{
     get tradeAlgos(): TradeAlgorithms;
@@ -8,6 +8,7 @@ export interface IExchangeAnalyzer extends IWatcherRef, ITraderRef{
 export interface IExchangeWatcher extends ITraderRef, IAnalyzerRef{
     receiveOrderData(data: any)
     getRate(ticker: string)
+    getPortfolio(): Promise<R_Portfolio>
 }
 
 export interface IExchangeTrader extends IWatcherRef{

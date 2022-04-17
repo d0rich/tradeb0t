@@ -1,14 +1,19 @@
+import { Portfolio } from "@tinkoff/invest-openapi-js-sdk";
 import { ExchangeClient } from "..";
 import { IExchangeClientRef, IExchangeInfo } from "../interfaces";
 
 export class InfoModule implements IExchangeInfo, IExchangeClientRef {
-  private readonly _exchangeApi: ExchangeClient
+  private readonly _exchangeClient: ExchangeClient
 
-  constructor(exchangeApi: ExchangeClient){
-    this._exchangeApi = exchangeApi
+  constructor(exchangeClient: ExchangeClient){
+    this._exchangeClient = exchangeClient
   }
 
-  get exchangeApi(): ExchangeClient {
-    return this._exchangeApi
+  get exchangeClient(): ExchangeClient {
+    return this._exchangeClient
+  }
+
+  async portfolio(): Promise<Portfolio> {
+      return await this.exchangeClient.api.portfolio()
   }
 }

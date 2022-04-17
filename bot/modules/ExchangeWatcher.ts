@@ -1,6 +1,7 @@
 import {IExchangeWatcher} from "../interfaces";
 import {ExchangeAnalyzer, ExchangeTrader} from "./index";
 import {TradeBot} from "../TradeBot";
+import { Portfolio } from "@tinkoff/invest-openapi-js-sdk";
 
 export class ExchangeWatcher implements IExchangeWatcher{
     private _tradebot: TradeBot;
@@ -21,5 +22,9 @@ export class ExchangeWatcher implements IExchangeWatcher{
     }
 
     receiveOrderData(data: any) {
+    }
+
+    async getPortfolio(): Promise<Portfolio> {
+        return await this._tradebot.exchangeClient.portfolio()
     }
 }

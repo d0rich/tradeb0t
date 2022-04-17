@@ -1,9 +1,9 @@
 import { OrderDetails } from "../../types"
-import { PlacedOrder } from "../../types/ExchangeApi.t"
+import { R_PlacedOrder } from "../../types/ExchangeApi.t"
 
 export interface IExchangeTrade {
-  sell({ ticker, lots, price }: OrderDetails): Promise<PlacedOrder>
-  buy({ ticker, lots, price }: OrderDetails): Promise<PlacedOrder>
+  sell({ ticker, lots, price }: OrderDetails): Promise<R_PlacedOrder>
+  buy({ ticker, lots, price }: OrderDetails): Promise<R_PlacedOrder>
   sellOrCancel(): Promise<any>
   buyOrCancel(): Promise<any>
 }
