@@ -3,7 +3,7 @@ import {ExchangeTrader, ExchangeWatcher} from ".";
 import {TradeAlgorithms} from "../../config/TradeAlgorithms";
 import {TradeBot} from "../TradeBot";
 
-import { Currency, PortfolioPosition, PrismaClient, Security } from "@prisma/client";
+import { C_Currency, C_PortfolioPosition, PrismaClient, C_Security } from "@prisma/client";
 const db = new PrismaClient()
 
 export class ExchangeAnalyzer implements IExchangeAnalyzer{
@@ -26,36 +26,36 @@ export class ExchangeAnalyzer implements IExchangeAnalyzer{
         return this._tradeAlgos
     }
 
-    async updatePortfolio(): Promise<PortfolioPosition[]>{
+    async updatePortfolio(): Promise<C_PortfolioPosition[]>{
         const transactionFunction = async () => {
-            await db.portfolioPosition.deleteMany()
+            await db.c_PortfolioPosition.deleteMany()
             const relevantPortfolio = await this.watcher.getPortfolio()
-            return relevantPortfolio.map(position => db.portfolioPosition.create({ data: position }))
+            return relevantPortfolio.map(position => db.c_PortfolioPosition.create({ data: position }))
         }
         return await db.$transaction(await transactionFunction())
         
     }
 
-    async getPortfolio(): Promise<PortfolioPosition[]> {
-        return db.portfolioPosition.findMany({})
+    async getPortfolio(): Promise<C_PortfolioPosition[]> {
+        return db.c_PortfolioPosition.findMany({})
     }
 
-    async updateCurrencies(): Promise<Currency[]> {
+    async updateCurrencies(): Promise<C_Currency[]> {
         const transactionFunction = async () => {
             const relevantCurrencies = await this.watcher.getCurrencies()
             return relevantCurrencies
-                .map(currency => db.currency.upsert({ where: {ticker: currency.ticker}, update: {}, create: currency }))
+                .map(currency => db.c_Currency.upsert({ where: {ticker: currency.ticker}, update: {}, create: currency }))
         }
         return await db.$transaction(await transactionFunction())
     }
 
-    async getCurrencies(): Promise<Currency[]> {
-        return await db.currency.findMany({})
+    async getCurrencies(): Promise<C_Currency[]> {
+        return await db.c_Currency.findMany({})
     }
 
-    async updateSecurities(): Promise<Security[]> {
+    async updateSecurities(): Promise<C_Security[]> {
         const transactionFunction = async () => {
-            const portfolio: PortfolioPosition[] = await this.watcher.getPortfolio()
+            const portfolio: C_PortfolioPosition[] = await this.watcher.getPortfolio()
             const portfolioInfo = await Promise.all(
                 portfolio.map(async (position) => {
                     return {
@@ -65,7 +65,7 @@ export class ExchangeAnalyzer implements IExchangeAnalyzer{
                 })
             )
             const promises = portfolio
-                .map((position, index) => db.security.upsert({ 
+                .map((position, index) => db.c_Security.upsert({ 
                         where: { ticker: position.security_ticker },
                         update: {
                             price: portfolioInfo[index].price,
@@ -83,7 +83,7 @@ export class ExchangeAnalyzer implements IExchangeAnalyzer{
         return await db.$transaction(await transactionFunction())
     }
 
-    async getSecurities(): Promise<Security[]> {
-        return await db.security.findMany({})
+    async getSecurities(): Promise<C_Security[]> {
+        return await db.c_Security.findMany({})
     }
 }

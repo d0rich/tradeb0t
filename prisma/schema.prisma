@@ -10,52 +10,62 @@ datasource db {
   url      = "file:./storage.db"
 }
 
-model Currency {
+model C_Currency {
+  @@map("Currencies")
+
   name                String
   ticker              String  @id
 
-  securities          Security[]
+  securities          C_Security[]
 }
 
-model Security {
+model C_Security {
+  @@map("Securities")
+
   name                String
   ticker              String  @id
   price               Float
 
   currency_ticker     String 
 
-  currency            Currency  @relation(fields: [currency_ticker], references: [ticker])
-  followed_securities FollowedSecurity[]
-  portfolio_lines     PortfolioPosition[]
-  transactions        TransactionHistoryNote[]
+  currency            C_Currency  @relation(fields: [currency_ticker], references: [ticker])
+  followed_securities C_FollowedSecurity[]
+  portfolio_positions C_PortfolioPosition[]
+  transactions        C_TransactionHistoryNote[]
 }
 
-model FollowedSecurity {
+model C_FollowedSecurity {
+  @@map("FollowedSecurities")
+
   security_ticker     String  @id
   followed_since      DateTime
 
-  security            Security @relation(fields: [security_ticker], references: [ticker])
+  security            C_Security @relation(fields: [security_ticker], references: [ticker])
 }
 
-model PortfolioPosition {
+model C_PortfolioPosition {
+  @@map("PortfolioPositions")
+
   security_ticker     String
   amount              Int
   buy_price           Float?
   buy_date            DateTime  @default(now())
 
-  security            Security @relation(fields: [security_ticker], references: [ticker])
+  security            C_Security @relation(fields: [security_ticker], references: [ticker])
 
   @@id([security_ticker, buy_date])
 }
 
-model TransactionHistoryNote {
+model C_TransactionHistoryNote {
+  @@map("TransactionHistoryNotes")
+
   security_ticker     String
   transaction_type    String
   amount              Int
   price               Float
   date                DateTime  @default(now())
 
-  security            Security @relation(fields: [security_ticker], references: [ticker])
+  security            C_Security @relation(fields: [security_ticker], references: [ticker])
 
   @@id([security_ticker, date])
 }
