@@ -59,6 +59,7 @@ export class ExchangeAnalyzer implements IExchangeAnalyzer{
             const portfolioInfo = await Promise.all(
                 portfolio.map(async (position) => {
                     return {
+                        name: await this.watcher.getSecurityName(position.security_ticker),
                         price: await this.watcher.getSecurityLastPrice(position.security_ticker),
                         currency: await this.watcher.getSecurityCurrency(position.security_ticker)
                     } 
@@ -71,7 +72,7 @@ export class ExchangeAnalyzer implements IExchangeAnalyzer{
                             price: portfolioInfo[index].price,
                         },
                         create: { 
-                            name: position.security_ticker, 
+                            name: portfolioInfo[index].name, 
                             price: portfolioInfo[index].price, 
                             ticker: position.security_ticker, 
                             currency_ticker: portfolioInfo[index].currency.ticker

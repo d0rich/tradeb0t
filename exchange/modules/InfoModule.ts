@@ -1,7 +1,9 @@
 import { Portfolio } from "@tinkoff/invest-openapi-js-sdk";
 import { ExchangeClient } from "..";
-import { C_Currency } from "../../types";
+import { C_Currency, C_Security } from "../../types";
 import { IExchangeClientRef, IExchangeInfo } from "../interfaces";
+
+const securitiesCache = new Map<string, C_Security>()
 
 export class InfoModule implements IExchangeInfo, IExchangeClientRef {
   private readonly _exchangeClient: ExchangeClient
@@ -20,15 +22,28 @@ export class InfoModule implements IExchangeInfo, IExchangeClientRef {
   }
 
   async securityLastPrice(ticker: string): Promise<number> {
-    const security = await this.exchangeClient.api.searchOne({ ticker })
-    if (!security) throw new Error(`Security with ticker "${ticker} was not found"`)
+    const security = await this.getSecurity(ticker, true)
     const orderBook = await this.exchangeClient.api.orderbookGet({ figi: security?.figi || '' })
     return orderBook?.lastPrice || 0
   }
 
   async securityCurrency(ticker: string): Promise<C_Currency> {
-    const security = await this.exchangeClient.api.searchOne({ ticker })
-    if (!security) throw new Error(`Security with ticker "${ticker} was not found"`)
+    const security = await this.getSecurity(ticker)
     return security?.currency || 'USD'
+  }
+
+  async securityName(ticker: string): Promise<string> {
+    const security = await this.getSecurity(ticker)
+    return security?.name || ''
+  }
+
+  private async getSecurity(ticker: string, ignoreCache: boolean = false) {
+    if (!securitiesCache.has(ticker) || ignoreCache){
+      const security = await this.exchangeClient.api.searchOne({ ticker })
+      if (!security) throw new Error(`Security with ticker "${ticker} was not found"`)
+      else return security
+    }
+    else return securitiesCache.get(ticker)
+    
   }
 }

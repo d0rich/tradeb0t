@@ -46,6 +46,10 @@ export class ExchangeWatcher implements IExchangeWatcher{
         }))
     }
 
+    async getSecurityName(ticker: string): Promise<string> {
+        return await this._tradebot.exchangeClient.infoModule.securityName(ticker)
+    }
+
     async getSecurityLastPrice(ticker: string): Promise<number> {
         return await this._tradebot.exchangeClient.infoModule.securityLastPrice(ticker) 
     }
