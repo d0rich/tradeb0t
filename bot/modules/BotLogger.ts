@@ -19,7 +19,6 @@ export class BotLogger {
     if (this._lastLogs.length > 30){
       this._lastLogs.shift()
     }
-    console.log(this._lastLogs)
   }
 
   getLastLogs(): string{
@@ -28,6 +27,7 @@ export class BotLogger {
 
   log(message: string){
     this._log.info(message)
+    console.log(message)
     wsApi.emit('log', message)
     this.updateLastLogs(message)
   }
