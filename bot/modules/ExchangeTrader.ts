@@ -26,7 +26,7 @@ export class ExchangeTrader implements IExchangeTrader{
     }
 
     async sendOrder({ ticker, lots, price, operation }: OrderDetails) {
-        console.log(`${new Date().toISOString()} Sending order: `, {operation, ticker, lots, price})
+        this._tradebot.logger.log(`Sending order: ${JSON.stringify({operation, ticker, lots, price})}`)
         try {
             let order
             switch (operation){
@@ -46,7 +46,6 @@ export class ExchangeTrader implements IExchangeTrader{
                     throw new Error('Incorrect operation type')
                     break
             }
-            console.log(order)
         } catch (e: any) {
             console.error(e)
         }
