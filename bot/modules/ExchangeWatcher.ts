@@ -1,8 +1,8 @@
 import {IExchangeWatcher} from "../interfaces";
 import {ExchangeAnalyzer, ExchangeTrader} from "./index";
 import {TradeBot} from "../TradeBot";
-import { PortfolioPosition } from "@prisma/client";
-import { R_Portfolio } from "../../types";
+import { PortfolioPosition, Currency } from "@prisma/client";
+import { R_Currency, R_Portfolio } from "../../types";
 
 export class ExchangeWatcher implements IExchangeWatcher{
     private _tradebot: TradeBot;
@@ -36,5 +36,25 @@ export class ExchangeWatcher implements IExchangeWatcher{
                 buy_price: null
             }
         })
+    }
+
+    async getCurrencies(): Promise<Currency[]> {
+        const currencies: R_Currency[] = await this._tradebot.exchangeClient.infoModule.currencies()
+        return currencies.map(currency => ({
+            name: currency,
+            ticker: currency
+        }))
+    }
+
+    async getSecurityLastPrice(ticker: string): Promise<number> {
+        return await this._tradebot.exchangeClient.infoModule.securityLastPrice(ticker) 
+    }
+
+    async getSecurityCurrency(ticker: string): Promise<Currency> {
+        const currency: R_Currency = await this._tradebot.exchangeClient.infoModule.securityCurrency(ticker)
+        return {
+            name: currency,
+            ticker: currency
+        }
     }
 }

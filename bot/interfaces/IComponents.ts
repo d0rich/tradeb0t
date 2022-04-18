@@ -1,9 +1,13 @@
 import {IAnalyzerRef, IWatcherRef, ITraderRef} from "./IComponentRefs";
 import {OperationTypes, OrderDetails} from "../../types";
 import {TradeAlgorithms} from "../../config/TradeAlgorithms";
-import { PortfolioPosition } from "@prisma/client";
+import { PortfolioPosition, Currency } from "@prisma/client";
 export interface IExchangeAnalyzer extends IWatcherRef, ITraderRef{
-    get tradeAlgos(): TradeAlgorithms;
+    get tradeAlgos(): TradeAlgorithms
+    updatePortfolio(): Promise<PortfolioPosition[]>
+    updateCurrencies(): Promise<Currency[]>
+    getCurrencies(): Promise<Currency[]>
+    
 }
 
 export interface IExchangeWatcher extends ITraderRef, IAnalyzerRef{

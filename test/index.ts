@@ -25,6 +25,8 @@ import { OperationTypes } from "../types";
   await tradeBot.trader.sendOrder({ ticker: 'AAPL', lots: 5, operation: OperationTypes.buy, price: 200 })
   await tradeBot.trader.sendOrder({ ticker: 'AAPL', lots: 5, operation: OperationTypes.buy, price: 300 })
   await tradeBot.trader.sendOrder({ ticker: 'AAPL', lots: 2, operation: OperationTypes.sell, price: 100 })
+  console.table(await tradeBot.analyzer.updateCurrencies())
+  console.table(await tradeBot.analyzer.updateSecurities())
   console.table(await tradeBot.analyzer.updatePortfolio())
   console.table(await tradeBot.analyzer.getPortfolio())
 })()
