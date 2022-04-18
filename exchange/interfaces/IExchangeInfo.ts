@@ -1,7 +1,7 @@
-import { RA_Portfolio, RA_Currency } from "../../types";
+import { C_Portfolio, C_Currency } from "../../types";
 
 export interface IExchangeInfo {
-  currencies(): Promise<RA_Currency[]>
+  currencies(): Promise<C_Currency[]>
   securityLastPrice(ticker: string): Promise<number>
-  securityCurrency(ticker: string): Promise<RA_Currency>
+  securityCurrency(ticker: string): Promise<C_Currency>
 }

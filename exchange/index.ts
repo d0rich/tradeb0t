@@ -1,11 +1,11 @@
 import OpenAPI from '@tinkoff/invest-openapi-js-sdk';
-import { RA_ExchangeApi, RA_Portfolio } from '../types/ExchangeApi.t';
+import { C_ExchangeApi, C_Portfolio } from '../types/ExchangeApi.t';
 
 import { IExchangeAccount, IExchangeInfo, IExchangeTrade } from "./interfaces";
 import { InfoModule, TradeModule } from './modules';
 
 export class ExchangeClient implements IExchangeAccount {
-  private readonly _api: RA_ExchangeApi
+  private readonly _api: C_ExchangeApi
   private readonly _tradeModule: TradeModule
   private readonly _infoModule: InfoModule
   private _isAccountInitialized: boolean = false
@@ -30,12 +30,12 @@ export class ExchangeClient implements IExchangeAccount {
   public get isAccountInitialized(): boolean { return this._isAccountInitialized }
   public get tradeModule(): TradeModule { return this._tradeModule }
   public get infoModule(): InfoModule { return this._infoModule }
-  public get api(): RA_ExchangeApi { return this._api }
+  public get api(): C_ExchangeApi { return this._api }
   
   public async metaInfo(): Promise<any> {
     throw new Error('Method not implemented.');
   }
-  public async portfolio(): Promise<RA_Portfolio> {
+  public async portfolio(): Promise<C_Portfolio> {
     return await this.api.portfolio()
   }
 }
