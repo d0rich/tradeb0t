@@ -28,7 +28,7 @@ export class ExchangeAnalyzer implements IExchangeAnalyzer{
 
     async updatePortfolio(): Promise<PortfolioPosition[]>{
         const transactionFunction = async () => {
-            db.portfolioPosition.deleteMany({})
+            await db.portfolioPosition.deleteMany()
             const relevantPortfolio = await this.watcher.getPortfolio()
             return relevantPortfolio.map(position => db.portfolioPosition.create({ data: position }))
         }
