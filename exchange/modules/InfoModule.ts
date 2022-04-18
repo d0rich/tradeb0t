@@ -1,6 +1,6 @@
 import { Portfolio } from "@tinkoff/invest-openapi-js-sdk";
 import { ExchangeClient } from "..";
-import { R_Currency } from "../../types";
+import { RA_Currency } from "../../types";
 import { IExchangeClientRef, IExchangeInfo } from "../interfaces";
 
 export class InfoModule implements IExchangeInfo, IExchangeClientRef {
@@ -14,8 +14,8 @@ export class InfoModule implements IExchangeInfo, IExchangeClientRef {
     return this._exchangeClient
   }
 
-  async currencies(): Promise<R_Currency[]> {
-    const currencies: R_Currency[] = [ 'CHF', "CNY", 'EUR', "GBP", "HKD", "JPY", "RUB", "TRY", "USD" ]
+  async currencies(): Promise<RA_Currency[]> {
+    const currencies: RA_Currency[] = [ 'CHF', "CNY", 'EUR', "GBP", "HKD", "JPY", "RUB", "TRY", "USD" ]
     return currencies
   }
 
@@ -26,7 +26,7 @@ export class InfoModule implements IExchangeInfo, IExchangeClientRef {
     return orderBook?.lastPrice || 0
   }
 
-  async securityCurrency(ticker: string): Promise<R_Currency> {
+  async securityCurrency(ticker: string): Promise<RA_Currency> {
     const security = await this.exchangeClient.api.searchOne({ ticker })
     if (!security) throw new Error(`Security with ticker "${ticker} was not found"`)
     return security?.currency || 'USD'
