@@ -7,7 +7,7 @@ app.use(express.json())
 const router = Router();
 
 router.get('/', function (req, res) {
-    res.send('This is tradebot v0.1.0')
+    res.send('This is tradebot v0.5.0')
 })
 
 import {algosRouter} from "./algorithms.router";
