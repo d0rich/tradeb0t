@@ -41,9 +41,9 @@ export class InfoModule implements IExchangeInfo, IExchangeClientRef {
     if (!securitiesCache.has(ticker) || ignoreCache){
       const security = await this.exchangeClient.api.searchOne({ ticker })
       if (!security) throw new Error(`Security with ticker "${ticker} was not found"`)
-      else return security
+      securitiesCache.set(ticker, security)
+      return security
     }
-    else return securitiesCache.get(ticker)
-    
+    return securitiesCache.get(ticker)    
   }
 }
