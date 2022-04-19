@@ -5,7 +5,7 @@ try {
 
 
 import {TradeBot} from "./bot/TradeBot";
-export const tradeBot = new TradeBot(process.env.TINKOFF_SANDBOX_API_KEY || '')
+export const tradeBot = TradeBot.createBotByEnv()
 
 import {restApi, wsApi} from "./api"
 

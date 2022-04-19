@@ -11,7 +11,7 @@ import { OperationTypes } from "../types";
       setTimeout(() => {resolve(true)}, ms)
     })
   } 
-  const tradeBot = new TradeBot(process.env.TINKOFF_SANDBOX_API_KEY || '')
+  const tradeBot = TradeBot.createBotByEnv()
 
 
   console.info(`${new Date()} Waiting initialization...`)
