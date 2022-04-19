@@ -1,5 +1,7 @@
 # Quick Start
 
+## Preparation
+
 Install dependencies: 
 
 ```sh
@@ -22,6 +24,8 @@ Initialize local SQLite database:
 npm run db-update
 ```
 
+## Run
+
 Run robot in _development_ mode:
 
 ```sh
@@ -35,3 +39,17 @@ run in _production_ mode:
 ```sh
 npm run start
 ```
+
+# Try it out
+
+## Check database
+
+You can check robot local database by running
+
+```sh
+npm run db-browse
+```
+
+## Check requests
+
+We have [Postman workspace](https://www.postman.com/bad-labs/workspace/tradebots/overview) for testing robots.
