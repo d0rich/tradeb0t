@@ -9,6 +9,7 @@ export class BotAuth{
   }
 
   public authByToken(token: string): boolean {
+    if (process.env.AUTH_REQUIRED === '0') return true
     return this._botToken === token
   }
 
