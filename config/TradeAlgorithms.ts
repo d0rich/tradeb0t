@@ -11,6 +11,19 @@ export class TradeAlgorithms{
     get trader(): ExchangeTrader {return this._analyzer.trader}
     get watcher(): ExchangeWatcher {return this._analyzer.watcher}
 
+    get description() {
+        return [
+            {
+                name: 'slicing',
+                inputs: [
+                    { name: 'order', type: 'OrderDetails' },
+                    { name: 'parts', type: 'number' },
+                    { name: 'minutes', type: 'number' }
+                ]
+            }
+        ]
+    }
+
     slicing(order: OrderDetails, parts: number, minutes: number){
         const lotsInOrder = Math.ceil(order.lots/parts)
         const lastLots = order.lots - lotsInOrder * (parts - 1)
