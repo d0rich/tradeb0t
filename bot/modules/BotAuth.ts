@@ -1,4 +1,5 @@
 import { Request } from "express"
+import { IncomingMessage } from "http"
 
 export class BotAuth{
   private readonly _botToken: string
@@ -11,8 +12,8 @@ export class BotAuth{
     return this._botToken === token
   }
 
-  public authByRequest(request: Request): boolean {
-    const token = request.headers.authorization.replace('Bearer ', '')
-    return this.authByToken(token)
+  public authByRequest(request: Request | IncomingMessage): boolean {
+    const token = request.headers.authorization?.replace('Bearer ', '')
+    return this.authByToken(token || '')
   }
 }

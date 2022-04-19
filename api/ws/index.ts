@@ -3,7 +3,9 @@ import { tradeBot } from '../..';
 
 const wss = new WebSocketServer({ port: 8080 });
 
-wss.on('connection', (ws) => {
+wss.on('connection', (ws, req) => {
+  if (!tradeBot.auth.authByRequest(req)) ws.close()
+  
   ws.send('Hello from tradebot...\r\n'+tradeBot.logger.getLastLogs())
 });
 
