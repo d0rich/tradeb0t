@@ -7,6 +7,12 @@ app.use(express.json())
 // create routes
 const router = Router();
 
+app.use((req: Request, res: Response, next: NextFunction) => {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Headers', '*');
+    next();
+});
+
 router.get('/', function (req, res) {
     res.send('This is tradebot v0.5.0')
 })
