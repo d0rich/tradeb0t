@@ -1,7 +1,8 @@
 import { WebSocketServer, WebSocket } from 'ws';
 import { tradeBot } from '../..';
 
-const wss = new WebSocketServer({ port: 8080 });
+// @ts-ignore
+const wss = new WebSocketServer({ port: isNaN(+process.env.WS_PORT)  ? 4269 : +process.env.WS_PORT });
 
 wss.on('connection', (ws, req) => {
   if (!tradeBot.auth.authByRequest(req)) ws.close()
