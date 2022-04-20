@@ -10,8 +10,8 @@ export const tradeBot = TradeBot.createBotByEnv()
 import {restApi, wsApi} from "./api"
 
 
-restApi.listen(process.env.REST_PORT || 4268, () => {
-  console.info('We are online on http://localhost:4268/')
+restApi.listen(process.env.REST_PORT || 4268, process.env.HOST || 'localhost', () => {
+  console.info(`We are online on http://${process.env.HOST || 'localhost'}:${process.env.REST_PORT || 4268}/`)
 })
 
 
