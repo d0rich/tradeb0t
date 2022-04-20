@@ -24,6 +24,9 @@ export class ExchangeClient implements IExchangeAccount {
   private async initAccount(){
     await this._api.sandboxClear()
     await this._api.setCurrenciesBalance({ currency: 'USD', balance: 1_000_000 })
+    // @ts-ignore
+    const { figi: appleFigi } = await this._api.searchOne({ ticker: 'AAPL' })
+    await this._api.setPositionBalance({ balance: 100, figi: appleFigi })
     this._isAccountInitialized = true
   }
   

@@ -27,8 +27,9 @@ export class BotLogger {
 
   log(message: string){
     this._log.info(message)
-    console.log(message)
-    wsApi.emit('log', message)
-    this.updateLastLogs(message)
+    const messageWithTime = new Date().toLocaleString()+ ' ' + message
+    console.log(messageWithTime)
+    wsApi.emit('log', messageWithTime)
+    this.updateLastLogs(messageWithTime)
   }
 }
