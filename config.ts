@@ -10,7 +10,7 @@ export const config = {
     token: process.env.BOT_TOKEN || '',
     required: false
   },
-  controls: {
+  api: {
     restPort: 4268,
     wsPort: 4269,
     host: 'localhost'

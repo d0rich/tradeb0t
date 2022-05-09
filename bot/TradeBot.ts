@@ -1,6 +1,6 @@
 import { config } from "../config";
 import { ExchangeClient } from "../exchange";
-import {BotAuth, BotLogger, ExchangeAnalyzer, ExchangeTrader, ExchangeWatcher} from "./modules";
+import {BotApi, BotAuth, BotLogger, ExchangeAnalyzer, ExchangeTrader, ExchangeWatcher} from "./modules";
 
 type TradeBotConstructorParams = { 
     exchangeToken?: string, 
@@ -12,6 +12,7 @@ export class TradeBot {
     private readonly _trader: ExchangeTrader
     private readonly _watcher: ExchangeWatcher
     private readonly _exchangeClient: ExchangeClient
+    private readonly _api: BotApi
     private readonly _logger: BotLogger
     private readonly _auth: BotAuth
 
@@ -19,7 +20,8 @@ export class TradeBot {
         this._analyzer = new ExchangeAnalyzer(this)
         this._trader = new ExchangeTrader(this)
         this._watcher = new ExchangeWatcher(this)
-        this._logger = new BotLogger()
+        this._api = new BotApi(this)
+        this._logger = new BotLogger(this)
         this._exchangeClient = new ExchangeClient(exchangeToken || config.exchange.exchangeToken)
         this._auth = new BotAuth(botToken || config.auth.token)
     }
@@ -37,4 +39,5 @@ export class TradeBot {
     public get exchangeClient(): ExchangeClient { return this._exchangeClient }
     public get logger(): BotLogger { return this._logger }
     public get auth(): BotAuth { return this._auth }
+    public get api(): BotApi { return this._api }
 }
