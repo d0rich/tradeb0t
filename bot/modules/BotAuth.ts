@@ -1,5 +1,6 @@
 import { Request } from "express"
 import { IncomingMessage } from "http"
+import { config } from "../../config"
 
 export class BotAuth{
   private readonly _botToken: string
@@ -9,7 +10,7 @@ export class BotAuth{
   }
 
   public authByToken(token: string): boolean {
-    if (process.env.AUTH_REQUIRED === '0') return true
+    if (!config.auth.required) return true
     return this._botToken === token
   }
 

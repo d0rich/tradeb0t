@@ -1,11 +1,11 @@
+import { config } from '../../config';
 import { WebSocketServer, WebSocket } from 'ws';
 import { tradeBot } from '../..';
 
 
 const wss = new WebSocketServer({ 
-  // @ts-ignore
-  port: isNaN(+process.env.WS_PORT)  ? 4269 : +process.env.WS_PORT,  
-  host: process.env.HOST || 'localhost'
+  port: config.controls.wsPort,  
+  host: config.controls.host
 });
 
 wss.on('connection', (ws, req) => {

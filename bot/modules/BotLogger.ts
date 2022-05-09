@@ -1,4 +1,5 @@
 import fs from 'fs'
+import { config } from '../../config';
 import {createRollingFileLogger, Logger} from "simple-node-logger";
 import { wsApi } from "../../api";
 
@@ -8,13 +9,13 @@ export class BotLogger {
   private _lastLogs: string[]
 
   private createLogsDirIfNotExist(){
-    if (!fs.existsSync('./logs')) fs.mkdirSync('./logs')
+    if (!fs.existsSync(config.logs.directory)) fs.mkdirSync(config.logs.directory)
   }
 
   constructor(){
     this.createLogsDirIfNotExist()
     this._log = createRollingFileLogger({
-      logDirectory:'./logs',
+      logDirectory:config.logs.directory,
       fileNamePattern:'trade-bot-<DATE>.log'
     })
     this._lastLogs = []

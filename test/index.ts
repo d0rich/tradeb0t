@@ -1,7 +1,3 @@
-try {
-  require('dotenv').config()
-}catch (e){}
-
 import {TradeBot} from "../bot/TradeBot";
 import { OperationTypes } from "../types";
 
