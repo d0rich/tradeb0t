@@ -1,14 +1,15 @@
 import {TradeBot} from "../bot/TradeBot";
 import { OperationTypes } from "../types";
 
-(async () => {
-  const awaitTime = (ms: number) => {
-    return new Promise((resolve) => {
-      setTimeout(() => {resolve(true)}, ms)
-    })
-  } 
-  const tradeBot = TradeBot.createBotByEnv()
+async function awaitTime(ms: number) {
+  return new Promise((resolve) => {
+    setTimeout(() => {resolve(true)}, ms)
+  })
+} 
 
+(async () => {
+  
+  const tradeBot = new TradeBot()
 
   console.info(`${new Date()} Waiting initialization...`)
   

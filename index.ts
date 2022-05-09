@@ -1,6 +1,7 @@
 import { config } from "./config";
 import {TradeBot} from "./bot/TradeBot";
-export const tradeBot = TradeBot.createBotByEnv()
+export const tradeBot = new TradeBot()
+
 
 import {restApi, wsApi} from "./api"
 

@@ -1,6 +1,7 @@
-import {NextFunction, Router, Request, Response} from "express";
+import express from 'express'
+import { NextFunction, Router, Request, Response } from "express";
 import { tradeBot } from "../..";
-const express = require('express')
+
 const app = express()
 app.use(express.json())
 

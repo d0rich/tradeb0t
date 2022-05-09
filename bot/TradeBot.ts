@@ -1,6 +1,12 @@
+import { config } from "../config";
 import { ExchangeClient } from "../exchange";
 import {BotAuth, BotLogger, ExchangeAnalyzer, ExchangeTrader, ExchangeWatcher} from "./modules";
 
+type TradeBotConstructorParams = { 
+    exchangeToken?: string, 
+    botToken?: string 
+  }
+  
 export class TradeBot {
     private readonly _analyzer: ExchangeAnalyzer
     private readonly _trader: ExchangeTrader
@@ -9,13 +15,13 @@ export class TradeBot {
     private readonly _logger: BotLogger
     private readonly _auth: BotAuth
 
-    constructor({exchangeToken, botToken}: { exchangeToken: string, botToken: string }) {
+    constructor({exchangeToken, botToken}: TradeBotConstructorParams = {}) {
         this._analyzer = new ExchangeAnalyzer(this)
         this._trader = new ExchangeTrader(this)
         this._watcher = new ExchangeWatcher(this)
         this._logger = new BotLogger()
-        this._exchangeClient = new ExchangeClient(exchangeToken)
-        this._auth = new BotAuth(botToken)
+        this._exchangeClient = new ExchangeClient(exchangeToken || config.exchange.exchangeToken)
+        this._auth = new BotAuth(botToken || config.auth.token)
     }
 
     public static createBotByEnv() {
