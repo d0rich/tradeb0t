@@ -11,8 +11,7 @@ export const config = {
     required: false
   },
   api: {
-    restPort: 4268,
-    wsPort: 4269,
+    port: 4268,
     host: 'localhost'
   },
   logs: {

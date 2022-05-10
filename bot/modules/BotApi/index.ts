@@ -20,13 +20,16 @@ export class BotApi {
   private async configureServers(){
     this._restServer = expressApp
     this._restServer.set('tradeBot', this._tradeBot)
-    const { httpServer, webSocketServer } = createWebSocketServer({ tradeBot: this._tradeBot, expressApp: this._restServer })
+    const { httpServer, webSocketServer } = createWebSocketServer({ 
+      tradeBot: this._tradeBot, 
+      expressApp: this._restServer 
+    })
     this._httpServer = httpServer
     this._webSocketServer = webSocketServer
-    this._httpServer.listen(config.api.restPort, () => {
-      console.info(`TradeBot is online on: `)
-      console.info(`  http://${config.api.host}:${config.api.restPort}/`)
-      console.info(`  ws://${config.api.host}:${config.api.wsPort}/`)
+    this._httpServer.listen(config.api.port, () => {
+      console.info(`[i] TradeBot is online on: `)
+      console.info(`  [i] REST API - http://${config.api.host}:${config.api.port}/`)
+      console.info(`  [i] WebSocket - ws://${config.api.host}:${config.api.port}/`)
     })
   }
 
