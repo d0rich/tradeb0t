@@ -1,6 +1,10 @@
-import { Request } from "express";
+import { Application } from "express";
 import { TradeBot } from "bot/TradeBot";
 
-export function tradeBot(expressRequest: Request): TradeBot {
-  return expressRequest.app.get('tradeBot')
+interface IExpressAppCarrier {
+  app: Application
+}
+
+export function tradeBot(expressAppCarrier: IExpressAppCarrier): TradeBot {
+  return expressAppCarrier.app.get('tradeBot')
 }
