@@ -41,6 +41,6 @@
     "node-schedule": "^2.1.0",
     "prisma": "^3.10.0",
     "simple-node-logger": "^21.8.12",
-    "ws": "^8.5.0"
+    "socket.io": "^4.5.0"
   }
 }

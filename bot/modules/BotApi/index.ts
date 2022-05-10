@@ -1,14 +1,16 @@
 import { config } from '../../../config'
 import { TradeBot } from 'bot/TradeBot'
 import { Express } from 'express'
-import { WebSocketServer } from 'ws'
-import { configureWebSocketServer } from './ws'
+import { createWebSocketServer } from './ws'
 import { expressApp } from './rest'
+import http from 'http'
+import { Server } from 'socket.io'
 
 export class BotApi {
   private readonly _tradeBot: TradeBot
-  private _rest: Express
-  private _webSocket: WebSocketServer
+  private _restServer: Express
+  private _webSocketServer: Server
+  private _httpServer: http.Server
 
   constructor(tradeBot: TradeBot){
     this._tradeBot = tradeBot
@@ -16,30 +18,18 @@ export class BotApi {
   }
 
   private async configureServers(){
-    let restReady = false
-    this._webSocket = new WebSocketServer({ 
-      port: config.api.wsPort,  
-      host: config.api.host
+    this._restServer = expressApp
+    this._restServer.set('tradeBot', this._tradeBot)
+    const { httpServer, webSocketServer } = createWebSocketServer({ tradeBot: this._tradeBot, expressApp: this._restServer })
+    this._httpServer = httpServer
+    this._webSocketServer = webSocketServer
+    this._httpServer.listen(config.api.restPort, () => {
+      console.info(`TradeBot is online on: `)
+      console.info(`  http://${config.api.host}:${config.api.restPort}/`)
+      console.info(`  ws://${config.api.host}:${config.api.wsPort}/`)
     })
-    this._rest = expressApp
-    this._rest.set('tradeBot', this._tradeBot)
-    configureWebSocketServer(this._webSocket, this._tradeBot)
-    this._rest.listen(config.api.restPort, config.api.host, () => {
-      restReady = true
-    })
-    while (!restReady){
-      await awaitTime(10)
-    }
-    console.info(`TradeBot is online on: `)
-    console.info(`  http://${config.api.host}:${config.api.restPort}/`)
-    console.info(`  ws://${config.api.host}:${config.api.wsPort}/`)
   }
 
-  public get webSocket(): WebSocketServer { return this._webSocket }
+  public get webSocketServer(): Server { return this._webSocketServer }
+  public get httpServer(): http.Server { return this._httpServer }
 }
-
-async function awaitTime(ms: number) {
-  return new Promise((resolve) => {
-    setTimeout(() => {resolve(true)}, ms)
-  })
-} 

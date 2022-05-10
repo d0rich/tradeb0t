@@ -38,7 +38,7 @@ export class BotLogger {
     this._log.info(message)
     const messageWithTime = new Date().toLocaleString()+ ' ' + message
     console.log(messageWithTime)
-    this._tradeBot.api.webSocket.emit('log', messageWithTime)
+    this._tradeBot.api.webSocketServer.emit('log', messageWithTime)
     this.updateLastLogs(messageWithTime)
   }
 }
