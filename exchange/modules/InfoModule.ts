@@ -1,4 +1,4 @@
-import { Portfolio } from "@tinkoff/invest-openapi-js-sdk";
+import { Operation, Portfolio } from "@tinkoff/invest-openapi-js-sdk";
 import { ExchangeClient } from "..";
 import { C_Currency, C_Security } from "../../types";
 import { IExchangeClientRef, IExchangeInfo } from "../interfaces";
@@ -35,6 +35,18 @@ export class InfoModule implements IExchangeInfo, IExchangeClientRef {
   async securityName(ticker: string): Promise<string> {
     const security = await this.getSecurity(ticker)
     return security?.name || ''
+  }
+
+  async securityOperations(ticker: string, from: Date = new Date(0), to: Date = new Date()): Promise<Operation[]> {
+    const security = await this.getSecurity(ticker)
+    const operations = await this._exchangeClient.api.operations({
+      from: from.toISOString(),
+      to: to.toISOString(),
+      figi: security?.figi
+    })
+    console.log('Operations for ', ticker)
+    console.table(operations.operations)
+    return operations.operations
   }
 
   private async getSecurity(ticker: string, ignoreCache: boolean = false) {
