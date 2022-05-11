@@ -1,6 +1,5 @@
 {
   "recommendations": [
-    "prisma.prisma",
-    "alexcvzz.vscode-sqlite"
+    "prisma.prisma"
   ]
 }
