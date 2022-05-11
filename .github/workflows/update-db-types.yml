@@ -1,0 +1,30 @@
+name: Update Database Types Package
+on: 
+  push:
+    branches: [master]
+  workflow_dispatch:
+jobs:
+  update-db-types:
+    runs-on: ubuntu-latest
+    environment: trade-bot-db-types CI/CD
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
+      - run: echo "Installing Node Modules"
+      - run: npm install
+      - run: echo "Generating Types for DataBase"
+      - run: npm run db-update
+      - run: node .\.github\scripts\get-db-types.js
+      - run: node .\.github\scripts\gen-db-types-package-json.js
+      - name: Push to db-types repository
+        uses: cpina/github-action-push-to-another-repository@main
+        env:
+          API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
+        with:
+          source-directory: 'tmp/trade-bot-db-types'
+          destination-github-username: 'badlabs'
+          destination-repository-name: 'trade-bot-db-types'
+          user-email: dorich2000@gmail.com
+          target-branch: master

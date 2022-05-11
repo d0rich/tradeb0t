@@ -130,3 +130,7 @@ gen
 
 ### Prisma migrations
 prisma/migrations
+
+### Temporary files
+
+tmp
