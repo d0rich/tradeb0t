@@ -16,8 +16,8 @@ jobs:
       - run: npm install
       - run: echo "Generating Types for DataBase"
       - run: npm run db-update
-      - run: node .\.github\scripts\get-db-types.js
-      - run: node .\.github\scripts\gen-db-types-package-json.js
+      - run: node ./.github/scripts/get-db-types.js
+      - run: node ./.github/scripts/gen-db-types-package-json.js
       - name: Push to db-types repository
         uses: cpina/github-action-push-to-another-repository@main
         env:
