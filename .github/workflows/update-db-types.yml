@@ -25,7 +25,7 @@ jobs:
         with:
           source-directory: 'tmp/trade-bot-db-types'
           destination-github-username: 'badlabs'
-          destination-repository-name: 'trade-bot-db-types'
+          destination-repository-name: 'trade-bot__db-types'
           user-name: d0rich
           user-email: dorich2000@gmail.com
           target-branch: master
