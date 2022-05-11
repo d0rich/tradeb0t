@@ -1,5 +1,5 @@
 import {TradeBot} from "../bot/TradeBot";
-import { OperationTypes } from "../types";
+import { OperationType } from "../types";
 
 async function awaitTime(ms: number) {
   return new Promise((resolve) => {
@@ -19,9 +19,9 @@ async function awaitTime(ms: number) {
 
   console.info(`${new Date()} Starting tests...`)
 
-  await tradeBot.trader.sendOrder({ ticker: 'AAPL', lots: 5, operation: OperationTypes.buy, price: 200 })
-  await tradeBot.trader.sendOrder({ ticker: 'AAPL', lots: 5, operation: OperationTypes.buy, price: 300 })
-  await tradeBot.trader.sendOrder({ ticker: 'AAPL', lots: 2, operation: OperationTypes.sell, price: 100 })
+  await tradeBot.trader.sendOrder({ ticker: 'AAPL', lots: 5, operation: 'buy', price: 200 })
+  await tradeBot.trader.sendOrder({ ticker: 'AAPL', lots: 5, operation: 'buy', price: 300 })
+  await tradeBot.trader.sendOrder({ ticker: 'AAPL', lots: 2, operation: 'sell', price: 100 })
   console.table(await tradeBot.analyzer.updateCurrencies())
   console.table(await tradeBot.analyzer.updateSecurities())
   console.table(await tradeBot.analyzer.updatePortfolio())

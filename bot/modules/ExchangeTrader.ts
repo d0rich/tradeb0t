@@ -1,6 +1,6 @@
 import {IExchangeTrader} from "../interfaces";
 import {ExchangeWatcher} from ".";
-import {OperationTypes, OrderDetails} from "../../types";
+import {OrderDetails} from "../../types";
 import {TradeBot} from "../TradeBot";
 const schedule = require('node-schedule');
 
@@ -30,16 +30,16 @@ export class ExchangeTrader implements IExchangeTrader{
         try {
             let order
             switch (operation){
-                case OperationTypes.buy:
+                case 'buy':
                     order = await this._tradebot.exchangeClient.tradeModule.buy({ ticker, lots, price, operation })
                     break
-                case OperationTypes.buyOrCancel:
+                case 'buy_or_cancel':
                     order = await this._tradebot.exchangeClient.tradeModule.buyOrCancel()
                     break
-                case OperationTypes.sell:
+                case 'sell':
                     order = await this._tradebot.exchangeClient.tradeModule.sell({ ticker, lots, price, operation })
                     break
-                case OperationTypes.sellOrCancel:
+                case 'sell_or_cancel':
                     order = await this._tradebot.exchangeClient.tradeModule.sellOrCancel()
                     break
                 default:
