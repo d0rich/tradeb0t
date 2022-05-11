@@ -26,12 +26,12 @@ model D_Security {
   ticker              String  @id
   price               Float
 
-  currency_ticker     String 
+  currency_ticker     String
 
   currency            D_Currency  @relation(fields: [currency_ticker], references: [ticker])
   followed_securities D_FollowedSecurity[]
   portfolio_positions D_PortfolioPosition[]
-  transactions        D_TransactionHistoryNote[]
+  transactions        D_Operation[]
 }
 
 model D_FollowedSecurity {
@@ -46,26 +46,25 @@ model D_FollowedSecurity {
 model D_PortfolioPosition {
   @@map("PortfolioPositions")
 
-  security_ticker     String
+  security_ticker     String @id
   amount              Int
-  buy_price           Float?
-  buy_date            DateTime  @default(now())
 
   security            D_Security @relation(fields: [security_ticker], references: [ticker])
-
-  @@id([security_ticker, buy_date])
 }
 
-model D_TransactionHistoryNote {
-  @@map("TransactionHistoryNotes")
+model D_Operation {
+  @@map("Operations")
 
+  exchange_id         String?   @unique
   security_ticker     String
-  transaction_type    String
+  status              String
+  operation_type      String
   amount              Int
   price               Float
-  date                DateTime  @default(now())
+  updated_at          DateTime  @default(now())
+  created_at          DateTime  @default(now())
 
   security            D_Security @relation(fields: [security_ticker], references: [ticker])
 
-  @@id([security_ticker, date])
+  @@id([security_ticker, created_at])
 }

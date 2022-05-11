@@ -44,8 +44,6 @@ export class InfoModule implements IExchangeInfo, IExchangeClientRef {
       to: to.toISOString(),
       figi: security?.figi
     })
-    console.log('Operations for ', ticker)
-    console.table(operations.operations)
     return operations.operations
   }
 

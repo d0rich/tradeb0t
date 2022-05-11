@@ -31,9 +31,7 @@ export class ExchangeWatcher implements IExchangeWatcher{
         .map(position => {
             return {
                 security_ticker: position.ticker || 'undefined',
-                amount: position.balance,
-                buy_date: new Date(0),
-                buy_price: null
+                amount: position.balance
             }
         })
     }
