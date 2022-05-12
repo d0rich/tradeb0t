@@ -12,10 +12,10 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 16
-      - run: echo "Installing Node Modules"
-      - run: npm install
-      - run: echo "Generating Types for DataBase"
-      - run: npm run db-update
+      - name: Installing Node Modules
+        run: npm install
+      - name: Generating Types for DataBase
+        run: npm run db-update
       - run: node ./.github/scripts/get-db-types.js
       - run: node ./.github/scripts/gen-db-types-package-json.js
       - name: Push to db-types repository
