@@ -17,17 +17,6 @@ jobs:
         run: npm run db-update
       - run: node ./.github/scripts/get-db-types.js
       - run: node ./.github/scripts/gen-db-types-package-json.js
-      - name: Push to db-types repository
-        uses: cpina/github-action-push-to-another-repository@main
-        env:
-          API_TOKEN_GITHUB: ${{ secrets.PACKAGES_TOKEN }}
-        with:
-          source-directory: 'tmp/trade-bot-db-types'
-          destination-github-username: 'badlabs'
-          destination-repository-name: 'trade-bot__db-types'
-          user-name: d0rich
-          user-email: dorich2000@gmail.com
-          target-branch: master
 
   package:
     needs: [build]
