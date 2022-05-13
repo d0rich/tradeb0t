@@ -27,8 +27,6 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 16
-      - name: Locate to Package Folder
-        run: cd ./tmp/trade-bot__db-types
       - run: npm version prerelease --preid=ci-$GITHUB_RUN_ID --no-git-tag-version
       - run: npm pack
       - name: Upload
@@ -42,8 +40,6 @@ jobs:
     runs-on: ubuntu-latest
     if: github.repository_owner == 'badlabs'
     steps:
-    - name: Locate to Package Folder
-      run: cd ./tmp/trade-bot__db-types
     - name: Upload
       uses: actions/download-artifact@v2
       with:
