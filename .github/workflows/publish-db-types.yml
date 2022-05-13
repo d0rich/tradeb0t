@@ -15,8 +15,10 @@ jobs:
         run: npm install
       - name: Generating Types for DataBase
         run: npm run db-update
-      - run: node ./.github/scripts/get-db-types.js
-      - run: node ./.github/scripts/gen-db-types-package-json.js
+      - name: Extract Types to Special Directory
+        run: node ./.github/scripts/get-db-types.js
+      - name: Generate package.json
+        run: node ./.github/scripts/gen-db-types-package-json.js
 
   package:
     needs: [build]
@@ -27,6 +29,7 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 16
+      - run: ls
       - run: npm version prerelease --preid=ci-$GITHUB_RUN_ID --no-git-tag-version
       - run: npm pack
       - name: Upload

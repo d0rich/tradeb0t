@@ -3,7 +3,7 @@ const fs = require('fs')
 function main(){
   const localPackage = JSON.parse(fs.readFileSync('./package.json', 'utf-8'))
   const packageToCreate = {
-    name: 'trade-bot-db-types',
+    name: '@badlabs/trade-bot__db-types',
     version: localPackage.version,
     types: './index.d.ts',
     author: {
