@@ -27,7 +27,7 @@ jobs:
       - name: Push to db-types repository
         uses: cpina/github-action-push-to-another-repository@main
         env:
-          API_TOKEN_GITHUB: ${{ secrets.PACKAGES_TOKEN }}
+          API_TOKEN_GITHUB: ${{ secrets.GH_REPOS_TOKEN }}
         with:
           source-directory: 'tmp/trade-bot__db-types'
           destination-github-username: 'badlabs'
