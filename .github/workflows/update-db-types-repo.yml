@@ -20,8 +20,8 @@ jobs:
         with:
           repository: badlabs/trade-bot__db-types
           path: ./tmp/trade-bot__db-types
-      - run: sudo rm -R ./tmp/trade-bot__db-types/.git
-      - run: ls -a ./tmp/trade-bot__db-types
+      - name: Delete .git folder
+        run: sudo rm -R ./tmp/trade-bot__db-types/.git
       - name: Extract Types to Special Directory
         run: node ./.github/scripts/get-db-types.js
       - name: Generate package.json
