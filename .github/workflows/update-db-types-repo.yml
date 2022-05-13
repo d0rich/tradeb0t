@@ -20,7 +20,7 @@ jobs:
         with:
           repository: badlabs/trade-bot__db-types
           path: ./tmp/trade-bot__db-types
-      - run: ls ./tmp/trade-bot__db-types
+      - run: ls -a ./tmp/trade-bot__db-types
       - name: Extract Types to Special Directory
         run: node ./.github/scripts/get-db-types.js
       - name: Generate package.json
