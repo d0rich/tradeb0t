@@ -1,4 +1,4 @@
-name: Publish trade-bot__db-types Package
+name: Update trade-bot__db-types repository
 on: 
   push:
     branches: [master]
