@@ -33,15 +33,17 @@ jobs:
         run: node ./.github/scripts/get-db-types.js
       - name: Generate package.json
         run: node ./.github/scripts/gen-db-types-package-json.js
-      - name: Locate to Package Directory
-        run: cd ./tmp/trade-bot__db-types
-      - run: npm version prerelease --preid=ci-$GITHUB_RUN_ID --no-git-tag-version
-      - run: npm pack
+      - run: 
+          shell: npm version prerelease --preid=ci-$GITHUB_RUN_ID --no-git-tag-version
+          working_directory: tmp/trade-bot__db-types
+      - run: 
+          shell: npm pack
+          working_directory: tmp/trade-bot__db-types
       - name: Upload
         uses: actions/upload-artifact@v2
         with:
             name: trade-bot__db-types
-            path: "*.tgz"
+            path: "tmp/trade-bot__db-types/*.tgz"
   publish:
     name: "Publish to GitHub Packages"
     needs: [package]
