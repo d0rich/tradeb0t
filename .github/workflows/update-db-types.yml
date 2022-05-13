@@ -6,7 +6,6 @@ on:
 jobs:
   update-db-types:
     runs-on: ubuntu-latest
-    environment: trade-bot-db-types CI/CD
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
@@ -21,7 +20,7 @@ jobs:
       - name: Push to db-types repository
         uses: cpina/github-action-push-to-another-repository@main
         env:
-          API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
+          API_TOKEN_GITHUB: ${{ secrets.PACKAGES_TOKEN }}
         with:
           source-directory: 'tmp/trade-bot-db-types'
           destination-github-username: 'badlabs'
