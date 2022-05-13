@@ -34,9 +34,9 @@ jobs:
       - name: Generate package.json
         run: node ./.github/scripts/gen-db-types-package-json.js
       - run: npm version prerelease --preid=ci-$GITHUB_RUN_ID --no-git-tag-version
-        working_directory: tmp/trade-bot__db-types
+        working-directory: tmp/trade-bot__db-types
       - run: npm pack
-        working_directory: tmp/trade-bot__db-types
+        working-directory: tmp/trade-bot__db-types
       - name: Upload
         uses: actions/upload-artifact@v2
         with:
