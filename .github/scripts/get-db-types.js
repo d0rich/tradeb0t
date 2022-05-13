@@ -31,8 +31,8 @@ function main(){
   console.log('Generated types: \n', generatedTypes)
 
   if(!fs.existsSync('./tmp')) fs.mkdirSync('./tmp')
-  if(!fs.existsSync('./tmp/trade-bot-db-types')) fs.mkdirSync('./tmp/trade-bot-db-types')
-  fs.writeFileSync('./tmp/trade-bot-db-types/index.d.ts', generatedTypes)
+  if(!fs.existsSync('./tmp/trade-bot__db-types')) fs.mkdirSync('./tmp/trade-bot__db-types')
+  fs.writeFileSync('./tmp/trade-bot__db-types/index.d.ts', generatedTypes)
 }
 
 main()
