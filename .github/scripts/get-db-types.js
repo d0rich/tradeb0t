@@ -43,11 +43,15 @@ function getTypes(){
 function changeVersion(){
   const tradebotPackageJson = JSON.parse(fs.readFileSync('./package.json', 'utf-8'))
   let dbTypesPackageJson = JSON.parse(fs.readFileSync(`${NEW_TYPES_BASEDIR}/package.json`, 'utf-8'))
-  const majorV = tradebotPackageJson.version.split('.').map(v => +v)[0]
-  const minorV = dbTypesPackageJson.version.split('.').map(v => +v)[1]
+  const tradebotVersion = {}
+  const dbTypesVersion = {}
+  tradebotVersion.major = tradebotPackageJson.version.split('.').map(v => +v)[0]
+  tradebotVersion.minor = tradebotPackageJson.version.split('.').map(v => +v)[1]
+  dbTypesVersion.major = dbTypesPackageJson.version.split('.').map(v => +v)[0]
+  dbTypesVersion.minor = dbTypesPackageJson.version.split('.').map(v => +v)[1]
   const packageJson = {
     ...dbTypesPackageJson,
-    version: `${majorV}.${minorV+1}.0`,
+    version: `${tradebotVersion.major}.${dbTypesVersion.major === tradebotVersion.major ? dbTypesVersion.minor + 1 : 0}.0`,
   }
   console.log('Generating package.json ...')
   console.log(packageJson)
