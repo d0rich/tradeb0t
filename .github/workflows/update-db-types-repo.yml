@@ -22,10 +22,8 @@ jobs:
           path: ./tmp/trade-bot__db-types
       - name: Delete .git folder
         run: sudo rm -R ./tmp/trade-bot__db-types/.git
-      - name: Extract Types to Special Directory
+      - name: Generate new package content
         run: node ./.github/scripts/get-db-types.js
-      - name: Generate package.json
-        run: node ./.github/scripts/gen-db-types-package-json.js
       - name: Push to db-types repository
         uses: cpina/github-action-push-to-another-repository@main
         env:
@@ -37,3 +35,4 @@ jobs:
           user-name: d0rich
           user-email: dorich2000@gmail.com
           target-branch: master
+          commit-message: "${{ github.event.head_commit.message }}"

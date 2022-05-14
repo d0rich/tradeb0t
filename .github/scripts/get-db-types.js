@@ -1,6 +1,8 @@
 const fs = require('fs')
 
-function main(){
+const NEW_TYPES_BASEDIR = './tmp/trade-bot__db-types'
+
+function getTypes(){
   const clientTypesContent = fs
     .readFileSync('./node_modules/.prisma/client/index.d.ts', 'utf-8')
 
@@ -31,8 +33,59 @@ function main(){
   console.log('Generated types: \n', generatedTypes)
 
   if(!fs.existsSync('./tmp')) fs.mkdirSync('./tmp')
-  if(!fs.existsSync('./tmp/trade-bot__db-types')) fs.mkdirSync('./tmp/trade-bot__db-types')
-  fs.writeFileSync('./tmp/trade-bot__db-types/index.d.ts', generatedTypes)
+  if(!fs.existsSync(NEW_TYPES_BASEDIR)) fs.mkdirSync(NEW_TYPES_BASEDIR)
+  return generatedTypes
+}
+
+function changeVersion(){
+  const tradebotPackageJson = JSON.parse(fs.readFileSync('./package.json', 'utf-8'))
+  let dbTypesPackageJson = JSON.parse(fs.readFileSync(`${NEW_TYPES_BASEDIR}/package.json`, 'utf-8'))
+  const majorV = tradebotPackageJson.version.split('.').map(v => +v)[0]
+  const minorV = dbTypesPackageJson.version.split('.').map(v => +v)[1]
+  const packageJson = {
+    ...dbTypesPackageJson,
+    version: `${majorV}.${minorV+1}.0`,
+  }
+  console.log('Generating package.json ...')
+  console.log(packageJson)
+  fs.writeFileSync(`${NEW_TYPES_BASEDIR}/package.json`, JSON.stringify(packageJson, null, 2))
+  dbTypesPackageJson = JSON.parse(fs.readFileSync(`${NEW_TYPES_BASEDIR}/package.json`, 'utf-8'))
+  updateCompatibleVersions({ tradebotV: tradebotPackageJson.version, dbTypesV: dbTypesPackageJson.version })
+}
+
+function updateCompatibleVersions({ tradebotV, dbTypesV }){
+  const readme = fs.readFileSync(`${NEW_TYPES_BASEDIR}/README.md`, 'utf-8')
+  const tableMd = readme.match(/<!--versions-compatability-start-->[\w\W]*<!--versions-compatability-end-->/)[0]
+  const tableHeader = tableMd
+    .split('\n')
+    .filter(line => line.includes('|'))
+    .filter((_, index) => index <= 1)
+    .join('\n')
+  const table = tableMd
+    .split('\n')
+    .filter(line => line.includes('|'))
+    .filter((_, index) => index > 1)
+    .map(line => {
+      const [_, tradebot, dbTypes] = line.split('|')
+      return { tradebot, dbTypes }
+    })
+  if (!table.some(line => line.tradebot === tradebotV && line.dbTypes === dbTypesV))
+    table.push({ tradebot: tradebotV, dbTypes: dbTypesV })
+  const newTableMd = 
+`<!--versions-compatability-start-->
+
+${tableHeader}
+${table.map(line => `|${line.tradebot}|${line.dbTypes}|`).join('\n')}
+
+<!--versions-compatability-end-->`
+  fs.writeFileSync(`${NEW_TYPES_BASEDIR}/README.md`, readme.replace(tableMd, newTableMd))
+}
+
+function main(){
+  const newTypes = getTypes()
+  const oldTypes = fs.readFileSync('./tmp/trade-bot__db-types/index.d.ts', 'utf-8')
+  if (newTypes !== oldTypes) changeVersion()
+  fs.writeFileSync('./tmp/trade-bot__db-types/index.d.ts', newTypes)
 }
 
 main()
