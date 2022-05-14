@@ -31,6 +31,7 @@ function getTypes(){
   const generatedTypes = match[0]
     .replace(fileEnd, '')
     .replaceAll('D_', '')
+    .replaceAll('export type ', 'export interface I')
 
   console.log('Generated types: \n', generatedTypes)
 
