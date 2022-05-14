@@ -1,11 +1,11 @@
 const fs = require('fs')
 
 function main(){
-  const localPackage = JSON.parse(fs.readFileSync('./package.json', 'utf-8'))
-  const remotePackageJson = JSON.parse(fs.readFileSync('./package.json', 'utf-8'))
+  const localPackageJson = JSON.parse(fs.readFileSync('./package.json', 'utf-8'))
+  const remotePackageJson = JSON.parse(fs.readFileSync('./tmp/trade-bot__db-types/package.json', 'utf-8'))
   const packageJson = {
     ...remotePackageJson,
-    version: localPackage.version,
+    version: localPackageJson.version,
     types: './index.d.ts'
   }
   console.log('Generating package.json ...')
