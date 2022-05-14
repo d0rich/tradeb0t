@@ -28,7 +28,9 @@ function getTypes(){
 
   if (!match) throw new Error('Types was not matched')
 
-  const generatedTypes = match[0].replace(fileEnd, '')
+  const generatedTypes = match[0]
+    .replace(fileEnd, '')
+    .replaceAll('D_', '')
 
   console.log('Generated types: \n', generatedTypes)
 
