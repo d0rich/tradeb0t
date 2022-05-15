@@ -2,6 +2,7 @@ import {IExchangeTrader} from "../interfaces";
 import {ExchangeWatcher} from ".";
 import {OrderDetails} from "../../types";
 import {TradeBot} from "../TradeBot";
+import {Job} from "node-schedule";
 const schedule = require('node-schedule');
 
 export class ExchangeTrader implements IExchangeTrader{
@@ -15,13 +16,13 @@ export class ExchangeTrader implements IExchangeTrader{
         return this._tradebot.watcher
     }
 
-    scheduleAction(action: Function, date: Date) {
-        schedule.scheduleJob(date, action)
+    scheduleAction(action: Function, date: Date): Job {
+        return schedule.scheduleJob(date, action)
     }
 
-    scheduleOrder(order: OrderDetails, date: Date) {
-        schedule.scheduleJob(date, async () => {
-            this.sendOrder(order)
+    scheduleOrder(order: OrderDetails, date: Date): Job {
+        return schedule.scheduleJob(date, async () => {
+            await this.sendOrder(order)
         })
     }
 
