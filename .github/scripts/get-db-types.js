@@ -28,10 +28,16 @@ function getTypes(){
 
   if (!match) throw new Error('Types was not matched')
 
-  const generatedTypes = match[0]
+  const generatedTypes =
+`${match[0]
     .replace(fileEnd, '')
-    .replaceAll('D_', '')
-    .replaceAll('export type ', 'export interface I')
+    .replaceAll('D_', '')}
+
+${match[0]
+  .replace(fileEnd, '')
+  .replaceAll('D_', '')
+  .replaceAll('export type ', 'export interface I')}
+` 
 
   console.log('Generated types: \n', generatedTypes)
 
