@@ -26,7 +26,7 @@ export class ExchangeWatcher implements IExchangeWatcher{
     }
 
     async getPortfolio(): Promise<D_PortfolioPosition[]> {
-        const portfolio: C_Portfolio = await this._tradebot.exchangeClient.portfolio()
+        const portfolio: C_Portfolio = await this._tradebot.exchangeClient.getPortfolio()
         return portfolio.positions
         .map(position => {
             return {
@@ -37,7 +37,7 @@ export class ExchangeWatcher implements IExchangeWatcher{
     }
 
     async getCurrencies(): Promise<D_Currency[]> {
-        const currencies: C_Currency[] = await this._tradebot.exchangeClient.infoModule.currencies()
+        const currencies: C_Currency[] = await this._tradebot.exchangeClient.infoModule.getCurrencies()
         return currencies.map(currency => ({
             name: currency,
             ticker: currency
@@ -45,15 +45,15 @@ export class ExchangeWatcher implements IExchangeWatcher{
     }
 
     async getSecurityName(ticker: string): Promise<string> {
-        return await this._tradebot.exchangeClient.infoModule.securityName(ticker)
+        return await this._tradebot.exchangeClient.infoModule.getSecurityName(ticker)
     }
 
     async getSecurityLastPrice(ticker: string): Promise<number> {
-        return await this._tradebot.exchangeClient.infoModule.securityLastPrice(ticker) 
+        return await this._tradebot.exchangeClient.infoModule.getSecurityLastPrice(ticker)
     }
 
     async getSecurityCurrency(ticker: string): Promise<D_Currency> {
-        const currency: C_Currency = await this._tradebot.exchangeClient.infoModule.securityCurrency(ticker)
+        const currency: C_Currency = await this._tradebot.exchangeClient.infoModule.getSecurityCurrency(ticker)
         return {
             name: currency,
             ticker: currency
