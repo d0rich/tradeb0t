@@ -7,24 +7,15 @@ import { D_Currency, D_PortfolioPosition, PrismaClient, D_Security, D_FollowedSe
 const db = new PrismaClient()
 
 export class ExchangeAnalyzer implements IExchangeAnalyzer{
-    private _tradebot: TradeBot
-    private _tradeAlgos: TradeAlgorithms
+    private readonly tradebot: TradeBot
+    private get trader(): ExchangeTrader { return this.tradebot.trader }
+    private get watcher(): ExchangeWatcher { return this.tradebot.watcher }
 
+    readonly tradeAlgos: TradeAlgorithms
+    
     constructor(tradebot: TradeBot) {
-        this._tradebot = tradebot
-        this._tradeAlgos = new TradeAlgorithms(this._tradebot)
-    }
-
-    private get trader(): ExchangeTrader {
-        return this._tradebot.trader
-    }
-
-    private get watcher(): ExchangeWatcher {
-        return this._tradebot.watcher
-    }
-
-    get tradeAlgos(): TradeAlgorithms {
-        return this._tradeAlgos
+        this.tradebot = tradebot
+        this.tradeAlgos = new TradeAlgorithms(tradebot)
     }
 
     // Currencies

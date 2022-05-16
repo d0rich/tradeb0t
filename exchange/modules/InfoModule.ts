@@ -1,18 +1,14 @@
 import { ExchangeClient } from "..";
 import { C_Currency, C_Security, C_Operation } from "../../types";
-import { IExchangeClientRef, IExchangeInfo } from "../interfaces";
+import { IExchangeInfo } from "../interfaces";
 
 const securitiesCache = new Map<string, C_Security>()
 
-export class InfoModule implements IExchangeInfo, IExchangeClientRef {
-  private readonly _exchangeClient: ExchangeClient
+export class InfoModule implements IExchangeInfo {
+  private readonly exchangeClient: ExchangeClient
 
   constructor(exchangeClient: ExchangeClient){
-    this._exchangeClient = exchangeClient
-  }
-
-  get exchangeClient(): ExchangeClient {
-    return this._exchangeClient
+    this.exchangeClient = exchangeClient
   }
 
   async getCurrencies(): Promise<C_Currency[]> {
@@ -38,7 +34,7 @@ export class InfoModule implements IExchangeInfo, IExchangeClientRef {
 
   async getSecurityOperations(ticker: string, from: Date = new Date(0), to: Date = new Date()): Promise<C_Operation[]> {
     const security = await this.getSecurity(ticker)
-    const operations = await this._exchangeClient.api.operations({
+    const operations = await this.exchangeClient.api.operations({
       from: from.toISOString(),
       to: to.toISOString(),
       figi: security?.figi

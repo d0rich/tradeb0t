@@ -3,18 +3,18 @@ import { IncomingMessage } from "http"
 import { config } from "../../config"
 
 export class BotAuth{
-  private readonly _botToken: string
+  private readonly botToken: string
 
   constructor(botToken: string){
-    this._botToken = botToken
+    this.botToken = botToken
   }
 
-  public authByToken(token: string): boolean {
+  authByToken(token: string): boolean {
     if (!config.auth.required) return true
-    return this._botToken === token
+    return this.botToken === token
   }
 
-  public authByRequest(request: Request | IncomingMessage): boolean {
+  authByRequest(request: Request | IncomingMessage): boolean {
     const token = request.headers.authorization?.replace('Bearer ', '')
     return this.authByToken(token || '')
   }

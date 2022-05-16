@@ -2,11 +2,12 @@ import fs from 'fs'
 import { config } from '../../config';
 import {createRollingFileLogger, Logger} from "simple-node-logger";
 import { TradeBot } from 'bot/TradeBot';
+import { BotApi } from './BotApi';
 
 
 export class BotLogger {
-  private readonly _tradeBot: TradeBot
-  private readonly _log: Logger
+  private readonly botApi: BotApi
+  private readonly logger: Logger
   private _lastLogs: string[]
 
   private createLogsDirIfNotExist(){
@@ -15,8 +16,8 @@ export class BotLogger {
 
   constructor(tradeBot: TradeBot){
     this.createLogsDirIfNotExist()
-    this._tradeBot = tradeBot
-    this._log = createRollingFileLogger({
+    this.botApi = tradeBot.api
+    this.logger = createRollingFileLogger({
       logDirectory:config.logs.directory,
       fileNamePattern:'trade-bot-<DATE>.log'
     })
@@ -35,10 +36,10 @@ export class BotLogger {
   }
 
   log(message: string){
-    this._log.info(message)
+    this.logger.info(message)
     const messageWithTime = new Date().toLocaleString()+ ' ' + message
     console.log(messageWithTime)
-    this._tradeBot.api.webSocketServer.emit('log', messageWithTime)
+    this.botApi.webSocketServer.emit('log', messageWithTime)
     this.updateLastLogs(messageWithTime)
   }
 }

@@ -1,17 +1,13 @@
 import { ExchangeClient } from "..";
 import { OrderDetails } from "../../types";
 import { C_Order } from "../../types/ExchangeApi.t";
-import { IExchangeClientRef, IExchangeTrade } from "../interfaces";
+import { IExchangeTrade } from "../interfaces";
 
-export class TradeModule implements IExchangeTrade, IExchangeClientRef {
-  private readonly _exchangeApi: ExchangeClient
+export class TradeModule implements IExchangeTrade {
+  private readonly exchangeClient: ExchangeClient
 
   constructor(exchangeApi: ExchangeClient){
-    this._exchangeApi = exchangeApi
-  }
-
-  get exchangeClient(): ExchangeClient {
-    return this._exchangeApi
+    this.exchangeClient = exchangeApi
   }
 
   public async sell({ ticker, lots, price }: OrderDetails): Promise<C_Order> {

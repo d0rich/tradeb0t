@@ -1,19 +1,20 @@
 import {IExchangeTrader} from "../interfaces";
 import {ExchangeWatcher} from ".";
-import {OrderDetails} from "../../types";
+import {OrderDetails} from "types";
 import {TradeBot} from "../TradeBot";
 import {Job} from "node-schedule";
+import { ExchangeClient } from "exchange";
+import { BotLogger } from "./BotLogger";
 const schedule = require('node-schedule');
 
 export class ExchangeTrader implements IExchangeTrader{
-    private _tradebot: TradeBot;
+    private readonly tradebot: TradeBot
+    private get watcher(): ExchangeWatcher { return this.tradebot.watcher }
+    private get logger(): BotLogger { return this.tradebot.logger }
+    private get exchangeClient(): ExchangeClient { return this.tradebot.exchangeClient }
 
     constructor(tradebot: TradeBot) {
-        this._tradebot = tradebot
-    }
-
-    private get watcher(): ExchangeWatcher {
-        return this._tradebot.watcher
+        this.tradebot = tradebot
     }
 
     scheduleAction(action: Function, date: Date): Job {
@@ -27,21 +28,21 @@ export class ExchangeTrader implements IExchangeTrader{
     }
 
     async sendOrder({ ticker, lots, price, operation }: OrderDetails) {
-        this._tradebot.logger.log(`Sending order: ${JSON.stringify({operation, ticker, lots, price})}`)
+        this.logger.log(`Sending order: ${JSON.stringify({operation, ticker, lots, price})}`)
         try {
             let order
             switch (operation){
                 case 'buy':
-                    order = await this._tradebot.exchangeClient.tradeModule.buy({ ticker, lots, price, operation })
+                    order = await this.exchangeClient.tradeModule.buy({ ticker, lots, price, operation })
                     break
                 case 'buy_or_cancel':
-                    order = await this._tradebot.exchangeClient.tradeModule.buyOrCancel()
+                    order = await this.exchangeClient.tradeModule.buyOrCancel()
                     break
                 case 'sell':
-                    order = await this._tradebot.exchangeClient.tradeModule.sell({ ticker, lots, price, operation })
+                    order = await this.exchangeClient.tradeModule.sell({ ticker, lots, price, operation })
                     break
                 case 'sell_or_cancel':
-                    order = await this._tradebot.exchangeClient.tradeModule.sellOrCancel()
+                    order = await this.exchangeClient.tradeModule.sellOrCancel()
                     break
                 default:
                     throw new Error('Incorrect operation type')

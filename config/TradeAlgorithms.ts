@@ -1,16 +1,15 @@
 import { TradeBot } from "bot/TradeBot";
-import {ExchangeAnalyzer, ExchangeTrader, ExchangeWatcher} from "../bot/modules";
-import {OrderDetails} from "../types";
+import {ExchangeTrader, ExchangeWatcher} from "bot/modules";
+import {OrderDetails} from "types";
 
 export class TradeAlgorithms{
-    private _tradeBot: TradeBot;
+    private readonly tradebot: TradeBot
+    private get trader(): ExchangeTrader { return this.tradebot.trader }
+    private get watcher(): ExchangeWatcher { return this.tradebot.watcher }
 
-    constructor(tradeBot: TradeBot) {
-        this._tradeBot = tradeBot
+    constructor(tradebot: TradeBot) {
+        this.tradebot = tradebot
     }
-
-    private get trader(): ExchangeTrader {return this._tradeBot.trader}
-    private get watcher(): ExchangeWatcher {return this._tradeBot.watcher}
 
     get description() {
         return [
