@@ -11,11 +11,11 @@ export class ExchangeWatcher implements IExchangeWatcher{
         this._tradebot = tradebot
     }
 
-    get analyzer(): ExchangeAnalyzer {
+    private get analyzer(): ExchangeAnalyzer {
         return this._tradebot.analyzer
     }
 
-    get trader(): ExchangeTrader {
+    private get trader(): ExchangeTrader {
         return this._tradebot.trader
     }
 

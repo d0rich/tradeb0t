@@ -12,7 +12,7 @@ export class ExchangeTrader implements IExchangeTrader{
         this._tradebot = tradebot
     }
 
-    get watcher(): ExchangeWatcher {
+    private get watcher(): ExchangeWatcher {
         return this._tradebot.watcher
     }
 
