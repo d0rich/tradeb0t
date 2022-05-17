@@ -11,16 +11,18 @@ export class TradeModule implements IExchangeTrade {
   }
 
   public async sell({ ticker, lots, price }: OrderDetails): Promise<C_Order> {
+    const { exchangeClient } = this
     // @ts-ignore
-    const { figi } = await this.exchangeClient.api.searchOne({ ticker });
-    const placedOrder = await this.exchangeClient.api.limitOrder({figi, operation: 'Sell', lots, price})
+    const { figi } = await exchangeClient.api.searchOne({ ticker });
+    const placedOrder = await exchangeClient.api.limitOrder({figi, operation: 'Sell', lots, price})
     return placedOrder
   }
 
   public async buy({ ticker, lots, price }: OrderDetails): Promise<C_Order> {
+    const { exchangeClient } = this
     // @ts-ignore
-    const { figi } = await this.exchangeClient.api.searchOne({ ticker });
-    const placedOrder = await this.exchangeClient.api.limitOrder({figi, operation: 'Buy', lots, price})
+    const { figi } = await exchangeClient.api.searchOne({ ticker });
+    const placedOrder = await exchangeClient.api.limitOrder({figi, operation: 'Buy', lots, price})
     return placedOrder
   }
 

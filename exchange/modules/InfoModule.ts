@@ -17,24 +17,37 @@ export class InfoModule implements IExchangeInfo {
   }
 
   async getSecurityLastPrice(ticker: string): Promise<number> {
-    const security = await this.getSecurity(ticker, true)
-    const orderBook = await this.exchangeClient.api.orderbookGet({ figi: security?.figi || '' })
+    const { exchangeClient, getSecurity } = this
+    const security = await getSecurity(ticker, true)
+    const orderBook = await exchangeClient.api.orderbookGet({ figi: security?.figi || '' })
     return orderBook?.lastPrice || 0
   }
 
   async getSecurityCurrency(ticker: string): Promise<C_Currency> {
-    const security = await this.getSecurity(ticker)
+    const { getSecurity } = this
+    const security = await getSecurity(ticker)
     return security?.currency || 'USD'
   }
 
   async getSecurityName(ticker: string): Promise<string> {
-    const security = await this.getSecurity(ticker)
+    const { getSecurity } = this
+    const security = await getSecurity(ticker)
     return security?.name || ''
   }
 
-  async getSecurityOperations(ticker: string, from: Date = new Date(0), to: Date = new Date()): Promise<C_Operation[]> {
-    const security = await this.getSecurity(ticker)
-    const operations = await this.exchangeClient.api.operations({
+  async getOperationsAll(from: Date = new Date(0), to: Date = new Date()): Promise<C_Operation[]> {
+    const { exchangeClient } = this
+    const operations = await exchangeClient.api.operations({
+      from: from.toISOString(),
+      to: to.toISOString()
+    })
+    return operations.operations
+  }
+
+  async getOperationsBySecurity(ticker: string, from: Date = new Date(0), to: Date = new Date()): Promise<C_Operation[]> {
+    const { exchangeClient, getSecurity } = this
+    const security = await getSecurity(ticker)
+    const operations = await exchangeClient.api.operations({
       from: from.toISOString(),
       to: to.toISOString(),
       figi: security?.figi
@@ -42,11 +55,24 @@ export class InfoModule implements IExchangeInfo {
     return operations.operations
   }
 
-  private async getSecurity(ticker: string, ignoreCache: boolean = false): Promise<C_Security> {
+  async getSecurity(ticker: string, ignoreCache: boolean = false): Promise<C_Security> {
+    const { exchangeClient } = this
     if (!securitiesCache.has(ticker) || ignoreCache){
-      const security = await this.exchangeClient.api.searchOne({ ticker })
+      const security = await exchangeClient.api.searchOne({ ticker })
       if (!security) throw new Error(`Security with ticker "${ticker} was not found"`)
       securitiesCache.set(ticker, security)
+      return security
+    }
+    // @ts-ignore
+    return securitiesCache.get(ticker)
+  }
+
+  async getSecurityByExchangeId(id: string, ignoreCache: boolean = false): Promise<C_Security>{
+    const { exchangeClient } = this
+    if (!securitiesCache.has(id) || ignoreCache){
+      const security = await exchangeClient.api.searchOne({ figi: id })
+      if (!security) throw new Error(`Security with id "${id} was not found"`)
+      securitiesCache.set(id, security)
       return security
     }
     // @ts-ignore
