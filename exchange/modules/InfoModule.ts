@@ -17,8 +17,8 @@ export class InfoModule implements IExchangeInfo {
   }
 
   async getSecurityLastPrice(ticker: string): Promise<number> {
-    const { exchangeClient, getSecurity } = this
-    const security = await getSecurity(ticker, true)
+    const { exchangeClient } = this
+    const security = await this.getSecurity(ticker, true)
     const orderBook = await exchangeClient.api.orderbookGet({ figi: security?.figi || '' })
     return orderBook?.lastPrice || 0
   }
@@ -45,8 +45,8 @@ export class InfoModule implements IExchangeInfo {
   }
 
   async getOperationsBySecurity(ticker: string, from: Date = new Date(0), to: Date = new Date()): Promise<C_Operation[]> {
-    const { exchangeClient, getSecurity } = this
-    const security = await getSecurity(ticker)
+    const { exchangeClient } = this
+    const security = await this.getSecurity(ticker)
     const operations = await exchangeClient.api.operations({
       from: from.toISOString(),
       to: to.toISOString(),
