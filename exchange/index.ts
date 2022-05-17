@@ -9,6 +9,8 @@ export class ExchangeClient implements IExchangeAccount {
   public readonly tradeModule: TradeModule
   public readonly infoModule: InfoModule
   private _isAccountInitialized: boolean = false
+  public get isAccountInitialized(): boolean { return this._isAccountInitialized }
+  private set isAccountInitialized(value: boolean) { this._isAccountInitialized = value }
 
   constructor(token: string){
     this.api = new OpenAPI({
@@ -27,10 +29,8 @@ export class ExchangeClient implements IExchangeAccount {
     // @ts-ignore
     const { figi: appleFigi } = await this.api.searchOne({ ticker: 'AAPL' })
     await this.api.setPositionBalance({ balance: 100, figi: appleFigi })
-    this._isAccountInitialized = true
+    this.isAccountInitialized = true
   }
-
-  public get isAccountInitialized(): boolean { return this._isAccountInitialized }
 
   public async metaInfo(): Promise<any> {
     throw new Error('Method not implemented.');
