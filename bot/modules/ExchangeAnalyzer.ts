@@ -2,14 +2,14 @@ import {GetOperationsOptions, IExchangeAnalyzer, OperationId} from "../interface
 import {ExchangeTrader, ExchangeWatcher} from ".";
 import {TradeAlgorithms} from "../../config/TradeAlgorithms";
 import {TradeBot} from "../TradeBot";
-import { D_Currency, D_PortfolioPosition, PrismaClient, D_Security, D_FollowedSecurity, D_Operation } from "@prisma/client";
+import { D_Currency, D_PortfolioPosition, PrismaClient, D_Security, D_FollowedSecurity, D_Operation, D_Algorithm, D_AlgorithmRun } from "@prisma/client";
 
 const db = new PrismaClient()
 
 export class ExchangeAnalyzer implements IExchangeAnalyzer{
-    private readonly tradebot: TradeBot
-    private get trader(): ExchangeTrader { return this.tradebot.trader }
-    private get watcher(): ExchangeWatcher { return this.tradebot.watcher }
+    readonly tradebot: TradeBot
+    get trader(): ExchangeTrader { return this.tradebot.trader }
+    get watcher(): ExchangeWatcher { return this.tradebot.watcher }
     private getOperationId(operation: D_Operation): OperationId{
         if (!!operation.exchange_id) return { exchange_id: operation.exchange_id }
         return { 
@@ -23,7 +23,8 @@ export class ExchangeAnalyzer implements IExchangeAnalyzer{
     
     constructor(tradebot: TradeBot) {
         this.tradebot = tradebot
-        this.tradeAlgos = new TradeAlgorithms(tradebot)
+        this.tradeAlgos = new TradeAlgorithms(this)
+        this.saveAlgorithms()
     }
 
     // Currencies
@@ -247,5 +248,56 @@ export class ExchangeAnalyzer implements IExchangeAnalyzer{
         })
     }
 
-    
+    // Algorithms
+
+    async saveAlgorithms(): Promise<D_Algorithm[]>{
+        const { tradeAlgos } = this
+        const updatePromises = tradeAlgos.description.map(algo => db.d_Algorithm.upsert({
+            where: { name: algo.name },
+            update: { 
+                description: algo.description,
+                input_types: algo.input_types
+            },
+            create: algo
+        }))
+        return await Promise.all(updatePromises)
+    }
+
+    async runAlgorithm(algorithmName: string, inputs: any, state: any = inputs): Promise<D_AlgorithmRun>{
+        return await db.d_AlgorithmRun.create({
+            data: {
+                algorithm_name: algorithmName,
+                inputs: JSON.stringify(inputs),
+                state: JSON.stringify(state)
+            }
+        })
+    }
+
+    async saveAlgorithmRunProgress(id: number, state: any): Promise<D_AlgorithmRun>{
+        return await db.d_AlgorithmRun.update({
+            where: { id },
+            data: {
+                state: JSON.stringify(state)
+            }
+        })
+    }
+
+    async loadAlgorithmRunProgress(id: number): Promise<D_AlgorithmRun | null>{
+        return await db.d_AlgorithmRun.findUnique({ where: { id } })
+    }
+
+    async finishAlgorithmRun(id: number): Promise<D_AlgorithmRun>{
+        return await db.d_AlgorithmRun.update({
+            where: { id },
+            data: {
+                state: JSON.stringify({ status: 'finished' })
+            }
+        })
+    }
+
+    async getUnfinishedAlgorithmRuns(): Promise<D_AlgorithmRun[]>{
+        return await db.d_AlgorithmRun.findMany({
+            where: { NOT: { state: JSON.stringify({ status: 'finished' }) } }
+        })
+    }
 }

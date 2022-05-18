@@ -17,13 +17,15 @@ export class TradeBot {
     public readonly auth: BotAuth
 
     constructor({exchangeToken, botToken}: TradeBotConstructorParams = {}) {
+        this.logger = new BotLogger(this)
+        this.logger.log('TradeBot Initialization...')
         this.analyzer = new ExchangeAnalyzer(this)
         this.trader = new ExchangeTrader(this)
         this.watcher = new ExchangeWatcher(this)
         this.api = new BotApi(this)
-        this.logger = new BotLogger(this)
         this.exchangeClient = new ExchangeClient(exchangeToken || config.exchange.exchangeToken)
         this.auth = new BotAuth(botToken || config.auth.token)
+        this.logger.log('All modules are initialized...')
     }
 
     public static createBotByEnv() {

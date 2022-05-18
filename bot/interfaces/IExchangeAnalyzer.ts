@@ -1,4 +1,4 @@
-import {TradeAlgorithms} from "../../config/TradeAlgorithms";
+import {TradeAlgorithms} from "config/TradeAlgorithms";
 import {D_PortfolioPosition, D_Currency, D_Security, D_FollowedSecurity, D_Operation} from "@prisma/client";
 import { OperationType } from "types";
 

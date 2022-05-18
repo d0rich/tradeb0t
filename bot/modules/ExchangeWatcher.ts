@@ -77,7 +77,8 @@ export class ExchangeWatcher implements IExchangeWatcher{
                         operation_type: operation.operationType === "Buy" ? 'buy' : 'sell',
                         price: operation?.price || 0,
                         status: operation.status,
-                        updated_at: new Date()
+                        updated_at: new Date(),
+                        run_id: null
                     }
                 }
             )
@@ -100,6 +101,7 @@ export class ExchangeWatcher implements IExchangeWatcher{
                         operation_type: operation.operationType === "Buy" ? 'buy' : 'sell',
                         price: operation?.price || 0,
                         status: operation.status,
+                        run_id: null,
                         updated_at: new Date()
                     }
                 }

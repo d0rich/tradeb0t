@@ -62,10 +62,36 @@ model D_Operation {
   operation_type      String
   amount              Int
   price               Float
-  updated_at          DateTime  @default(now())
+  run_id              Int?
+  updated_at          DateTime  @updatedAt
   created_at          DateTime  @default(now())
 
   security            D_Security @relation(fields: [security_ticker], references: [ticker])
+  algorithm_run       D_AlgorithmRun?  @relation(fields: [run_id], references: [id])
 
   @@id([security_ticker, created_at])
+}
+
+model D_Algorithm {
+  @@map("Algorithm")
+
+  name               String     @id
+  description        String
+  input_types        String
+
+  runs               D_AlgorithmRun[]
+}
+
+model D_AlgorithmRun {
+  @@map("AlgorithmRun")
+
+  id                 Int        @id @default(autoincrement())
+  algorithm_name     String
+  inputs             String
+  state              String
+  updated_at         DateTime   @updatedAt
+  created_at         DateTime   @default(now()) 
+
+  algorithm          D_Algorithm  @relation(fields: [algorithm_name], references: [name])
+  operations         D_Operation[]
 }
