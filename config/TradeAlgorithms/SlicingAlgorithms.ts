@@ -34,7 +34,7 @@ export class SlicingAlgorithm extends AbstractTradeAlgorithm {
     const algorithmRun: D_AlgorithmRun = await this.start(inputs, { orders_sended: 0, lots_in_orders: lotsInOrders })
 
     const startPoint = new Date()
-    for (let i = 0; i < lotsInOrders.length; i ++) {
+    for (let i = 0; i < lotsInOrders.length; i++) {
       const lots = lotsInOrders[i]
       const sendOrderTime: Date = new Date(startPoint.getTime() + 10_000 + 60_000 * minutes/(parts - 1) * i)
       trader.scheduleAction(() => {
@@ -55,7 +55,7 @@ export class SlicingAlgorithm extends AbstractTradeAlgorithm {
 
     const minutesRemain = minutes * (1 - orders_sended / parts)
     const startPoint = new Date()
-    for (let i = 0; i < lots_in_orders.length; i ++) {
+    for (let i = orders_sended; i < lots_in_orders.length; i++) {
       const lots = lots_in_orders[i]
       const sendOrderTime: Date = new Date(startPoint.getTime() + 10_000 + 60_000 * minutesRemain/(parts - 1) * i)
       trader.scheduleAction(() => {
