@@ -73,7 +73,7 @@ model D_Operation {
 }
 
 model D_Algorithm {
-  @@map("Algorithm")
+  @@map("Algorithms")
 
   name               String     @id
   description        String
@@ -83,7 +83,7 @@ model D_Algorithm {
 }
 
 model D_AlgorithmRun {
-  @@map("AlgorithmRun")
+  @@map("AlgorithmRuns")
 
   id                 Int        @id @default(autoincrement())
   algorithm_name     String
