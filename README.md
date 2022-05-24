@@ -50,3 +50,11 @@ npm run db-browse
 ## Check requests
 
 We have [Postman workspace](https://www.postman.com/bad-labs/workspace/tradebots/overview) for testing robots.
+
+# Other
+
+Generate class diagram:
+
+```sh
+tplant --input bot/**/*.ts --output class-diagram.svg
+```
