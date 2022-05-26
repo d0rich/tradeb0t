@@ -47,8 +47,7 @@ export class SlicingAlgorithm extends AbstractTradeAlgorithm {
     return algorithmRun
   }
   async continue(id: number): Promise<D_AlgorithmRun> {
-    const algorithmRun: D_AlgorithmRun | null = await this.loadProgress(id)
-    if (!algorithmRun) throw new Error(`Algorithm run with id ${id} was not found`)
+    const algorithmRun: D_AlgorithmRun = await this.loadProgress(id)
     const { order, parts, minutes } = JSON.parse(algorithmRun.inputs)
     const { orders_sended, lots_in_orders } = JSON.parse(algorithmRun.state)
     const { trader } = this

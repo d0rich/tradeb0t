@@ -36,7 +36,6 @@ export class TradeAlgorithms{
         tradebot.logger.log('Continue stopped algorithms runs...')
         const unfinishedRuns = await analyzer.getUnfinishedAlgorithmRuns()
         for (let run of unfinishedRuns){
-            tradebot.logger.log(`Continue run ${run.id} ...`)
             await algorithms.find(algo => algo.name === run.algorithm_name)?.continue(run.id)
         }
     }
