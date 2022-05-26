@@ -4,7 +4,17 @@ import { TradeBot } from "bot/TradeBot";
 import { OrderDetails } from "types";
 import { AbstractTradeAlgorithm } from "./AbstractTradeAlgorithm";
 
-export class SlicingAlgorithm extends AbstractTradeAlgorithm {
+type SlicingInput = {
+  order: OrderDetails,
+  parts: number,
+  minutes: number
+}
+type SlicingState = {
+  orders_sended: number,
+  lots_in_orders: number[]
+}
+
+export class SlicingAlgorithm extends AbstractTradeAlgorithm<SlicingInput, SlicingState> {
   get name(): string { return 'slicing' }
   get description(): string { return 'slicing' }
   get inputs(): any { 
@@ -19,7 +29,7 @@ export class SlicingAlgorithm extends AbstractTradeAlgorithm {
     super(analyzer)
   }
   
-  async main(inputs: { order: OrderDetails, parts: number, minutes: number }): Promise<D_AlgorithmRun> {
+  async main(inputs: SlicingInput): Promise<D_AlgorithmRun> {
     const { order, parts, minutes } = inputs
     const { trader } = this
     const lotsInOrder: number = Math.floor(order.lots / parts)

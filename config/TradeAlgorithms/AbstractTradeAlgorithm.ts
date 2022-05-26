@@ -2,7 +2,7 @@ import { D_AlgorithmRun, D_Algorithm } from "@prisma/client";
 import { BotLogger, ExchangeAnalyzer, ExchangeTrader, ExchangeWatcher } from "bot/modules";
 import { TradeBot } from "bot/TradeBot";
 
-export abstract class AbstractTradeAlgorithm{
+export abstract class AbstractTradeAlgorithm<InputsType, StateType>{
   private readonly analyzer: ExchangeAnalyzer
   protected get watcher(): ExchangeWatcher { return this.analyzer.watcher }
   protected get trader(): ExchangeTrader { return this.analyzer.trader }
@@ -20,13 +20,13 @@ export abstract class AbstractTradeAlgorithm{
   }
 
 
-  protected async start(inputs: any, state: any = inputs): Promise<D_AlgorithmRun> {
+  protected async start(inputs: InputsType, state: StateType): Promise<D_AlgorithmRun> {
     const { name, analyzer, logger } = this
     const algoRun: D_AlgorithmRun = await analyzer.runAlgorithm(name, inputs, state)
     logger.log(`Starting algorithm ${name}:${algoRun.id}. Inputs: ${JSON.stringify(inputs)}`)
     return algoRun
   }
-  protected async saveProgress(id: number, progress: any): Promise<D_AlgorithmRun> {
+  protected async saveProgress(id: number, progress: StateType): Promise<D_AlgorithmRun> {
     const { name, analyzer, logger } = this
     logger.log(`Saving process of algorithm ${name}:${id}. State: ${JSON.stringify(progress)}`)
     return await analyzer.saveAlgorithmRunProgress(id, progress)
@@ -47,6 +47,6 @@ export abstract class AbstractTradeAlgorithm{
   abstract get name(): string
   abstract get description(): string
   abstract get inputs(): any
-  abstract main(inputs: any): Promise<D_AlgorithmRun>
+  abstract main(inputs: InputsType): Promise<D_AlgorithmRun>
   abstract continue(id: number): Promise<D_AlgorithmRun>
 }

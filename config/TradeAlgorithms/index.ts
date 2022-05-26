@@ -10,7 +10,7 @@ export class TradeAlgorithms{
     private get watcher(): ExchangeWatcher { return this.analyzer.watcher }
     private get tradebot(): TradeBot { return this.analyzer.tradebot }
     
-    private readonly algorithms: AbstractTradeAlgorithm[]
+    private readonly algorithms: AbstractTradeAlgorithm<any, any>[]
 
     constructor(analyzer: ExchangeAnalyzer) {
         this.analyzer = analyzer
