@@ -6,7 +6,8 @@ import { BotApi } from './BotApi';
 
 
 export class BotLogger {
-  private readonly botApi: BotApi
+  private readonly tradebot: TradeBot
+  private get botApi(): BotApi { return this.tradebot.api }
   private readonly logger: Logger
   private _lastLogs: string[]
 
@@ -16,7 +17,7 @@ export class BotLogger {
 
   constructor(tradeBot: TradeBot){
     this.createLogsDirIfNotExist()
-    this.botApi = tradeBot.api
+    this.tradebot = tradeBot
     this.logger = createRollingFileLogger({
       logDirectory:config.logs.directory,
       fileNamePattern:'trade-bot-<DATE>.log'
