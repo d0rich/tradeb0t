@@ -1,5 +1,5 @@
 import {TradeAlgorithms} from "config/TradeAlgorithms";
-import {D_PortfolioPosition, D_Currency, D_Security, D_FollowedSecurity, D_Operation} from "@prisma/client";
+import {D_PortfolioPosition, D_Currency, D_Instrument, D_FollowedInstrument, D_Operation} from "@prisma/client";
 import { OperationType } from "types";
 
 export interface IExchangeAnalyzer{
@@ -9,16 +9,16 @@ export interface IExchangeAnalyzer{
     updateCurrencies(): Promise<D_Currency[]>
     getCurrencies(): Promise<D_Currency[]>
 
-    // Securities
-    getSecurities(): Promise<D_Security[]>
-    updateSecurities(): Promise<D_Security[]>
-    addSecurities(...securities: D_Security[]): Promise<D_Security[]>
+    // Instruments
+    getInstruments(): Promise<D_Instrument[]>
+    updateInstruments(): Promise<D_Instrument[]>
+    addInstruments(...securities: D_Instrument[]): Promise<D_Instrument[]>
 
-    // Followed Securities
-    getFollowedSecurities(): Promise<D_FollowedSecurity[]>
-    followSecurity(securityTicker: string): Promise<D_FollowedSecurity>
-    unfollowSecurity(securityTicker: string): Promise<D_FollowedSecurity>
-    updateFollowedSecurities(): Promise<D_Security[]>
+    // Followed Instruments
+    getFollowedInstruments(): Promise<D_FollowedInstrument[]>
+    followInstrument(securityTicker: string): Promise<D_FollowedInstrument>
+    unfollowInstrument(securityTicker: string): Promise<D_FollowedInstrument>
+    updateFollowedInstruments(): Promise<D_Instrument[]>
 
     // Portfolio
     updatePortfolio(): Promise<D_PortfolioPosition[]>
@@ -31,7 +31,7 @@ export interface IExchangeAnalyzer{
     // Operations
     fixOperation(operation: D_Operation): Promise<D_Operation>
     updateOperationsAll(): Promise<D_Operation[]>
-    updateOperationsBySecurity(ticker: string): Promise<D_Operation[]>
+    updateOperationsByInstrument(ticker: string): Promise<D_Operation[]>
     getOperations(options: GetOperationsOptions): Promise<D_Operation[]>
 
 
@@ -40,8 +40,8 @@ export interface IExchangeAnalyzer{
 export type OperationId = { 
     exchange_id: string 
 } | { 
-    security_ticker_created_at: {
-        security_ticker: string
+    instrument_ticker_created_at: {
+        instrument_ticker: string
         created_at: Date
     }
 }
@@ -49,6 +49,6 @@ export type OperationId = {
 export type GetOperationsOptions = {
     from?: Date,
     to?: Date,
-    securityTicker?: string,
+    instrumentTicker?: string,
     operation?: OperationType
 }

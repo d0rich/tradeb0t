@@ -23,14 +23,14 @@ router.post('/currencies', (async (req, res) => {
   res.send(currencies)
 }))
 
-router.get('/securities', (async (req, res) => {
-  const securities = await tradeBot(req).analyzer.getSecurities()
-  res.send(securities)
+router.get('/instruments', (async (req, res) => {
+  const instruments = await tradeBot(req).analyzer.getInstruments()
+  res.send(instruments)
 }))
 
-router.post('/securities', (async (req, res) => {
-  const securities = await tradeBot(req).analyzer.updateSecurities()
-  res.send(securities)
+router.post('/instruments', (async (req, res) => {
+  const instruments = await tradeBot(req).analyzer.updateInstruments()
+  res.send(instruments)
 }))
 
 

@@ -1,8 +1,8 @@
 import { ExchangeClient } from "..";
-import { C_Currency, C_Security, C_Operation } from "../../types";
+import { C_Currency, C_Instrument, C_Operation } from "../../types";
 import { IExchangeInfo } from "../interfaces";
 
-const securitiesCache = new Map<string, C_Security>()
+const securitiesCache = new Map<string, C_Instrument>()
 
 export class InfoModule implements IExchangeInfo {
   private readonly exchangeClient: ExchangeClient
@@ -16,22 +16,22 @@ export class InfoModule implements IExchangeInfo {
     return currencies
   }
 
-  async getSecurityLastPrice(ticker: string): Promise<number> {
+  async getInstrumentLastPrice(ticker: string): Promise<number> {
     const { exchangeClient } = this
-    const security = await this.getSecurity(ticker, true)
+    const security = await this.getInstrument(ticker, true)
     const orderBook = await exchangeClient.api.orderbookGet({ figi: security?.figi || '' })
     return orderBook?.lastPrice || 0
   }
 
-  async getSecurityCurrency(ticker: string): Promise<C_Currency> {
-    const { getSecurity } = this
-    const security = await getSecurity(ticker)
+  async getInstrumentCurrency(ticker: string): Promise<C_Currency> {
+    const { getInstrument } = this
+    const security = await getInstrument(ticker)
     return security?.currency || 'USD'
   }
 
-  async getSecurityName(ticker: string): Promise<string> {
-    const { getSecurity } = this
-    const security = await getSecurity(ticker)
+  async getInstrumentName(ticker: string): Promise<string> {
+    const { getInstrument } = this
+    const security = await getInstrument(ticker)
     return security?.name || ''
   }
 
@@ -44,9 +44,9 @@ export class InfoModule implements IExchangeInfo {
     return operations.operations
   }
 
-  async getOperationsBySecurity(ticker: string, from: Date = new Date(0), to: Date = new Date()): Promise<C_Operation[]> {
+  async getOperationsByInstrument(ticker: string, from: Date = new Date(0), to: Date = new Date()): Promise<C_Operation[]> {
     const { exchangeClient } = this
-    const security = await this.getSecurity(ticker)
+    const security = await this.getInstrument(ticker)
     const operations = await exchangeClient.api.operations({
       from: from.toISOString(),
       to: to.toISOString(),
@@ -55,11 +55,11 @@ export class InfoModule implements IExchangeInfo {
     return operations.operations
   }
 
-  async getSecurity(ticker: string, ignoreCache: boolean = false): Promise<C_Security> {
+  async getInstrument(ticker: string, ignoreCache: boolean = false): Promise<C_Instrument> {
     const { exchangeClient } = this
     if (!securitiesCache.has(ticker) || ignoreCache){
       const security = await exchangeClient.api.searchOne({ ticker })
-      if (!security) throw new Error(`Security with ticker "${ticker} was not found"`)
+      if (!security) throw new Error(`Instrument with ticker "${ticker} was not found"`)
       securitiesCache.set(ticker, security)
       return security
     }
@@ -67,11 +67,11 @@ export class InfoModule implements IExchangeInfo {
     return securitiesCache.get(ticker)
   }
 
-  async getSecurityByExchangeId(id: string, ignoreCache: boolean = false): Promise<C_Security>{
+  async getInstrumentByExchangeId(id: string, ignoreCache: boolean = false): Promise<C_Instrument>{
     const { exchangeClient } = this
     if (!securitiesCache.has(id) || ignoreCache){
       const security = await exchangeClient.api.searchOne({ figi: id })
-      if (!security) throw new Error(`Security with id "${id} was not found"`)
+      if (!security) throw new Error(`Instrument with id "${id} was not found"`)
       securitiesCache.set(id, security)
       return security
     }

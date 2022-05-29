@@ -17,11 +17,11 @@ model D_Currency {
   name                String
   ticker              String  @id
 
-  securities          D_Security[]
+  instruments         D_Instrument[]
 }
 
-model D_Security {
-  @@map("Securities")
+model D_Instrument {
+  @@map("Instruments")
 
   name                String
   ticker              String  @id
@@ -29,35 +29,35 @@ model D_Security {
 
   currency_ticker     String
 
-  currency            D_Currency  @relation(fields: [currency_ticker], references: [ticker])
-  followed_securities D_FollowedSecurity[]
-  portfolio_positions D_PortfolioPosition[]
-  transactions        D_Operation[]
+  currency              D_Currency  @relation(fields: [currency_ticker], references: [ticker])
+  followed_instruments  D_FollowedInstrument[]
+  portfolio_positions   D_PortfolioPosition[]
+  transactions          D_Operation[]
 }
 
-model D_FollowedSecurity {
-  @@map("FollowedSecurities")
+model D_FollowedInstrument {
+  @@map("FollowedInstruments")
 
-  security_ticker     String  @id
+  instrument_ticker     String  @id
   followed_since      DateTime
 
-  security            D_Security @relation(fields: [security_ticker], references: [ticker])
+  instrument            D_Instrument @relation(fields: [instrument_ticker], references: [ticker])
 }
 
 model D_PortfolioPosition {
   @@map("PortfolioPositions")
 
-  security_ticker     String @id
+  instrument_ticker   String @id
   amount              Int
 
-  security            D_Security @relation(fields: [security_ticker], references: [ticker])
+  instrument           D_Instrument @relation(fields: [instrument_ticker], references: [ticker])
 }
 
 model D_Operation {
   @@map("Operations")
 
   exchange_id         String?   @unique
-  security_ticker     String
+  instrument_ticker   String
   status              String
   operation_type      String
   amount              Int
@@ -66,10 +66,10 @@ model D_Operation {
   updated_at          DateTime  @updatedAt
   created_at          DateTime  @default(now())
 
-  security            D_Security @relation(fields: [security_ticker], references: [ticker])
+  instrument          D_Instrument @relation(fields: [instrument_ticker], references: [ticker])
   algorithm_run       D_AlgorithmRun?  @relation(fields: [run_id], references: [id])
 
-  @@id([security_ticker, created_at])
+  @@id([instrument_ticker, created_at])
 }
 
 model D_Algorithm {

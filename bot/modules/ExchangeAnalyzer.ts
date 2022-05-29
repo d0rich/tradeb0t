@@ -2,7 +2,7 @@ import {GetOperationsOptions, IExchangeAnalyzer, OperationId} from "../interface
 import {ExchangeTrader, ExchangeWatcher} from ".";
 import {TradeAlgorithms} from "../../config/TradeAlgorithms";
 import {TradeBot} from "../TradeBot";
-import { D_Currency, D_PortfolioPosition, PrismaClient, D_Security, D_FollowedSecurity, D_Operation, D_Algorithm, D_AlgorithmRun } from "@prisma/client";
+import { D_Currency, D_PortfolioPosition, PrismaClient, D_Instrument, D_FollowedInstrument, D_Operation, D_Algorithm, D_AlgorithmRun } from "@prisma/client";
 
 const db = new PrismaClient()
 
@@ -13,8 +13,8 @@ export class ExchangeAnalyzer implements IExchangeAnalyzer{
     private getOperationId(operation: D_Operation): OperationId{
         if (!!operation.exchange_id) return { exchange_id: operation.exchange_id }
         return { 
-            security_ticker_created_at: {
-                security_ticker: operation.security_ticker, 
+            instrument_ticker_created_at: {
+                instrument_ticker: operation.instrument_ticker, 
                 created_at: operation.created_at
             }
         } 
@@ -45,42 +45,42 @@ export class ExchangeAnalyzer implements IExchangeAnalyzer{
         return await db.d_Currency.findMany({})
     }
 
-    // Securities
+    // Instruments
 
-    async updateSecurities(): Promise<D_Security[]> {
+    async updateInstruments(): Promise<D_Instrument[]> {
         const { watcher } = this
-        const securities: D_Security[] = await db.d_Security.findMany({  })
-        const securitiesPrices = await Promise.all(
-            securities.map((security): Promise<number> => watcher.getSecurityLastPrice(security.ticker))
+        const instruments: D_Instrument[] = await db.d_Instrument.findMany({  })
+        const instrumentsPrices = await Promise.all(
+            instruments.map((security): Promise<number> => watcher.getInstrumentLastPrice(security.ticker))
         )
-        const updatePromises = securities
-            .map((security, index) => db.d_Security.update({ 
+        const updatePromises = instruments
+            .map((security, index) => db.d_Instrument.update({ 
                     where: { ticker: security.ticker },
-                    data: { price: securitiesPrices[index] }
+                    data: { price: instrumentsPrices[index] }
                 })
             )
         return await Promise.all(updatePromises) 
     }
 
-    async getSecurities(): Promise<D_Security[]> {
-        return await db.d_Security.findMany({})
+    async getInstruments(): Promise<D_Instrument[]> {
+        return await db.d_Instrument.findMany({})
     }
 
-    async addSecurities(...securities: D_Security[]): Promise<D_Security[]> {
+    async addInstruments(...instruments: D_Instrument[]): Promise<D_Instrument[]> {
         const { watcher } = this
-        const securitiesToAdd: D_Security[] = await Promise.all(
-            securities.map(async (security): Promise<D_Security> => {
-                const currency: D_Currency = await watcher.getSecurityCurrency(security.ticker)
+        const instrumentsToAdd: D_Instrument[] = await Promise.all(
+            instruments.map(async (security): Promise<D_Instrument> => {
+                const currency: D_Currency = await watcher.getInstrumentCurrency(security.ticker)
                 return {
                     ticker: security.ticker,
-                    name: await watcher.getSecurityName(security.ticker),
-                    price: await watcher.getSecurityLastPrice(security.ticker),
+                    name: await watcher.getInstrumentName(security.ticker),
+                    price: await watcher.getInstrumentLastPrice(security.ticker),
                     currency_ticker: currency.ticker
                 } 
             })
         )
-        const createOrUpdatePromises = securitiesToAdd
-            .map((security) => db.d_Security.upsert({ 
+        const createOrUpdatePromises = instrumentsToAdd
+            .map((security) => db.d_Instrument.upsert({ 
                     where: { ticker: security.ticker },
                     update: { price: security.price },
                     create: security
@@ -89,33 +89,33 @@ export class ExchangeAnalyzer implements IExchangeAnalyzer{
         return await Promise.all(createOrUpdatePromises) 
     }
 
-    // Followed Securities
+    // Followed Instruments
 
-    async getFollowedSecurities(): Promise<D_FollowedSecurity[]> {
-        return await db.d_FollowedSecurity.findMany({})
+    async getFollowedInstruments(): Promise<D_FollowedInstrument[]> {
+        return await db.d_FollowedInstrument.findMany({})
     }
-    async followSecurity(securityTicker: string): Promise<D_FollowedSecurity> {
-        return await db.d_FollowedSecurity.create({ 
+    async followInstrument(securityTicker: string): Promise<D_FollowedInstrument> {
+        return await db.d_FollowedInstrument.create({ 
             data: {
-                security_ticker: securityTicker,
+                instrument_ticker: securityTicker,
                 followed_since: new Date()
             }
         })
     }
-    async unfollowSecurity(securityTicker: string): Promise<D_FollowedSecurity> {
-        return await db.d_FollowedSecurity.delete({
-            where: { security_ticker: securityTicker }
+    async unfollowInstrument(securityTicker: string): Promise<D_FollowedInstrument> {
+        return await db.d_FollowedInstrument.delete({
+            where: { instrument_ticker: securityTicker }
         })
     }
-    async updateFollowedSecurities(): Promise<D_Security[]> {
+    async updateFollowedInstruments(): Promise<D_Instrument[]> {
         const { watcher } = this
-        const securitiesToUpdate = await db.d_FollowedSecurity.findMany({})
-        const securitiesPrices = await Promise.all(
-            securitiesToUpdate.map(security => watcher.getSecurityLastPrice(security.security_ticker))
+        const instrumentsToUpdate = await db.d_FollowedInstrument.findMany({})
+        const instrumentsPrices = await Promise.all(
+            instrumentsToUpdate.map(security => watcher.getInstrumentLastPrice(security.instrument_ticker))
         )
-        const updatePromises = securitiesToUpdate.map((security, index) => db.d_Security.update({ 
-            where: { ticker: security.security_ticker },
-            data: { price: securitiesPrices[index] } 
+        const updatePromises = instrumentsToUpdate.map((security, index) => db.d_Instrument.update({ 
+            where: { ticker: security.instrument_ticker },
+            data: { price: instrumentsPrices[index] } 
         }))
         return await Promise.all(updatePromises)
     }
@@ -127,7 +127,7 @@ export class ExchangeAnalyzer implements IExchangeAnalyzer{
         const relevantPortfolio = await watcher.getPortfolio()
         return await Promise.all(relevantPortfolio.map(position => db.d_PortfolioPosition.upsert(
             { 
-                where: { security_ticker: position.security_ticker },
+                where: { instrument_ticker: position.instrument_ticker },
                 update: { amount: position.amount },
                 create: position
             })
@@ -146,10 +146,10 @@ export class ExchangeAnalyzer implements IExchangeAnalyzer{
     async addPortfolioPosition(portfolioPosition: D_PortfolioPosition): Promise<D_PortfolioPosition> {
         return await db.$transaction(async (db) => {
             const positionToUpdate = await db.d_PortfolioPosition.findUnique({ 
-                where: { security_ticker: portfolioPosition.security_ticker } 
+                where: { instrument_ticker: portfolioPosition.instrument_ticker } 
             })
             return db.d_PortfolioPosition.upsert({
-                where: { security_ticker: portfolioPosition.security_ticker },
+                where: { instrument_ticker: portfolioPosition.instrument_ticker },
                 update: { amount: (positionToUpdate?.amount || 0) + portfolioPosition.amount },
                 create: portfolioPosition
             })
@@ -158,24 +158,24 @@ export class ExchangeAnalyzer implements IExchangeAnalyzer{
     async removePortfolioPosition(portfolioPosition: D_PortfolioPosition): Promise<D_PortfolioPosition | null> {
         return await db.$transaction(async (db) => {
             const positionToUpdate = await db.d_PortfolioPosition.findUnique({ 
-                where: { security_ticker: portfolioPosition.security_ticker } 
+                where: { instrument_ticker: portfolioPosition.instrument_ticker } 
             })
             if ((positionToUpdate?.amount || 0) - portfolioPosition.amount > 0)
                 return db.d_PortfolioPosition.update({
-                    where: { security_ticker: portfolioPosition.security_ticker },
+                    where: { instrument_ticker: portfolioPosition.instrument_ticker },
                     data: { amount: (positionToUpdate?.amount || 0) + portfolioPosition.amount }
                 })
-            return db.d_PortfolioPosition.delete({ where: { security_ticker: portfolioPosition.security_ticker } })
+            return db.d_PortfolioPosition.delete({ where: { instrument_ticker: portfolioPosition.instrument_ticker } })
         })
     }
     async getPositionAverageBuyPrice(ticker: string): Promise<number> {
-        const position = await db.d_PortfolioPosition.findUnique({where: { security_ticker: ticker }})
+        const position = await db.d_PortfolioPosition.findUnique({where: { instrument_ticker: ticker }})
         async function getBoughtStats(take: number){
             const boughtStats = await db.d_Operation.aggregate({
                 orderBy: { created_at: 'desc' },
                 where: {
                     operation_type: 'buy',
-                    security_ticker: ticker
+                    instrument_ticker: ticker
                 },
                 take,
                 _sum: { amount: true },
@@ -187,17 +187,17 @@ export class ExchangeAnalyzer implements IExchangeAnalyzer{
         for ( let boughtStats = await getBoughtStats(countOperations); 
             (!!boughtStats._sum.amount ? boughtStats._sum.amount < (position?.amount || 0) : 0) || boughtStats._count._all !== 0 ; 
             countOperations++ ){}
-        const lastSecurityBuyOperations: D_Operation[] = await db.d_Operation.findMany({
+        const lastInstrumentBuyOperations: D_Operation[] = await db.d_Operation.findMany({
             orderBy: { created_at: 'desc' },
                 where: {
                     operation_type: 'buy',
-                    security_ticker: ticker
+                    instrument_ticker: ticker
                 },
                 take: countOperations
         })
         let buyPrice = 0
         let boughtAmount = position?.amount || 0
-        for ( let buyOperation of lastSecurityBuyOperations ){
+        for ( let buyOperation of lastInstrumentBuyOperations ){
             if (buyOperation.amount >= boughtAmount){
                 buyPrice += boughtAmount * buyOperation.price
                 break
@@ -229,12 +229,12 @@ export class ExchangeAnalyzer implements IExchangeAnalyzer{
         const allOperations = await watcher.getOperations()
         return await Promise.all(allOperations.map(operation => fixOperation(operation)))
     }
-    async updateOperationsBySecurity(ticker: string): Promise<D_Operation[]> {
+    async updateOperationsByInstrument(ticker: string): Promise<D_Operation[]> {
         const { watcher, fixOperation } = this
-        const allOperations = await watcher.getOperationsBySecurity(ticker)
+        const allOperations = await watcher.getOperationsByInstrument(ticker)
         return await Promise.all(allOperations.map(operation => fixOperation(operation)))
     }
-    async getOperations({ from, to, operation, securityTicker }: GetOperationsOptions): Promise<D_Operation[]> {
+    async getOperations({ from, to, operation, instrumentTicker }: GetOperationsOptions): Promise<D_Operation[]> {
         return await db.d_Operation.findMany({
             orderBy: { created_at: 'desc' },
             where: {
@@ -243,7 +243,7 @@ export class ExchangeAnalyzer implements IExchangeAnalyzer{
                     { created_at: { lte: to || new Date() } }
                 ],
                 operation_type: operation,
-                security_ticker: securityTicker
+                instrument_ticker: instrumentTicker
             }
         })
     }

@@ -2,7 +2,7 @@ import {IExchangeWatcher} from "../interfaces";
 import {ExchangeAnalyzer, ExchangeTrader} from "./index";
 import {TradeBot} from "../TradeBot";
 import { D_PortfolioPosition, D_Currency, D_Operation } from "@prisma/client";
-import { C_Currency, C_Portfolio, C_Security, OperationType } from "../../types";
+import { C_Currency, C_Portfolio, C_Instrument, OperationType } from "../../types";
 import { ExchangeClient } from "exchange";
 
 export class ExchangeWatcher implements IExchangeWatcher{
@@ -27,7 +27,7 @@ export class ExchangeWatcher implements IExchangeWatcher{
         return portfolio.positions
         .map(position => {
             return {
-                security_ticker: position.ticker || 'undefined',
+                instrument_ticker: position.ticker || 'undefined',
                 amount: position.balance
             }
         })
@@ -42,19 +42,19 @@ export class ExchangeWatcher implements IExchangeWatcher{
         }))
     }
 
-    async getSecurityName(ticker: string): Promise<string> {
+    async getInstrumentName(ticker: string): Promise<string> {
         const { exchangeClient } = this
-        return await exchangeClient.infoModule.getSecurityName(ticker)
+        return await exchangeClient.infoModule.getInstrumentName(ticker)
     }
 
-    async getSecurityLastPrice(ticker: string): Promise<number> {
+    async getInstrumentLastPrice(ticker: string): Promise<number> {
         const { exchangeClient } = this
-        return await exchangeClient.infoModule.getSecurityLastPrice(ticker)
+        return await exchangeClient.infoModule.getInstrumentLastPrice(ticker)
     }
 
-    async getSecurityCurrency(ticker: string): Promise<D_Currency> {
+    async getInstrumentCurrency(ticker: string): Promise<D_Currency> {
         const { exchangeClient } = this
-        const currency: C_Currency = await exchangeClient.infoModule.getSecurityCurrency(ticker)
+        const currency: C_Currency = await exchangeClient.infoModule.getInstrumentCurrency(ticker)
         return {
             name: currency,
             ticker: currency
@@ -68,9 +68,9 @@ export class ExchangeWatcher implements IExchangeWatcher{
             .filter(operation => operation.operationType === "Buy" || operation.operationType === "Sell")
             .map(
                 async (operation): Promise<D_Operation> => {
-                    const security: C_Security = await exchangeClient.infoModule.getSecurityByExchangeId(operation?.figi || '')
+                    const instrument: C_Instrument = await exchangeClient.infoModule.getInstrumentByExchangeId(operation?.figi || '')
                     return {
-                        security_ticker: security.ticker,
+                        instrument_ticker: instrument.ticker,
                         amount: operation?.quantity || 0,
                         created_at: new Date(),
                         exchange_id: operation.id,
@@ -85,16 +85,16 @@ export class ExchangeWatcher implements IExchangeWatcher{
         )
     }
 
-    async getOperationsBySecurity(ticker: string, from: Date = new Date(0), to: Date = new Date()): Promise<D_Operation[]>{
+    async getOperationsByInstrument(ticker: string, from: Date = new Date(0), to: Date = new Date()): Promise<D_Operation[]>{
         const { exchangeClient } = this
-        const relevantOperations = await exchangeClient.infoModule.getOperationsBySecurity(ticker, from, to)
+        const relevantOperations = await exchangeClient.infoModule.getOperationsByInstrument(ticker, from, to)
         return await Promise.all(relevantOperations
             .filter(operation => operation.operationType === "Buy" || operation.operationType === "Sell")
             .map(
                 async (operation): Promise<D_Operation> => {
-                    const security: C_Security = await exchangeClient.infoModule.getSecurityByExchangeId(operation?.figi || '')
+                    const instrument: C_Instrument = await exchangeClient.infoModule.getInstrumentByExchangeId(operation?.figi || '')
                     return {
-                        security_ticker: security.ticker,
+                        instrument_ticker: instrument.ticker,
                         amount: operation?.quantity || 0,
                         created_at: new Date(),
                         exchange_id: operation.id,
