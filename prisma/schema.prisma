@@ -8,7 +8,7 @@ generator client {
 
 datasource db {
   provider = "sqlite"
-  url      = "file:./storage.db"
+  url      = "file:./storage.db?connection_limit=1&connect_timeout=30"
 }
 
 model D_Currency {

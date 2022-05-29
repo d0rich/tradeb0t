@@ -23,7 +23,7 @@ async function awaitTime(ms: number) {
   await tradeBot.trader.sendOrder({ ticker: 'AAPL', lots: 5, operation: 'buy', price: 300 })
   await tradeBot.trader.sendOrder({ ticker: 'AAPL', lots: 2, operation: 'sell', price: 100 })
   await tradeBot.analyzer.updateCurrencies()
-  await tradeBot.analyzer.updateSecurities()
+  await tradeBot.analyzer.updateInstruments()
   await tradeBot.analyzer.updatePortfolio()
   await tradeBot.analyzer.getPortfolio()
   console.log(tradeBot.analyzer.tradeAlgos.description)

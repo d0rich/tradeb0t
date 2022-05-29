@@ -51,11 +51,11 @@ export class ExchangeAnalyzer implements IExchangeAnalyzer{
         const { watcher } = this
         const instruments: D_Instrument[] = await db.d_Instrument.findMany({  })
         const instrumentsPrices = await Promise.all(
-            instruments.map((security): Promise<number> => watcher.getInstrumentLastPrice(security.ticker))
+            instruments.map((instrument): Promise<number> => watcher.getInstrumentLastPrice(instrument.ticker))
         )
         const updatePromises = instruments
-            .map((security, index) => db.d_Instrument.update({ 
-                    where: { ticker: security.ticker },
+            .map((instrument, index) => db.d_Instrument.update({ 
+                    where: { ticker: instrument.ticker },
                     data: { price: instrumentsPrices[index] }
                 })
             )
@@ -69,21 +69,13 @@ export class ExchangeAnalyzer implements IExchangeAnalyzer{
     async addInstruments(...instruments: D_Instrument[]): Promise<D_Instrument[]> {
         const { watcher } = this
         const instrumentsToAdd: D_Instrument[] = await Promise.all(
-            instruments.map(async (security): Promise<D_Instrument> => {
-                const currency: D_Currency = await watcher.getInstrumentCurrency(security.ticker)
-                return {
-                    ticker: security.ticker,
-                    name: await watcher.getInstrumentName(security.ticker),
-                    price: await watcher.getInstrumentLastPrice(security.ticker),
-                    currency_ticker: currency.ticker
-                } 
-            })
+            instruments.map((instrument): Promise<D_Instrument> => watcher.getInstrument(instrument.ticker))
         )
         const createOrUpdatePromises = instrumentsToAdd
-            .map((security) => db.d_Instrument.upsert({ 
-                    where: { ticker: security.ticker },
-                    update: { price: security.price },
-                    create: security
+            .map((instrument) => db.d_Instrument.upsert({ 
+                    where: { ticker: instrument.ticker },
+                    update: { price: instrument.price },
+                    create: instrument
                 })
             )
         return await Promise.all(createOrUpdatePromises) 
@@ -94,27 +86,27 @@ export class ExchangeAnalyzer implements IExchangeAnalyzer{
     async getFollowedInstruments(): Promise<D_FollowedInstrument[]> {
         return await db.d_FollowedInstrument.findMany({})
     }
-    async followInstrument(securityTicker: string): Promise<D_FollowedInstrument> {
+    async followInstrument(instrumentTicker: string): Promise<D_FollowedInstrument> {
         return await db.d_FollowedInstrument.create({ 
             data: {
-                instrument_ticker: securityTicker,
+                instrument_ticker: instrumentTicker,
                 followed_since: new Date()
             }
         })
     }
-    async unfollowInstrument(securityTicker: string): Promise<D_FollowedInstrument> {
+    async unfollowInstrument(instrumentTicker: string): Promise<D_FollowedInstrument> {
         return await db.d_FollowedInstrument.delete({
-            where: { instrument_ticker: securityTicker }
+            where: { instrument_ticker: instrumentTicker }
         })
     }
     async updateFollowedInstruments(): Promise<D_Instrument[]> {
         const { watcher } = this
         const instrumentsToUpdate = await db.d_FollowedInstrument.findMany({})
         const instrumentsPrices = await Promise.all(
-            instrumentsToUpdate.map(security => watcher.getInstrumentLastPrice(security.instrument_ticker))
+            instrumentsToUpdate.map(instrument => watcher.getInstrumentLastPrice(instrument.instrument_ticker))
         )
-        const updatePromises = instrumentsToUpdate.map((security, index) => db.d_Instrument.update({ 
-            where: { ticker: security.instrument_ticker },
+        const updatePromises = instrumentsToUpdate.map((instrument, index) => db.d_Instrument.update({ 
+            where: { ticker: instrument.instrument_ticker },
             data: { price: instrumentsPrices[index] } 
         }))
         return await Promise.all(updatePromises)
@@ -125,6 +117,8 @@ export class ExchangeAnalyzer implements IExchangeAnalyzer{
     async updatePortfolio(): Promise<D_PortfolioPosition[]>{
         const { watcher } = this
         const relevantPortfolio = await watcher.getPortfolio()
+        const instruments = await Promise.all(relevantPortfolio.map(p => watcher.getInstrument(p.instrument_ticker)))
+        await this.addInstruments(...instruments)
         return await Promise.all(relevantPortfolio.map(position => db.d_PortfolioPosition.upsert(
             { 
                 where: { instrument_ticker: position.instrument_ticker },

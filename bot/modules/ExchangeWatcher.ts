@@ -1,7 +1,7 @@
 import {IExchangeWatcher} from "../interfaces";
 import {ExchangeAnalyzer, ExchangeTrader} from "./index";
 import {TradeBot} from "../TradeBot";
-import { D_PortfolioPosition, D_Currency, D_Operation } from "@prisma/client";
+import { D_PortfolioPosition, D_Currency, D_Operation, D_Instrument } from "@prisma/client";
 import { C_Currency, C_Portfolio, C_Instrument, OperationType } from "../../types";
 import { ExchangeClient } from "exchange";
 
@@ -40,6 +40,19 @@ export class ExchangeWatcher implements IExchangeWatcher{
             name: currency,
             ticker: currency
         }))
+    }
+
+    async getInstrument(ticker: string): Promise<D_Instrument>{
+        const { exchangeClient } = this
+        const instrument = await exchangeClient.infoModule.getInstrument(ticker)
+        if (!instrument) throw new Error(`Instrument with ticker "${ticker}" was not found`)
+        if (!instrument.currency) throw new Error(`Instrument with ticker "${ticker}" have no currency`)
+        return {
+            currency_ticker: instrument.currency,
+            name: instrument.name,
+            price: await this.getInstrumentLastPrice(ticker),
+            ticker: instrument.ticker
+        }
     }
 
     async getInstrumentName(ticker: string): Promise<string> {
