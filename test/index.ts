@@ -1,11 +1,6 @@
 import {TradeBot} from "../src/TradeBot";
 import { OperationType } from "../src/types";
-
-function awaitTime(ms: number) {
-  return new Promise((resolve) => {
-    setTimeout(() => {resolve(true)}, ms)
-  })
-}
+import { awaitTime } from 'src/utils'
 
 (async () => {
 
