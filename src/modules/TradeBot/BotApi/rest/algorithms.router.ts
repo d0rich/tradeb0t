@@ -1,5 +1,5 @@
 import {Router} from "express";
-import {OrderDetails} from "../../../../types";
+import {OrderDetails} from "../../../../utils/orderDetails";
 import { tradeBot } from "./support.functions";
 
 const router = Router();

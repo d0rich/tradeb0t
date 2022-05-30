@@ -1,6 +1,6 @@
 import {IExchangeTrader} from "../../interfaces/TradeBot";
 import {ExchangeWatcher} from "./index";
-import {OrderDetails} from "src/types";
+import {OrderDetails} from "src/utils/orderDetails";
 import {TradeBot} from "../../TradeBot";
 import {Job} from "node-schedule";
 import { ExchangeClient } from "src/ExchangeClient";

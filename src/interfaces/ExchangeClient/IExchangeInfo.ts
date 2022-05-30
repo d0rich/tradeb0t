@@ -1,4 +1,4 @@
-import { C_Portfolio, C_Currency } from "../../types";
+import { C_Portfolio, C_Currency } from "../../utils/orderDetails";
 
 export interface IExchangeInfo {
     getCurrencies(): Promise<C_Currency[]>

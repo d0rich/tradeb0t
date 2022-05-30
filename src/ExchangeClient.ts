@@ -1,5 +1,5 @@
 import OpenAPI from '@tinkoff/invest-openapi-js-sdk';
-import { C_ExchangeApi, C_Portfolio } from './types/exchangeClient';
+import { C_ExchangeApi, C_Portfolio } from '../config/exchangeClientTypes';
 
 import { IExchangeAccount, IExchangeInfo, IExchangeTrade } from "./interfaces/ExchangeClient";
 import { InfoModule, TradeModule } from './modules/ExchangeClient';

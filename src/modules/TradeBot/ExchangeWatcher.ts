@@ -2,7 +2,7 @@ import {IExchangeWatcher} from "../../interfaces/TradeBot";
 import {ExchangeAnalyzer, ExchangeTrader} from "./index";
 import {TradeBot} from "../../TradeBot";
 import { D_PortfolioPosition, D_Currency, D_Operation, D_Instrument } from "@prisma/client";
-import { C_Currency, C_Portfolio, C_Instrument, OperationType } from "../../types";
+import { C_Currency, C_Portfolio, C_Instrument, OperationType } from "../../utils/orderDetails";
 import { ExchangeClient } from "src/ExchangeClient";
 
 export class ExchangeWatcher implements IExchangeWatcher{

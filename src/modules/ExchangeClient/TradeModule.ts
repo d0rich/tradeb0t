@@ -1,6 +1,6 @@
 import { ExchangeClient } from "../../ExchangeClient";
-import { OrderDetails } from "../../types";
-import { C_Order } from "../../types/exchangeClient";
+import { OrderDetails } from "../../utils/orderDetails";
+import { C_Order } from "../../../config/exchangeClientTypes";
 import { IExchangeTrade } from "../../interfaces/ExchangeClient";
 
 export class TradeModule implements IExchangeTrade {

@@ -1,4 +1,4 @@
-export * from './exchangeClient'
+export * from '../../config/exchangeClientTypes'
 
 export type OrderDetails = {
     operation: OperationType

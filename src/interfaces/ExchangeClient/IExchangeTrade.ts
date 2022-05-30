@@ -1,5 +1,5 @@
-import { OrderDetails } from "../../types"
-import { C_Order } from "../../types/exchangeClient"
+import { OrderDetails } from "../../utils/orderDetails"
+import { C_Order } from "../../../config/exchangeClientTypes"
 
 export interface IExchangeTrade {
   sell({ ticker, lots, price }: OrderDetails): Promise<C_Order>

@@ -1,5 +1,5 @@
 import { ExchangeClient } from "../../ExchangeClient";
-import { C_Currency, C_Instrument, C_Operation } from "../../types";
+import { C_Currency, C_Instrument, C_Operation } from "../../utils/orderDetails";
 import { IExchangeInfo } from "../../interfaces/ExchangeClient";
 
 const securitiesCache = new Map<string, C_Instrument>()

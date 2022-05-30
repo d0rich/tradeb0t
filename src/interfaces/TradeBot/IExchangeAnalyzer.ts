@@ -1,6 +1,6 @@
 import {TradeAlgorithms} from "src/modules/TradeBot/ExchangeAnalyzer/TradeAlgorithms/TradeAlgorithms";
 import {D_PortfolioPosition, D_Currency, D_Instrument, D_FollowedInstrument, D_Operation} from "@prisma/client";
-import { OperationType } from "src/types";
+import { OperationType } from "src/utils/orderDetails";
 
 export interface IExchangeAnalyzer{
     get tradeAlgos(): TradeAlgorithms

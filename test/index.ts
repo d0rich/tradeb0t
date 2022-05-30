@@ -1,5 +1,5 @@
 import {TradeBot} from "../src/TradeBot";
-import { OperationType } from "../src/types";
+import { OperationType } from "../src/utils/orderDetails";
 import { awaitTime } from 'src/utils'
 
 (async () => {

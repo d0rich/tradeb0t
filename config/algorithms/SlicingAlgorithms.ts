@@ -1,6 +1,6 @@
 import { D_AlgorithmRun } from "@prisma/client";
 import { ExchangeAnalyzer } from "../../src/modules";
-import { OrderDetails } from "src/types";
+import { OrderDetails } from "src/utils/orderDetails";
 import { AbstractTradeAlgorithm } from '../../src/modules/TradeBot/ExchangeAnalyzer/TradeAlgorithms'
 import { addMinutesToDate, addSecondsToDate } from 'src/utils'
 
@@ -66,7 +66,7 @@ export class SlicingAlgorithm extends AbstractTradeAlgorithm<SlicingInput, Slici
     const startPoint = addSecondsToDate(new Date(), 10)
     for (let i = orders_sended; i < lots_in_orders.length; i++) {
       const lots = lots_in_orders[i]
-      const sendOrderTime: Date = addMinutesToDate(startPoint, minutesRemain/(parts - 1) * i) 
+      const sendOrderTime: Date = addMinutesToDate(startPoint, minutesRemain/(parts - 1) * i)
       trader.scheduleAction(() => {
         trader.sendOrder({...order, lots})
         if (i < lots_in_orders.length - 1) this.saveProgress(algorithmRun.id, { orders_sended: i + 1, lots_in_orders })

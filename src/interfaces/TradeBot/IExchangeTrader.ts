@@ -1,4 +1,4 @@
-import {OperationType, OrderDetails} from "../../types";
+import {OperationType, OrderDetails} from "../../utils/orderDetails";
 import {Job} from "node-schedule";
 
 export interface IExchangeTrader{

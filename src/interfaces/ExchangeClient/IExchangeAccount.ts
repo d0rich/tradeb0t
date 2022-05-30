@@ -1,4 +1,4 @@
-import { C_Portfolio } from "../../types"
+import { C_Portfolio } from "../../utils/orderDetails"
 
 export interface IExchangeAccount {
   get isAccountInitialized(): boolean
