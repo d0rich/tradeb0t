@@ -1,6 +1,5 @@
 import {TradeBot} from "../src/TradeBot";
-import { OperationType } from "../src/utils/orderDetails";
-import { awaitTime } from 'src/utils'
+import { OperationType, awaitTime } from "../src/utils";
 
 (async () => {
 
@@ -20,6 +19,7 @@ import { awaitTime } from 'src/utils'
   await tradeBot.analyzer.updateCurrencies()
   await tradeBot.analyzer.updateInstruments()
   await tradeBot.analyzer.updatePortfolio()
+  await tradeBot.analyzer.updateOperationsAll()
   await tradeBot.analyzer.getPortfolio()
   console.log(tradeBot.analyzer.tradeAlgos.description)
 })()

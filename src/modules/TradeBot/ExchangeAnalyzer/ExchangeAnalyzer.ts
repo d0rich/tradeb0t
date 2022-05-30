@@ -1,4 +1,4 @@
-import {GetOperationsOptions, OperationId} from "src/interfaces";
+import {GetOperationsOptions, OperationId} from "src/utils";
 import {ExchangeTrader, ExchangeWatcher} from "../index";
 import {TradeAlgorithms} from "./TradeAlgorithms";
 import {TradeBot} from "src/TradeBot";
@@ -212,7 +212,6 @@ export class ExchangeAnalyzer {
             update: { amount: operation.amount, updated_at: new Date() },
             create: {
                 ...operation,
-                created_at: new Date(),
                 updated_at: new Date()
             }
         })
