@@ -1,4 +1,4 @@
-import {TradeBot} from "./bot/TradeBot";
+import {TradeBot} from "./src/TradeBot";
 new TradeBot()
 
 

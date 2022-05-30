@@ -1,18 +1,18 @@
-import {TradeBot} from "../bot/TradeBot";
-import { OperationType } from "../types";
+import {TradeBot} from "../src/TradeBot";
+import { OperationType } from "../src/types";
 
-async function awaitTime(ms: number) {
+function awaitTime(ms: number) {
   return new Promise((resolve) => {
     setTimeout(() => {resolve(true)}, ms)
   })
-} 
+}
 
 (async () => {
-  
+
   const tradeBot = new TradeBot()
 
   console.info(`${new Date()} Waiting initialization...`)
-  
+
   while (!tradeBot.exchangeClient.isAccountInitialized){
     await awaitTime(10)
   }
