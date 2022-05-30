@@ -1,4 +1,3 @@
-import {IExchangeTrader} from "../../interfaces/TradeBot";
 import {ExchangeWatcher} from "./index";
 import {OrderDetails} from "src/utils/orderDetails";
 import {TradeBot} from "../../TradeBot";
@@ -7,7 +6,7 @@ import { ExchangeClient } from "src/ExchangeClient";
 import { BotLogger } from "./BotLogger";
 const schedule = require('node-schedule');
 
-export class ExchangeTrader implements IExchangeTrader{
+export class ExchangeTrader {
     private readonly tradebot: TradeBot
     private get watcher(): ExchangeWatcher { return this.tradebot.watcher }
     private get logger(): BotLogger { return this.tradebot.logger }

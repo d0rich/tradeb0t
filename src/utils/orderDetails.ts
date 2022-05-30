@@ -1,4 +1,4 @@
-export * from '../../config/exchangeClientTypes'
+import { OperationType } from "./operation";
 
 export type OrderDetails = {
     operation: OperationType
@@ -6,5 +6,3 @@ export type OrderDetails = {
     lots: number
     price: number
 }
-
-export type OperationType = 'buy' | 'sell' | 'buy_or_cancel' | 'sell_or_cancel'

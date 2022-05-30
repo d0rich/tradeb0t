@@ -1,10 +1,9 @@
 import { ExchangeClient } from "../../ExchangeClient";
-import { C_Currency, C_Instrument, C_Operation } from "../../utils/orderDetails";
-import { IExchangeInfo } from "../../interfaces/ExchangeClient";
+import { C_Currency, C_Instrument, C_Operation } from "../../../config/exchangeClientTypes";
 
 const securitiesCache = new Map<string, C_Instrument>()
 
-export class InfoModule implements IExchangeInfo {
+export class InfoModule {
   private readonly exchangeClient: ExchangeClient
 
   constructor(exchangeClient: ExchangeClient){

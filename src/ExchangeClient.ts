@@ -1,10 +1,9 @@
 import OpenAPI from '@tinkoff/invest-openapi-js-sdk';
 import { C_ExchangeApi, C_Portfolio } from '../config/exchangeClientTypes';
 
-import { IExchangeAccount, IExchangeInfo, IExchangeTrade } from "./interfaces/ExchangeClient";
-import { InfoModule, TradeModule } from './modules/ExchangeClient';
+import { InfoModule, TradeModule } from './modules';
 
-export class ExchangeClient implements IExchangeAccount {
+export class ExchangeClient {
   public readonly api: C_ExchangeApi
   public readonly tradeModule: TradeModule
   public readonly infoModule: InfoModule

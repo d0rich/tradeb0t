@@ -1,16 +1,16 @@
-import {GetOperationsOptions, IExchangeAnalyzer, OperationId} from "src/interfaces";
+import {GetOperationsOptions, OperationId} from "src/interfaces";
 import {ExchangeTrader, ExchangeWatcher} from "../index";
-import {TradeAlgorithms} from "./TradeAlgorithms/TradeAlgorithms";
+import {TradeAlgorithms} from "./TradeAlgorithms";
 import {TradeBot} from "src/TradeBot";
 import { D_Currency, D_PortfolioPosition, PrismaClient, D_Instrument, D_FollowedInstrument, D_Operation, D_Algorithm, D_AlgorithmRun } from "@prisma/client";
 
 const db = new PrismaClient()
 
-export class ExchangeAnalyzer implements IExchangeAnalyzer{
+export class ExchangeAnalyzer {
     readonly tradebot: TradeBot
     get trader(): ExchangeTrader { return this.tradebot.trader }
     get watcher(): ExchangeWatcher { return this.tradebot.watcher }
-    private getOperationId(operation: D_Operation): OperationId{
+    private static getOperationId(operation: D_Operation): OperationId{
         if (!!operation.exchange_id) return { exchange_id: operation.exchange_id }
         return {
             instrument_ticker_created_at: {
@@ -42,7 +42,7 @@ export class ExchangeAnalyzer implements IExchangeAnalyzer{
     }
 
     async getCurrencies(): Promise<D_Currency[]> {
-        return await db.d_Currency.findMany({})
+        return db.d_Currency.findMany({})
     }
 
     // Instruments
@@ -63,7 +63,7 @@ export class ExchangeAnalyzer implements IExchangeAnalyzer{
     }
 
     async getInstruments(): Promise<D_Instrument[]> {
-        return await db.d_Instrument.findMany({})
+        return db.d_Instrument.findMany({})
     }
 
     async addInstruments(...instruments: D_Instrument[]): Promise<D_Instrument[]> {
@@ -84,10 +84,10 @@ export class ExchangeAnalyzer implements IExchangeAnalyzer{
     // Followed Instruments
 
     async getFollowedInstruments(): Promise<D_FollowedInstrument[]> {
-        return await db.d_FollowedInstrument.findMany({})
+        return db.d_FollowedInstrument.findMany({})
     }
     async followInstrument(instrumentTicker: string): Promise<D_FollowedInstrument> {
-        return await db.d_FollowedInstrument.create({
+        return db.d_FollowedInstrument.create({
             data: {
                 instrument_ticker: instrumentTicker,
                 followed_since: new Date()
@@ -95,7 +95,7 @@ export class ExchangeAnalyzer implements IExchangeAnalyzer{
         })
     }
     async unfollowInstrument(instrumentTicker: string): Promise<D_FollowedInstrument> {
-        return await db.d_FollowedInstrument.delete({
+        return db.d_FollowedInstrument.delete({
             where: { instrument_ticker: instrumentTicker }
         })
     }
@@ -130,7 +130,7 @@ export class ExchangeAnalyzer implements IExchangeAnalyzer{
     }
 
     async getPortfolio(): Promise<D_PortfolioPosition[]> {
-        return await db.d_PortfolioPosition.findMany({})
+        return db.d_PortfolioPosition.findMany({})
     }
 
     async clearPortfolio(): Promise<number> {
@@ -205,9 +205,9 @@ export class ExchangeAnalyzer implements IExchangeAnalyzer{
     // Operations
 
     async fixOperation(operation: D_Operation): Promise<D_Operation> {
-        const { getOperationId } = this
+        const { getOperationId } = ExchangeAnalyzer
         const operationId: OperationId = getOperationId(operation)
-        return await db.d_Operation.upsert({
+        return db.d_Operation.upsert({
             where: operationId,
             update: { amount: operation.amount, updated_at: new Date() },
             create: {
@@ -229,7 +229,7 @@ export class ExchangeAnalyzer implements IExchangeAnalyzer{
         return await Promise.all(allOperations.map(operation => fixOperation(operation)))
     }
     async getOperations({ from, to, operation, instrumentTicker }: GetOperationsOptions): Promise<D_Operation[]> {
-        return await db.d_Operation.findMany({
+        return db.d_Operation.findMany({
             orderBy: { created_at: 'desc' },
             where: {
                 AND: [
@@ -258,7 +258,7 @@ export class ExchangeAnalyzer implements IExchangeAnalyzer{
     }
 
     async runAlgorithm(algorithmName: string, inputs: any, state: any = inputs): Promise<D_AlgorithmRun>{
-        return await db.d_AlgorithmRun.create({
+        return db.d_AlgorithmRun.create({
             data: {
                 algorithm_name: algorithmName,
                 inputs: JSON.stringify(inputs),
@@ -268,7 +268,7 @@ export class ExchangeAnalyzer implements IExchangeAnalyzer{
     }
 
     async saveAlgorithmRunProgress(id: number, state: any): Promise<D_AlgorithmRun>{
-        return await db.d_AlgorithmRun.update({
+        return db.d_AlgorithmRun.update({
             where: { id },
             data: {
                 state: JSON.stringify(state)
@@ -277,11 +277,11 @@ export class ExchangeAnalyzer implements IExchangeAnalyzer{
     }
 
     async loadAlgorithmRunProgress(id: number): Promise<D_AlgorithmRun | null>{
-        return await db.d_AlgorithmRun.findUnique({ where: { id } })
+        return db.d_AlgorithmRun.findUnique({ where: { id } })
     }
 
     async finishAlgorithmRun(id: number): Promise<D_AlgorithmRun>{
-        return await db.d_AlgorithmRun.update({
+        return db.d_AlgorithmRun.update({
             where: { id },
             data: {
                 state: JSON.stringify({ status: 'finished' })
@@ -290,7 +290,7 @@ export class ExchangeAnalyzer implements IExchangeAnalyzer{
     }
 
     async getUnfinishedAlgorithmRuns(): Promise<D_AlgorithmRun[]>{
-        return await db.d_AlgorithmRun.findMany({
+        return db.d_AlgorithmRun.findMany({
             where: { NOT: { state: JSON.stringify({ status: 'finished' }) } }
         })
     }

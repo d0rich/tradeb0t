@@ -1,9 +1,8 @@
 import { ExchangeClient } from "../../ExchangeClient";
-import { OrderDetails } from "../../utils/orderDetails";
+import { OrderDetails } from "../../utils";
 import { C_Order } from "../../../config/exchangeClientTypes";
-import { IExchangeTrade } from "../../interfaces/ExchangeClient";
 
-export class TradeModule implements IExchangeTrade {
+export class TradeModule {
   private readonly exchangeClient: ExchangeClient
 
   constructor(exchangeApi: ExchangeClient){
