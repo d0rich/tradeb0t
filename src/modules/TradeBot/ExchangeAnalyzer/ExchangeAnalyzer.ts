@@ -178,9 +178,17 @@ export class ExchangeAnalyzer {
             return boughtStats
         }
         let countOperations = 5
-        for ( let boughtStats = await getBoughtStats(countOperations);
-            (!!boughtStats._sum.amount ? boughtStats._sum.amount < (position?.amount || 0) : 0) || boughtStats._count._all !== 0 ;
-            countOperations++ ){}
+        let boughtStats = await getBoughtStats(countOperations)
+        while ((!!boughtStats._sum.amount ? boughtStats._sum.amount < (position?.amount || 0) : false) && boughtStats._count._all !== 0) {
+            countOperations++
+            boughtStats = await getBoughtStats(countOperations)
+        }
+        // for ( let boughtStats = await getBoughtStats(countOperations);
+        //     (!!boughtStats._sum.amount ? boughtStats._sum.amount < (position?.amount || 0) : false) && boughtStats._count._all !== 0 ;
+        //     countOperations++ ){
+        //     console.log(boughtStats)
+        //     console.log(countOperations)
+        // }
         const lastInstrumentBuyOperations: D_Operation[] = await db.d_Operation.findMany({
             orderBy: { created_at: 'desc' },
                 where: {
