@@ -2,10 +2,10 @@
   "name": "trade-bot--demo",
   "version": "0.3.2",
   "description": "",
-  "main": "index.ts",
+  "main": "server.ts",
   "scripts": {
-    "start": "ts-node index.ts",
-    "dev": "nodemon index.ts",
+    "start": "ts-node server.ts",
+    "dev": "nodemon server.ts",
     "test": "ts-node ./test/index.ts",
     "db-update": "npx prisma migrate dev --name ''",
     "db-browse": "npx prisma studio"

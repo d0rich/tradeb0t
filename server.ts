@@ -1,4 +1,4 @@
 import {TradeBot} from "./src/TradeBot";
-new TradeBot()
+const tradebot = new TradeBot()
 
 

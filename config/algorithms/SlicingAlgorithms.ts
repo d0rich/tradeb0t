@@ -1,8 +1,7 @@
 import { D_AlgorithmRun } from "@prisma/client";
 import { ExchangeAnalyzer } from "../../src/modules";
-import { OrderDetails } from "src/utils/orderDetails";
-import { AbstractTradeAlgorithm } from '../../src/modules/TradeBot/ExchangeAnalyzer/TradeAlgorithms'
-import { addMinutesToDate, addSecondsToDate } from 'src/utils'
+import { AbstractTradeAlgorithm } from "../../src/modules/TradeBot/ExchangeAnalyzer/TradeAlgorithms";
+import { addMinutesToDate, addSecondsToDate, OrderDetails } from '../../src/utils'
 
 type SlicingInput = {
   order: OrderDetails,
