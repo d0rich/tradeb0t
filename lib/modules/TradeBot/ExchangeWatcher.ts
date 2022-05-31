@@ -1,9 +1,9 @@
 import {ExchangeAnalyzer, ExchangeTrader} from "./index";
 import {TradeBot} from "../../TradeBot";
 import { D_PortfolioPosition, D_Currency, D_Operation, D_Instrument } from "@prisma/client";
-import { C_Currency, C_Portfolio, C_Instrument } from "../../../config/exchangeClientTypes";
-import { ExchangeClient } from "src/ExchangeClient";
-import {initTranslators} from "../../../config/cdTranslators";
+import { C_Currency, C_Portfolio, C_Instrument } from "../../../src/exchangeClientTypes";
+import { ExchangeClient } from "lib/ExchangeClient";
+import {initTranslators} from "../../../src/cdTranslators";
 
 export class ExchangeWatcher {
     private readonly tradebot: TradeBot

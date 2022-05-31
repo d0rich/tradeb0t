@@ -1,5 +1,5 @@
 import { D_AlgorithmRun, D_Algorithm } from "@prisma/client";
-import { BotLogger, ExchangeAnalyzer, ExchangeTrader, ExchangeWatcher } from "src/modules/TradeBot/index";
+import { BotLogger, ExchangeAnalyzer, ExchangeTrader, ExchangeWatcher } from "lib/modules/TradeBot/index";
 
 export abstract class AbstractTradeAlgorithm<InputsType, StateType>{
   private readonly analyzer: ExchangeAnalyzer

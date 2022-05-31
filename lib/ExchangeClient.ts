@@ -1,5 +1,5 @@
 import OpenAPI from '@tinkoff/invest-openapi-js-sdk';
-import { C_ExchangeApi, C_Portfolio } from '../config/exchangeClientTypes';
+import { C_ExchangeApi, C_Portfolio } from '../src/exchangeClientTypes';
 
 import { InfoModule, TradeModule } from './modules';
 
@@ -23,18 +23,20 @@ export class ExchangeClient {
   }
 
   private async initAccount(){
-    await this.api.sandboxClear()
-    await this.api.setCurrenciesBalance({ currency: 'USD', balance: 1_000_000 })
+    const { api } = this
+    await api.sandboxClear()
+    await api.setCurrenciesBalance({ currency: 'USD', balance: 1_000_000 })
     // @ts-ignore
-    const { figi: appleFigi } = await this.api.searchOne({ ticker: 'AAPL' })
-    await this.api.setPositionBalance({ balance: 100, figi: appleFigi })
+    const { figi: appleFigi } = await api.searchOne({ ticker: 'AAPL' })
+    await api.setPositionBalance({ balance: 100, figi: appleFigi })
     this.isAccountInitialized = true
   }
 
-  public async metaInfo(): Promise<any> {
+  async metaInfo(): Promise<any> {
     throw new Error('Method not implemented.');
   }
-  public async getPortfolio(): Promise<C_Portfolio> {
-    return await this.api.portfolio()
+  async getPortfolio(): Promise<C_Portfolio> {
+    const { api } = this
+    return await api.portfolio()
   }
 }

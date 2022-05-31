@@ -1,8 +1,8 @@
-import { TradeBot } from "src/TradeBot";
-import {ExchangeAnalyzer, ExchangeTrader, ExchangeWatcher} from "src/modules/TradeBot/index";
+import { TradeBot } from "lib/TradeBot";
+import {ExchangeAnalyzer, ExchangeTrader, ExchangeWatcher} from "lib/modules/TradeBot/index";
 import { AbstractTradeAlgorithm } from "./AbstractTradeAlgorithm";
 import { D_Algorithm, D_AlgorithmRun } from "@prisma/client";
-import { initAlgorithms } from "../../../../../config/algorithms";
+import { initAlgorithms } from "../../../../../src/algorithms";
 
 export class TradeAlgorithms{
     private readonly analyzer: ExchangeAnalyzer

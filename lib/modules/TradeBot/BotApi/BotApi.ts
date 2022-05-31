@@ -1,5 +1,5 @@
-import { config } from '../../../../config/config'
-import { TradeBot } from 'src/TradeBot'
+import { config } from '../../../../config'
+import { TradeBot } from 'lib/TradeBot'
 import { Express } from 'express'
 import { createWebSocketServer } from './ws'
 import { expressApp } from './rest'

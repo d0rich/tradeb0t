@@ -1,6 +1,6 @@
 import { Request } from "express"
 import { IncomingMessage } from "http"
-import { config } from "../../../config/config"
+import { config } from "../../../config"
 
 export class BotAuth{
   private readonly botToken: string

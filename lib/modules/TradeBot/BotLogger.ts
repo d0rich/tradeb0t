@@ -1,7 +1,7 @@
 import fs from 'fs'
-import { config } from '../../../config/config';
+import { config } from '../../../config';
 import {createRollingFileLogger, Logger} from "simple-node-logger";
-import { TradeBot } from 'src/TradeBot';
+import { TradeBot } from 'lib/TradeBot';
 import { BotApi } from './BotApi/BotApi';
 
 

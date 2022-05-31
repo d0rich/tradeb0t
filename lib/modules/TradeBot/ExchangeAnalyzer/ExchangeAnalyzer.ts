@@ -1,7 +1,7 @@
-import {GetOperationsOptions, OperationId} from "src/utils";
+import {GetOperationsOptions, OperationId} from "lib/utils";
 import {ExchangeTrader, ExchangeWatcher} from "../index";
 import {TradeAlgorithms} from "./TradeAlgorithms";
-import {TradeBot} from "src/TradeBot";
+import {TradeBot} from "lib/TradeBot";
 import { D_Currency, D_PortfolioPosition, PrismaClient, D_Instrument, D_FollowedInstrument, D_Operation, D_Algorithm, D_AlgorithmRun } from "@prisma/client";
 
 const db = new PrismaClient()

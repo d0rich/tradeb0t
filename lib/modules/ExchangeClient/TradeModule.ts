@@ -1,6 +1,6 @@
 import { ExchangeClient } from "../../ExchangeClient";
 import { OrderDetails } from "../../utils";
-import { C_Order } from "../../../config/exchangeClientTypes";
+import { C_Order } from "../../../src/exchangeClientTypes";
 
 export class TradeModule {
   private readonly exchangeClient: ExchangeClient

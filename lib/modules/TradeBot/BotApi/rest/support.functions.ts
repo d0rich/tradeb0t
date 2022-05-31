@@ -1,5 +1,5 @@
 import { Application } from "express";
-import { TradeBot } from "src/TradeBot";
+import { TradeBot } from "lib/TradeBot";
 
 interface IExpressAppCarrier {
   app: Application
