@@ -1,12 +1,12 @@
-import { ExchangeClient } from "../../ExchangeClient";
-import { OrderDetails } from "../../utils";
-import { C_Order } from "../../../src/exchangeClientTypes";
+import { ExchangeClient } from "./ExchangeClient";
+import { OrderDetails } from "../../lib/utils";
+import { C_Order } from "../exchangeClientTypes";
+import {AbstractTradeModule} from "../../lib/modules";
 
-export class TradeModule {
-  private readonly exchangeClient: ExchangeClient
+export class TradeModule extends AbstractTradeModule{
 
-  constructor(exchangeApi: ExchangeClient){
-    this.exchangeClient = exchangeApi
+  constructor(exchangeClient: ExchangeClient){
+    super(exchangeClient)
   }
 
   public async sell({ ticker, lots, price }: OrderDetails): Promise<C_Order> {

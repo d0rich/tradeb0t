@@ -1,17 +1,17 @@
 import OpenAPI from '@tinkoff/invest-openapi-js-sdk';
-import { C_ExchangeApi, C_Portfolio } from '../src/exchangeClientTypes';
+import { C_ExchangeApi, C_Portfolio } from '../exchangeClientTypes';
 
-import { InfoModule, TradeModule } from './modules';
+import { TradeModule } from './TradeModule';
+import { InfoModule } from './InfoModule';
+import {AbstractExchangeClient} from "../../lib/AbstractExchangeClient";
 
-export class ExchangeClient {
+export class ExchangeClient extends AbstractExchangeClient{
   public readonly api: C_ExchangeApi
   public readonly tradeModule: TradeModule
   public readonly infoModule: InfoModule
-  private _isAccountInitialized: boolean = false
-  public get isAccountInitialized(): boolean { return this._isAccountInitialized }
-  private set isAccountInitialized(value: boolean) { this._isAccountInitialized = value }
 
   constructor(token: string){
+    super()
     this.api = new OpenAPI({
         apiURL: 'https://api-invest.tinkoff.ru/openapi/sandbox',
         socketURL: 'wss://api-invest.tinkoff.ru/openapi/md/v1/md-openapi/ws',
@@ -22,7 +22,7 @@ export class ExchangeClient {
     this.initAccount()
   }
 
-  private async initAccount(){
+  protected async initAccount(){
     const { api } = this
     await api.sandboxClear()
     await api.setCurrenciesBalance({ currency: 'USD', balance: 1_000_000 })
@@ -32,9 +32,6 @@ export class ExchangeClient {
     this.isAccountInitialized = true
   }
 
-  async metaInfo(): Promise<any> {
-    throw new Error('Method not implemented.');
-  }
   async getPortfolio(): Promise<C_Portfolio> {
     const { api } = this
     return await api.portfolio()

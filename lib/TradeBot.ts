@@ -1,6 +1,6 @@
 import { config } from "../config";
-import { ExchangeClient } from "./ExchangeClient";
-import {BotApi, BotAuth, BotLogger, ExchangeAnalyzer, ExchangeTrader, ExchangeWatcher} from "./modules/TradeBot";
+import { ExchangeClient } from "../src/ExchangeClient";
+import {BotApi, BotAuth, BotLogger, ExchangeAnalyzer, ExchangeTrader, ExchangeWatcher} from "./modules";
 
 type TradeBotConstructorParams = {
     exchangeToken?: string,

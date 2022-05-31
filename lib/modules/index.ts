@@ -1,2 +1,2 @@
 export * from './TradeBot'
-export * from './ExchangeClient'
+export * from './AbstractExchangeClient'

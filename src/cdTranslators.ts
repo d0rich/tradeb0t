@@ -1,7 +1,7 @@
 import {ExchangeWatcher} from "../lib/modules";
 import {C_Currency, C_Instrument, C_Operation, C_Order, C_Portfolio} from "./exchangeClientTypes";
 import {D_Currency, D_Instrument, D_Operation, D_PortfolioPosition} from "@prisma/client";
-import {ExchangeClient} from "../lib/ExchangeClient";
+import {ExchangeClient} from "./ExchangeClient/ExchangeClient";
 
 const instrumentsCache = new Map<string, C_Instrument>()
 
