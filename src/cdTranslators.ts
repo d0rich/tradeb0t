@@ -2,7 +2,7 @@ import {ExchangeWatcher} from "../lib/modules";
 import {C_Currency, C_Instrument, C_Operation, C_Order, C_Portfolio} from "./exchangeClientTypes";
 import {D_Currency, D_Instrument, D_Operation, D_Order, D_PortfolioPosition} from "@prisma/client";
 import {ExchangeClient} from "./ExchangeClient/ExchangeClient";
-import {ITranslatorsCD} from "../lib/utils";
+import {ITranslatorsCD, OrderStatus} from "../lib/utils";
 
 
 export function initTranslators(watcher: ExchangeWatcher, exchangeClient: ExchangeClient): ITranslatorsCD {
@@ -63,7 +63,19 @@ export function initTranslators(watcher: ExchangeWatcher, exchangeClient: Exchan
                 amount: order.requestedLots,
                 price: order.price,
                 instrument_ticker: instrument?.ticker || 'undefined'
-
+            }
+        },
+        orderStatus(order: C_Order): OrderStatus {
+            switch (order.status) {
+                case "New": return 'new'
+                case "Cancelled": return 'cancelled'
+                case "Fill": return 'fill'
+                case "PartiallyFill": return "partially_fill"
+                case "Replaced": return 'replaced'
+                case "Rejected": return 'rejected'
+                case "PendingNew": return 'pending_new'
+                case "PendingReplace": return 'pending_replace'
+                case 'PendingCancel': return 'pending_cancel'
             }
         }
     }

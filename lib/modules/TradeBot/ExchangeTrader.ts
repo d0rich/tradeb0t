@@ -1,10 +1,11 @@
 import {ExchangeWatcher} from "./index";
-import {OrderDetails} from "lib/utils/orderDetails";
+import {OrderDetails, OrderStatus} from "lib/utils/orderDetails";
 import {TradeBot} from "../../TradeBot";
 import {Job} from "node-schedule";
 import { ExchangeClient } from "src/ExchangeClient/ExchangeClient";
 import { BotLogger } from "./BotLogger";
 import {C_Order} from "../../../src/exchangeClientTypes";
+import {D_Order} from "@prisma/client";
 const schedule = require('node-schedule');
 
 export class ExchangeTrader {
@@ -27,7 +28,7 @@ export class ExchangeTrader {
         })
     }
 
-    async sendOrder({ ticker, lots, price, operation }: OrderDetails, run_id: number | null = null) {
+    async sendOrder({ ticker, lots, price, operation }: OrderDetails, run_id: number | null = null): Promise<OrderStatus> {
         const { watcher } = this
         this.logger.log(`${run_id ? `[algo:${run_id}] `: ''}Sending order: ${JSON.stringify({operation, ticker, lots, price})}`)
         let order: C_Order
@@ -44,11 +45,8 @@ export class ExchangeTrader {
             case 'sell_or_cancel':
                 order = await this.exchangeClient.tradeModule.sellOrCancel()
                 break
-            default:
-                return
         }
-        const placedOrder = await watcher.onOrderSent(order, operation, run_id)
-
+        return watcher.onOrderSent(order, operation, run_id)
     }
 
 }

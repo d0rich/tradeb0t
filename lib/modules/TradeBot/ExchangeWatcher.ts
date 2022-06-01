@@ -4,7 +4,7 @@ import {D_PortfolioPosition, D_Currency, D_Operation, D_Instrument, D_Order} fro
 import {C_Currency, C_Portfolio, C_Instrument, C_Order} from "../../../src/exchangeClientTypes";
 import { ExchangeClient } from "src/ExchangeClient/ExchangeClient";
 import {initTranslators} from "../../../src/cdTranslators";
-import {ITranslatorsCD, OperationType} from "../../utils";
+import {ITranslatorsCD, OperationType, OrderStatus} from "../../utils";
 
 export class ExchangeWatcher {
     private readonly tradebot: TradeBot
@@ -69,9 +69,11 @@ export class ExchangeWatcher {
         )
     }
 
-    async onOrderSent(order: C_Order, operation_type: OperationType, run_id: number | null = null): Promise<D_Order>{
+    onOrderSent(order: C_Order, operation_type: OperationType, run_id: number | null = null): OrderStatus {
         const { translators, analyzer } = this
-        const d_order = await translators.order(order)
-        return analyzer.saveOrder(d_order, operation_type, run_id)
+        const status = translators.orderStatus(order)
+        translators.order(order)
+            .then(d_order => analyzer.saveOrder({...d_order, status_first: status}, operation_type, run_id))
+        return status
     }
 }
