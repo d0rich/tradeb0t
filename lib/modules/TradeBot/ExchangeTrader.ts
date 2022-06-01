@@ -33,17 +33,29 @@ export class ExchangeTrader {
         this.logger.log(`${run_id ? `[algo:${run_id}] `: ''}Sending order: ${JSON.stringify({operation, ticker, lots, price})}`)
         let order: C_Order
         switch (operation){
-            case 'buy':
+            case 'limit_buy':
                 order = await this.exchangeClient.tradeModule.buy({ ticker, lots, price, operation })
+                order.operation = "Buy"
                 break
             case 'buy_or_cancel':
                 order = await this.exchangeClient.tradeModule.buyOrCancel()
+                order.operation = "BuyOrCancel"
                 break
-            case 'sell':
+            case 'limit_sell':
                 order = await this.exchangeClient.tradeModule.sell({ ticker, lots, price, operation })
+                order.operation = "Sell"
                 break
             case 'sell_or_cancel':
                 order = await this.exchangeClient.tradeModule.sellOrCancel()
+                order.operation = "SellOrCancel"
+                break
+            case "market_buy":
+                order = await this.exchangeClient.tradeModule.marketBuy({ ticker, lots, price, operation })
+                order.operation = "MarketBuy"
+                break
+            case "market_sell":
+                order = await this.exchangeClient.tradeModule.marketSell({ ticker, lots, price, operation })
+                order.operation = "MarketSell"
                 break
         }
         return watcher.onOrderSent(order, operation, run_id)

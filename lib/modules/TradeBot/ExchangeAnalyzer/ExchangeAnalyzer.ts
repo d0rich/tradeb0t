@@ -1,4 +1,4 @@
-import {GetOperationsOptions, GetOrdersOptions, OperationId, OperationType} from "lib/utils";
+import {addDaysToDate, GetOperationsOptions, GetOrdersOptions, OperationId, OperationType} from "../../../utils";
 import {ExchangeTrader, ExchangeWatcher} from "../index";
 import {TradeAlgorithms} from "./TradeAlgorithms";
 import {TradeBot} from "lib/TradeBot";
@@ -224,12 +224,12 @@ export class ExchangeAnalyzer {
 
     async updateOperationsAll(): Promise<D_Operation[]> {
         const { watcher, fixOperation } = this
-        const allOperations = await watcher.getOperations()
+        const allOperations = await watcher.getOperations(addDaysToDate(new Date(), -1))
         return await Promise.all(allOperations.map(operation => fixOperation(operation)))
     }
     async updateOperationsByInstrument(ticker: string): Promise<D_Operation[]> {
         const { watcher, fixOperation } = this
-        const allOperations = await watcher.getOperationsByInstrument(ticker)
+        const allOperations = await watcher.getOperationsByInstrument(ticker, addDaysToDate(new Date(), -1))
         return await Promise.all(allOperations.map(operation => fixOperation(operation)))
     }
     async getOperations({ from, to, operation, instrumentTicker }: GetOperationsOptions): Promise<D_Operation[]> {

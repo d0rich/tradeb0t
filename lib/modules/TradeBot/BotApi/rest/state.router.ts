@@ -1,5 +1,5 @@
 import {Router} from "express"
-import {getTradeBotFromExpress, GetOperationsOptions, GetOrdersOptions} from "../../../../utils";
+import {getTradeBotFromExpress, GetOperationsOptions, GetOrdersOptions, stringToOperationType} from "../../../../utils";
 
 const router = Router();
 
@@ -78,14 +78,7 @@ router.get('/operations', (async (req, res) => {
     from: req.query['from'] ? new Date(String(req.query['from']) ) : undefined,
     to: req.query['to'] ? new Date(String(req.query['to']) ) : undefined,
     instrumentTicker: req.query['instrumentTicker'] ? String(req.query['instrumentTicker']) : undefined,
-  }
-  switch (String(req.query['operation'])) {
-    case 'buy':
-      options.operation = "buy"
-      break
-    case 'sell':
-      options.operation = "sell"
-      break
+    operation: stringToOperationType(String(req.query['operation']))
   }
   const portfolio = await getTradeBotFromExpress(req).analyzer.getOperations(options)
   res.send(portfolio)
@@ -108,14 +101,7 @@ router.get('/orders', (async (req, res) => {
     from: req.query['from'] ? new Date(String(req.query['from']) ) : undefined,
     to: req.query['to'] ? new Date(String(req.query['to']) ) : undefined,
     instrumentTicker: req.query['instrumentTicker'] ? String(req.query['instrumentTicker']) : undefined,
-  }
-  switch (String(req.query['operation'])) {
-    case 'buy':
-      options.operation = "buy"
-      break
-    case 'sell':
-      options.operation = "sell"
-      break
+    operation: stringToOperationType(String(req.query['operation']))
   }
   const portfolio = await getTradeBotFromExpress(req).analyzer.getOrders(options)
   res.send(portfolio)

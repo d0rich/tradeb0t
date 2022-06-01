@@ -13,10 +13,14 @@ import { OperationType, awaitTime } from "../lib/utils";
 
   console.info(`${new Date()} Starting tests...`)
 
-  await tradeBot.trader.sendOrder({ ticker: 'AAPL', lots: 5, operation: 'buy', price: 200 })
-  await tradeBot.trader.sendOrder({ ticker: 'AAPL', lots: 5, operation: 'buy', price: 300 })
-  await tradeBot.trader.sendOrder({ ticker: 'AAPL', lots: 2, operation: 'sell', price: 100 })
-  console.table(await tradeBot.exchangeClient.api.instrumentPortfolio({ticker: 'AAPL' }))
+  await tradeBot.trader.sendOrder({ ticker: 'AAPL', lots: 5, operation: 'limit_buy', price: 200 })
+  await tradeBot.trader.sendOrder({ ticker: 'AAPL', lots: 5, operation: 'limit_buy', price: 300 })
+  await tradeBot.trader.sendOrder({ ticker: 'AAPL', lots: 2, operation: 'limit_sell', price: 100 })
+  // @ts-ignore
+  const { figi } = await tradeBot.exchangeClient.api.searchOne({ ticker: 'AAPL' })
+  console.table(await tradeBot.exchangeClient.api.marketOrder({ figi, lots: 5, operation: "Buy",  }))
+  await awaitTime(10_000)
+  console.table(await tradeBot.analyzer.updateOperationsAll())
   console.log(tradeBot.analyzer.tradeAlgos.description)
 })()
 

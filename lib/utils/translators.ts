@@ -1,6 +1,7 @@
 import {C_Currency, C_Instrument, C_Operation, C_Order, C_Portfolio} from "../../src/exchangeClientTypes";
 import {D_Currency, D_PortfolioPosition, D_Instrument, D_Operation, D_Order} from "@prisma/client";
 import {OrderStatus} from "./orderDetails";
+import {OperationType} from "./database";
 
 export interface ITranslatorsCD {
     currency(currency: C_Currency): Promise<D_Currency>,
@@ -10,4 +11,5 @@ export interface ITranslatorsCD {
     operations(operations: C_Operation[]): Promise<D_Operation[]>
     order(order: C_Order): Promise<D_Order>
     orderStatus(order: C_Order): OrderStatus
+    orderOperation(order: C_Order): OperationType
 }

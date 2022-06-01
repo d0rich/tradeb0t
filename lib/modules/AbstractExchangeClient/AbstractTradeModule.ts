@@ -13,6 +13,10 @@ export abstract class AbstractTradeModule {
 
   abstract buy({ ticker, lots, price }: OrderDetails): Promise<C_Order>
 
+  abstract marketSell({ ticker, lots }: OrderDetails): Promise<C_Order>
+
+  abstract marketBuy({ ticker, lots }: OrderDetails): Promise<C_Order>
+
   abstract sellOrCancel(): Promise<C_Order>
 
   abstract buyOrCancel(): Promise<C_Order>

@@ -2,7 +2,7 @@ import {ExchangeWatcher} from "../lib/modules";
 import {C_Currency, C_Instrument, C_Operation, C_Order, C_Portfolio} from "./exchangeClientTypes";
 import {D_Currency, D_Instrument, D_Operation, D_Order, D_PortfolioPosition} from "@prisma/client";
 import {ExchangeClient} from "./ExchangeClient/ExchangeClient";
-import {ITranslatorsCD, OrderStatus} from "../lib/utils";
+import {ITranslatorsCD, OperationType, OrderStatus} from "../lib/utils";
 
 
 export function initTranslators(watcher: ExchangeWatcher, exchangeClient: ExchangeClient): ITranslatorsCD {
@@ -55,7 +55,7 @@ export function initTranslators(watcher: ExchangeWatcher, exchangeClient: Exchan
         async order(order: C_Order): Promise<D_Order> {
             const instrument = await exchangeClient.infoModule.getInstrumentByExchangeId(order.figi)
             return {
-                operation_type: order.operation === "Buy" ? 'buy' : 'sell',
+                operation_type: this.orderOperation(order),
                 run_id: null,
                 status_first: order.status,
                 exchange_id: order.orderId,
@@ -76,6 +76,16 @@ export function initTranslators(watcher: ExchangeWatcher, exchangeClient: Exchan
                 case "PendingNew": return 'pending_new'
                 case "PendingReplace": return 'pending_replace'
                 case 'PendingCancel': return 'pending_cancel'
+            }
+        },
+        orderOperation(order: C_Order): OperationType {
+            switch (order.operation) {
+                case "Buy": return "limit_buy"
+                case "BuyOrCancel": return "buy_or_cancel"
+                case "MarketBuy": return 'market_buy'
+                case "MarketSell": return  'market_sell'
+                case "Sell": return 'limit_sell'
+                case "SellOrCancel": return 'sell_or_cancel'
             }
         }
     }
