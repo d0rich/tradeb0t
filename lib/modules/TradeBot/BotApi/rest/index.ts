@@ -20,10 +20,10 @@ router.get('/', function (req, res) {
 import {algosRouter} from "./algorithms.router";
 import { stateRouter } from "./state.router";
 import { authRouter } from './auth.router'
-import { tradeBot } from './support.functions';
+import { getTradeBotFromExpress } from '../../../../utils';
 router.use('/auth', authRouter)
 router.use((req: Request, res: Response, next: NextFunction) => {
-    if (tradeBot(req).auth.authByRequest(req)) next()
+    if (getTradeBotFromExpress(req).auth.authByRequest(req)) next()
     else res.status(401).send('Error: Not Authorized')
 })
 router.use('/algos', algosRouter)

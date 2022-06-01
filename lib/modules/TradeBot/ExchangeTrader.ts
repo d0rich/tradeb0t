@@ -4,6 +4,7 @@ import {TradeBot} from "../../TradeBot";
 import {Job} from "node-schedule";
 import { ExchangeClient } from "src/ExchangeClient/ExchangeClient";
 import { BotLogger } from "./BotLogger";
+import {C_Order} from "../../../src/exchangeClientTypes";
 const schedule = require('node-schedule');
 
 export class ExchangeTrader {
@@ -28,8 +29,8 @@ export class ExchangeTrader {
 
     async sendOrder({ ticker, lots, price, operation }: OrderDetails) {
         this.logger.log(`Sending order: ${JSON.stringify({operation, ticker, lots, price})}`)
+        let order: C_Order
         try {
-            let order
             switch (operation){
                 case 'buy':
                     order = await this.exchangeClient.tradeModule.buy({ ticker, lots, price, operation })
