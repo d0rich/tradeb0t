@@ -1,10 +1,10 @@
 import {Router} from "express";
-import { tradeBot } from "./support.functions";
+import { getTradeBotFromExpress } from "../../../../utils";
 
 const router = Router();
 
 router.get('/check', ((req, res) => {
-    if (tradeBot(req).auth.authByRequest(req)) {
+    if (getTradeBotFromExpress(req).auth.authByRequest(req)) {
       res.send({
         status: 'Authorized',
         auth: true
@@ -15,8 +15,8 @@ router.get('/check', ((req, res) => {
         auth: false
       })
     }
-    
-    
+
+
 }))
 
 export const authRouter = router

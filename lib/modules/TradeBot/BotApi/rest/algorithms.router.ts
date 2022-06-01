@@ -1,18 +1,17 @@
 import {Router} from "express";
-import {OrderDetails} from "../../../../utils/orderDetails";
-import { tradeBot } from "./support.functions";
+import { getTradeBotFromExpress } from "../../../../utils";
 
 const router = Router();
 
 router.get('/', (req, res) => {
-    res.send(tradeBot(req).analyzer.tradeAlgos.description)
+    res.send(getTradeBotFromExpress(req).analyzer.tradeAlgos.description)
 })
 
 router.post('/:algoritmName', async (req, res) => {
     const algoName = req.params.algoritmName
     const inputs: any = req.body
     res.status(200)
-    res.send(await tradeBot(req).analyzer.tradeAlgos.runAlgorithm(algoName, inputs))
+    res.send(await getTradeBotFromExpress(req).analyzer.tradeAlgos.runAlgorithm(algoName, inputs))
 })
 
 export const algosRouter = router
