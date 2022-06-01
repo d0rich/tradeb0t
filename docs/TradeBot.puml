@@ -1,0 +1,12 @@
+@startuml
+class TradeBot {
+    +exchangeClient: ExchangeClient
+    +analyzer: ExchangeAnalyzer
+    +trader: ExchangeTrader
+    +watcher: ExchangeWatcher
+    +api: BotApi
+    +logger: BotLogger
+    +auth: BotAuth
+    +{static} createBotByEnv(): TradeBot
+}
+@enduml

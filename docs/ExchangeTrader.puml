@@ -1,0 +1,12 @@
+@startuml
+class ExchangeTrader {
+    -tradebot: TradeBot
+    -watcher: ExchangeWatcher
+    -logger: BotLogger
+    -exchangeClient: ExchangeClient
+    +scheduleAction(action: Function, date: Date): Job
+    +scheduleOrder(order: OrderDetails, date: Date): Job
+    +sendOrder(__0: OrderDetails): Promise<void>
+}
+
+@enduml

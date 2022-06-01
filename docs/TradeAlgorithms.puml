@@ -1,0 +1,29 @@
+@startuml
+class TradeAlgorithms {
+    -analyzer: ExchangeAnalyzer
+    -trader: ExchangeTrader
+    -watcher: ExchangeWatcher
+    -tradebot: TradeBot
+    -algorithms: AbstractTradeAlgorithm<any, any>[]
+    +description: D_Algorithm[]
+    +runAlgorithm(name: string, inputs: any): Promise<D_AlgorithmRun>
+    +continueAlgorithms(): Promise<void>
+}
+
+abstract class AbstractTradeAlgorithm<InputsType, StateType> {
+    -analyzer: ExchangeAnalyzer
+    #watcher: ExchangeWatcher
+    #trader: ExchangeTrader
+    -logger: BotLogger
+    +details: D_Algorithm
+    #start(inputs: InputsType, state: StateType): Promise<D_AlgorithmRun>
+    #saveProgress(id: number, progress: StateType): Promise<D_AlgorithmRun>
+    #loadProgress(id: number): Promise<D_AlgorithmRun>
+    #finish(id: number): Promise<D_AlgorithmRun>
+    +{abstract} name: string
+    +{abstract} description: string
+    +{abstract} inputs: any
+    +{abstract} main(inputs: InputsType): Promise<D_AlgorithmRun>
+    +{abstract} continue(id: number): Promise<D_AlgorithmRun>
+}
+@enduml

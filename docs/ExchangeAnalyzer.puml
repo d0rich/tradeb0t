@@ -1,0 +1,34 @@
+@startuml
+class ExchangeAnalyzer {
+    +tradebot: TradeBot
+    +trader: ExchangeTrader
+    +watcher: ExchangeWatcher
+    +tradeAlgos: TradeAlgorithms
+    +updateCurrencies(): Promise<D_Currency[]>
+    +getCurrencies(): Promise<D_Currency[]>
+    +updateInstruments(): Promise<D_Instrument[]>
+    +getInstruments(): Promise<D_Instrument[]>
+    +addInstruments(instruments: D_Instrument[]): Promise<D_Instrument[]>
+    +getFollowedInstruments(): Promise<D_FollowedInstrument[]>
+    +followInstrument(instrumentTicker: string): Promise<D_FollowedInstrument>
+    +unfollowInstrument(instrumentTicker: string): Promise<D_FollowedInstrument>
+    +updateFollowedInstruments(): Promise<D_Instrument[]>
+    +updatePortfolio(): Promise<D_PortfolioPosition[]>
+    +getPortfolio(): Promise<D_PortfolioPosition[]>
+    +clearPortfolio(): Promise<number>
+    +addPortfolioPosition(portfolioPosition: D_PortfolioPosition): Promise<D_PortfolioPosition>
+    +removePortfolioPosition(portfolioPosition: D_PortfolioPosition): Promise<D_PortfolioPosition | null>
+    +getPositionAverageBuyPrice(ticker: string): Promise<number>
+    +fixOperation(operation: D_Operation): Promise<D_Operation>
+    +updateOperationsAll(): Promise<D_Operation[]>
+    +updateOperationsByInstrument(ticker: string): Promise<D_Operation[]>
+    +getOperations(__0: GetOperationsOptions): Promise<D_Operation[]>
+    +saveAlgorithms(): Promise<D_Algorithm[]>
+    +runAlgorithm(algorithmName: string, inputs: any, state?: any): Promise<D_AlgorithmRun>
+    +saveAlgorithmRunProgress(id: number, state: any): Promise<D_AlgorithmRun>
+    +loadAlgorithmRunProgress(id: number): Promise<D_AlgorithmRun | null>
+    +finishAlgorithmRun(id: number): Promise<D_AlgorithmRun>
+    +getUnfinishedAlgorithmRuns(): Promise<D_AlgorithmRun[]>
+    -{static} getOperationId(operation: D_Operation): OperationId
+}
+@enduml

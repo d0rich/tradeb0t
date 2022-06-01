@@ -1,0 +1,17 @@
+@startuml
+class ExchangeWatcher {
+    -tradebot: TradeBot
+    -translators: ITranslatorsCD
+    -analyzer: ExchangeAnalyzer
+    -trader: ExchangeTrader
+    -exchangeClient: ExchangeClient
+    +getPortfolio(): Promise<D_PortfolioPosition[]>
+    +getCurrencies(): Promise<D_Currency[]>
+    +getInstrument(ticker: string): Promise<D_Instrument>
+    +getInstrumentName(ticker: string): Promise<string>
+    +getInstrumentLastPrice(ticker: string): Promise<number>
+    +getInstrumentCurrency(ticker: string): Promise<D_Currency>
+    +getOperations(from?: Date, to?: Date): Promise<D_Operation[]>
+    +getOperationsByInstrument(ticker: string, from?: Date, to?: Date): Promise<D_Operation[]>
+}
+@enduml

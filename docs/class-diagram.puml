@@ -1,0 +1,186 @@
+@startuml
+abstract class AbstractInfoModule {
+    #exchangeClient: AbstractExchangeClient
+    +{abstract} getCurrencies(): Promise<Currency[]>
+    +{abstract} getInstrumentLastPrice(ticker: string): Promise<number>
+    +{abstract} getInstrumentCurrency(ticker: string): Promise<Currency>
+    +{abstract} getInstrumentName(ticker: string): Promise<string>
+    +{abstract} getInstrument(ticker: string, ignoreCache: boolean): Promise<MarketInstrument>
+    +{abstract} getInstrumentByExchangeId(id: string, ignoreCache: boolean): Promise<MarketInstrument>
+}
+interface ITranslatorsCD {
+    +currency(currency: Currency): Promise<D_Currency>
+    +portfolio(portfolio: Portfolio): Promise<D_PortfolioPosition[]>
+    +instrument(instrument: MarketInstrument): Promise<D_Instrument>
+    +operation(operation: Operation): Promise<D_Operation>
+    +operations(operations: Operation[]): Promise<D_Operation[]>
+}
+abstract class AbstractTradeModule {
+    #exchangeClient: AbstractExchangeClient
+    +{abstract} sell(__0: OrderDetails): Promise<PlacedLimitOrder>
+    +{abstract} buy(__0: OrderDetails): Promise<PlacedLimitOrder>
+    +{abstract} sellOrCancel(): Promise<PlacedLimitOrder>
+    +{abstract} buyOrCancel(): Promise<PlacedLimitOrder>
+}
+abstract class AbstractExchangeClient {
+    +{abstract} api: OpenAPI
+    +{abstract} tradeModule: AbstractTradeModule
+    +{abstract} infoModule: AbstractInfoModule
+    -_isAccountInitialized: boolean
+    +isAccountInitialized: boolean
+    #isAccountInitialized: boolean
+    #{abstract} initAccount(): Promise<unknown>
+    +{abstract} getPortfolio(): Promise<Portfolio>
+    +{abstract} getOperationsAll(from: Date, to: Date): Promise<Operation[]>
+    +{abstract} getOperationsByInstrument(ticker: string, from: Date, to: Date): Promise<Operation[]>
+}
+class InfoModule extends AbstractInfoModule {
+    +getCurrencies(): Promise<Currency[]>
+    +getInstrumentLastPrice(ticker: string): Promise<number>
+    +getInstrumentCurrency(ticker: string): Promise<Currency>
+    +getInstrumentName(ticker: string): Promise<string>
+    +getInstrument(ticker: string, ignoreCache?: boolean): Promise<MarketInstrument>
+    +getInstrumentByExchangeId(id: string, ignoreCache?: boolean): Promise<MarketInstrument>
+}
+class ExchangeClient extends AbstractExchangeClient {
+    +api: OpenAPI
+    +tradeModule: TradeModule
+    +infoModule: InfoModule
+    #initAccount(): Promise<void>
+    +getPortfolio(): Promise<Portfolio>
+    +getOperationsAll(from?: Date, to?: Date): Promise<Operation[]>
+    +getOperationsByInstrument(ticker: string, from?: Date, to?: Date): Promise<Operation[]>
+}
+class TradeModule extends AbstractTradeModule {
+    +sell(__0: OrderDetails): Promise<PlacedLimitOrder>
+    +buy(__0: OrderDetails): Promise<PlacedLimitOrder>
+    +sellOrCancel(): Promise<PlacedLimitOrder>
+    +buyOrCancel(): Promise<PlacedLimitOrder>
+}
+class TradeBot {
+    +exchangeClient: ExchangeClient
+    +analyzer: ExchangeAnalyzer
+    +trader: ExchangeTrader
+    +watcher: ExchangeWatcher
+    +api: BotApi
+    +logger: BotLogger
+    +auth: BotAuth
+    +{static} createBotByEnv(): TradeBot
+}
+class ExchangeWatcher {
+    -tradebot: TradeBot
+    -translators: ITranslatorsCD
+    -analyzer: ExchangeAnalyzer
+    -trader: ExchangeTrader
+    -exchangeClient: ExchangeClient
+    +getPortfolio(): Promise<D_PortfolioPosition[]>
+    +getCurrencies(): Promise<D_Currency[]>
+    +getInstrument(ticker: string): Promise<D_Instrument>
+    +getInstrumentName(ticker: string): Promise<string>
+    +getInstrumentLastPrice(ticker: string): Promise<number>
+    +getInstrumentCurrency(ticker: string): Promise<D_Currency>
+    +getOperations(from?: Date, to?: Date): Promise<D_Operation[]>
+    +getOperationsByInstrument(ticker: string, from?: Date, to?: Date): Promise<D_Operation[]>
+}
+abstract class AbstractTradeAlgorithm<InputsType, StateType> {
+    -analyzer: ExchangeAnalyzer
+    #watcher: ExchangeWatcher
+    #trader: ExchangeTrader
+    -logger: BotLogger
+    +details: D_Algorithm
+    #start(inputs: InputsType, state: StateType): Promise<D_AlgorithmRun>
+    #saveProgress(id: number, progress: StateType): Promise<D_AlgorithmRun>
+    #loadProgress(id: number): Promise<D_AlgorithmRun>
+    #finish(id: number): Promise<D_AlgorithmRun>
+    +{abstract} name: string
+    +{abstract} description: string
+    +{abstract} inputs: any
+    +{abstract} main(inputs: InputsType): Promise<D_AlgorithmRun>
+    +{abstract} continue(id: number): Promise<D_AlgorithmRun>
+}
+class SlicingAlgorithm extends AbstractTradeAlgorithm {
+    +name: string
+    +description: string
+    +inputs: any
+    +main(inputs: SlicingInput): Promise<D_AlgorithmRun>
+    +continue(id: number): Promise<D_AlgorithmRun>
+}
+class TradeAlgorithms {
+    -analyzer: ExchangeAnalyzer
+    -trader: ExchangeTrader
+    -watcher: ExchangeWatcher
+    -tradebot: TradeBot
+    -algorithms: AbstractTradeAlgorithm<any, any>[]
+    +description: D_Algorithm[]
+    +runAlgorithm(name: string, inputs: any): Promise<D_AlgorithmRun>
+    +continueAlgorithms(): Promise<void>
+}
+class ExchangeAnalyzer {
+    +tradebot: TradeBot
+    +trader: ExchangeTrader
+    +watcher: ExchangeWatcher
+    +tradeAlgos: TradeAlgorithms
+    +updateCurrencies(): Promise<D_Currency[]>
+    +getCurrencies(): Promise<D_Currency[]>
+    +updateInstruments(): Promise<D_Instrument[]>
+    +getInstruments(): Promise<D_Instrument[]>
+    +addInstruments(instruments: D_Instrument[]): Promise<D_Instrument[]>
+    +getFollowedInstruments(): Promise<D_FollowedInstrument[]>
+    +followInstrument(instrumentTicker: string): Promise<D_FollowedInstrument>
+    +unfollowInstrument(instrumentTicker: string): Promise<D_FollowedInstrument>
+    +updateFollowedInstruments(): Promise<D_Instrument[]>
+    +updatePortfolio(): Promise<D_PortfolioPosition[]>
+    +getPortfolio(): Promise<D_PortfolioPosition[]>
+    +clearPortfolio(): Promise<number>
+    +addPortfolioPosition(portfolioPosition: D_PortfolioPosition): Promise<D_PortfolioPosition>
+    +removePortfolioPosition(portfolioPosition: D_PortfolioPosition): Promise<D_PortfolioPosition | null>
+    +getPositionAverageBuyPrice(ticker: string): Promise<number>
+    +fixOperation(operation: D_Operation): Promise<D_Operation>
+    +updateOperationsAll(): Promise<D_Operation[]>
+    +updateOperationsByInstrument(ticker: string): Promise<D_Operation[]>
+    +getOperations(__0: GetOperationsOptions): Promise<D_Operation[]>
+    +saveAlgorithms(): Promise<D_Algorithm[]>
+    +runAlgorithm(algorithmName: string, inputs: any, state?: any): Promise<D_AlgorithmRun>
+    +saveAlgorithmRunProgress(id: number, state: any): Promise<D_AlgorithmRun>
+    +loadAlgorithmRunProgress(id: number): Promise<D_AlgorithmRun | null>
+    +finishAlgorithmRun(id: number): Promise<D_AlgorithmRun>
+    +getUnfinishedAlgorithmRuns(): Promise<D_AlgorithmRun[]>
+    -{static} getOperationId(operation: D_Operation): OperationId
+}
+interface IExpressAppCarrier {
+    +app: Application
+}
+class BotApi {
+    -_tradeBot: TradeBot
+    -_restServer: Express
+    -_webSocketServer: Server<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any>
+    -_httpServer: http.Server
+    -configureServers(): Promise<void>
+    +webSocketServer: Server<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any>
+    +httpServer: http.Server
+}
+class BotLogger {
+    -tradebot: TradeBot
+    -botApi: BotApi
+    -logger: Logger
+    -_lastLogs: string[]
+    -createLogsDirIfNotExist(): void
+    +updateLastLogs(message: string): void
+    +getLastLogs(): string
+    +log(message: string): void
+}
+class ExchangeTrader {
+    -tradebot: TradeBot
+    -watcher: ExchangeWatcher
+    -logger: BotLogger
+    -exchangeClient: ExchangeClient
+    +scheduleAction(action: Function, date: Date): Job
+    +scheduleOrder(order: OrderDetails, date: Date): Job
+    +sendOrder(__0: OrderDetails): Promise<void>
+}
+class BotAuth {
+    -botToken: string
+    +authByToken(token: string): boolean
+    +authByRequest(request: Request<ParamsDictionary, any, any, QueryString.ParsedQs, Record<string, any>> | IncomingMessage): boolean
+}
+@enduml

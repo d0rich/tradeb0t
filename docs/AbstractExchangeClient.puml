@@ -1,0 +1,33 @@
+@startuml
+abstract class AbstractExchangeClient {
+    +{abstract} api: C_ExchangeApi
+    +{abstract} tradeModule: AbstractTradeModule
+    +{abstract} infoModule: AbstractInfoModule
+    -_isAccountInitialized: boolean
+    +isAccountInitialized: boolean
+    #isAccountInitialized: boolean
+    #{abstract} initAccount(): Promise<unknown>
+    +{abstract} getPortfolio(): Promise<C_Portfolio>
+    +{abstract} getOperationsAll(from: Date, to: Date): Promise<C_Operation[]>
+    +{abstract} getOperationsByInstrument(ticker: string, from: Date, to: Date): Promise<C_Operation[]>
+}
+
+abstract class AbstractInfoModule {
+    #exchangeClient: AbstractExchangeClient
+    +{abstract} getCurrencies(): Promise<Currency[]>
+    +{abstract} getInstrumentLastPrice(ticker: string): Promise<number>
+    +{abstract} getInstrumentCurrency(ticker: string): Promise<C_Currency>
+    +{abstract} getInstrumentName(ticker: string): Promise<string>
+    +{abstract} getInstrument(ticker: string, ignoreCache: boolean): Promise<C_Instrument>
+    +{abstract} getInstrumentByExchangeId(id: string, ignoreCache: boolean): Promise<C_Instrument>
+}
+
+abstract class AbstractTradeModule {
+    #exchangeClient: AbstractExchangeClient
+    +{abstract} sell(__0: OrderDetails): Promise<C_Order>
+    +{abstract} buy(__0: OrderDetails): Promise<C_Order>
+    +{abstract} sellOrCancel(): Promise<C_Order>
+    +{abstract} buyOrCancel(): Promise<C_Order>
+}
+
+@enduml
