@@ -4,10 +4,11 @@ import { D_PortfolioPosition, D_Currency, D_Operation, D_Instrument } from "@pri
 import { C_Currency, C_Portfolio, C_Instrument } from "../../../src/exchangeClientTypes";
 import { ExchangeClient } from "src/ExchangeClient/ExchangeClient";
 import {initTranslators} from "../../../src/cdTranslators";
+import {ITranslatorsCD} from "../../utils";
 
 export class ExchangeWatcher {
     private readonly tradebot: TradeBot
-    private readonly translators
+    private readonly translators: ITranslatorsCD
     private get analyzer(): ExchangeAnalyzer { return this.tradebot.analyzer }
     private get trader(): ExchangeTrader { return this.tradebot.trader }
     private get exchangeClient(): ExchangeClient { return this.tradebot.exchangeClient }
