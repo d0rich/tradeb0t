@@ -34,26 +34,6 @@ export class InfoModule extends AbstractInfoModule{
     return security?.name || ''
   }
 
-  async getOperationsAll(from: Date = new Date(0), to: Date = new Date()): Promise<C_Operation[]> {
-    const { exchangeClient } = this
-    const operations = await exchangeClient.api.operations({
-      from: from.toISOString(),
-      to: to.toISOString()
-    })
-    return operations.operations
-  }
-
-  async getOperationsByInstrument(ticker: string, from: Date = new Date(0), to: Date = new Date()): Promise<C_Operation[]> {
-    const { exchangeClient } = this
-    const security = await this.getInstrument(ticker)
-    const operations = await exchangeClient.api.operations({
-      from: from.toISOString(),
-      to: to.toISOString(),
-      figi: security?.figi
-    })
-    return operations.operations
-  }
-
   async getInstrument(ticker: string, ignoreCache: boolean = false): Promise<C_Instrument> {
     const { exchangeClient } = this
     if (!securitiesCache.has(ticker) || ignoreCache){

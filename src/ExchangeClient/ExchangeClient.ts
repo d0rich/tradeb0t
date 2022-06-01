@@ -1,5 +1,5 @@
 import OpenAPI from '@tinkoff/invest-openapi-js-sdk';
-import { C_ExchangeApi, C_Portfolio } from '../exchangeClientTypes';
+import {C_ExchangeApi, C_Operation, C_Portfolio} from '../exchangeClientTypes';
 
 import { TradeModule } from './TradeModule';
 import { InfoModule } from './InfoModule';
@@ -35,5 +35,25 @@ export class ExchangeClient extends AbstractExchangeClient{
   async getPortfolio(): Promise<C_Portfolio> {
     const { api } = this
     return await api.portfolio()
+  }
+
+  async getOperationsAll(from: Date = new Date(0), to: Date = new Date()): Promise<C_Operation[]> {
+    const { api } = this
+    const operations = await api.operations({
+      from: from.toISOString(),
+      to: to.toISOString()
+    })
+    return operations.operations
+  }
+
+  async getOperationsByInstrument(ticker: string, from: Date = new Date(0), to: Date = new Date()): Promise<C_Operation[]> {
+    const { api, infoModule } = this
+    const security = await infoModule.getInstrument(ticker)
+    const operations = await api.operations({
+      from: from.toISOString(),
+      to: to.toISOString(),
+      figi: security?.figi
+    })
+    return operations.operations
   }
 }

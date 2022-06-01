@@ -55,7 +55,7 @@ export class ExchangeWatcher {
 
     async getOperations(from: Date = new Date(0), to: Date = new Date()): Promise<D_Operation[]>{
         const { exchangeClient, translators } = this
-        const relevantOperations = await exchangeClient.infoModule.getOperationsAll(from, to)
+        const relevantOperations = await exchangeClient.getOperationsAll(from, to)
         return translators.operations(relevantOperations
             .filter(operation => operation.operationType === "Buy" || operation.operationType === "Sell")
         )
@@ -63,7 +63,7 @@ export class ExchangeWatcher {
 
     async getOperationsByInstrument(ticker: string, from: Date = new Date(0), to: Date = new Date()): Promise<D_Operation[]>{
         const { exchangeClient, translators } = this
-        const relevantOperations = await exchangeClient.infoModule.getOperationsByInstrument(ticker, from, to)
+        const relevantOperations = await exchangeClient.getOperationsByInstrument(ticker, from, to)
         return translators.operations(relevantOperations
             .filter(operation => operation.operationType === "Buy" || operation.operationType === "Sell")
         )
