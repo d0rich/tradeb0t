@@ -1,10 +1,10 @@
 import {ExchangeAnalyzer, ExchangeTrader} from "./index";
 import {TradeBot} from "../../TradeBot";
-import { D_PortfolioPosition, D_Currency, D_Operation, D_Instrument } from "@prisma/client";
-import { C_Currency, C_Portfolio, C_Instrument } from "../../../src/exchangeClientTypes";
+import {D_PortfolioPosition, D_Currency, D_Operation, D_Instrument, D_Order} from "@prisma/client";
+import {C_Currency, C_Portfolio, C_Instrument, C_Order} from "../../../src/exchangeClientTypes";
 import { ExchangeClient } from "src/ExchangeClient/ExchangeClient";
 import {initTranslators} from "../../../src/cdTranslators";
-import {ITranslatorsCD} from "../../utils";
+import {ITranslatorsCD, OperationType} from "../../utils";
 
 export class ExchangeWatcher {
     private readonly tradebot: TradeBot
@@ -67,5 +67,11 @@ export class ExchangeWatcher {
         return translators.operations(relevantOperations
             .filter(operation => operation.operationType === "Buy" || operation.operationType === "Sell")
         )
+    }
+
+    async onOrderSent(order: C_Order, operation_type: OperationType, run_id: number | null = null): Promise<D_Order>{
+        const { translators, analyzer } = this
+        const d_order = await translators.order(order)
+        return analyzer.saveOrder(d_order, operation_type, run_id)
     }
 }

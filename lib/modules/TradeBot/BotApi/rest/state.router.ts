@@ -1,5 +1,5 @@
 import {Router} from "express"
-import { getTradeBotFromExpress, GetOperationsOptions } from "../../../../utils";
+import {getTradeBotFromExpress, GetOperationsOptions, GetOrdersOptions} from "../../../../utils";
 
 const router = Router();
 
@@ -101,6 +101,24 @@ router.post('/operations/:ticker', (async (req, res) => {
   res.send(portfolio)
 }))
 
+// Orders
 
+router.get('/orders', (async (req, res) => {
+  const options: GetOrdersOptions = {
+    from: req.query['from'] ? new Date(String(req.query['from']) ) : undefined,
+    to: req.query['to'] ? new Date(String(req.query['to']) ) : undefined,
+    instrumentTicker: req.query['instrumentTicker'] ? String(req.query['instrumentTicker']) : undefined,
+  }
+  switch (String(req.query['operation'])) {
+    case 'buy':
+      options.operation = "buy"
+      break
+    case 'sell':
+      options.operation = "sell"
+      break
+  }
+  const portfolio = await getTradeBotFromExpress(req).analyzer.getOrders(options)
+  res.send(portfolio)
+}))
 
 export const stateRouter = router

@@ -1,4 +1,4 @@
-import { OperationType } from "./operation";
+import { OperationType } from "./database";
 
 export type OrderDetails = {
     operation: OperationType

@@ -34,11 +34,11 @@ export class InfoModule extends AbstractInfoModule{
     return security?.name || ''
   }
 
-  async getInstrument(ticker: string, ignoreCache: boolean = false): Promise<C_Instrument> {
+  async getInstrument(ticker: string, ignoreCache: boolean = false): Promise<C_Instrument | null> {
     const { exchangeClient } = this
     if (!securitiesCache.has(ticker) || ignoreCache){
       const security = await exchangeClient.api.searchOne({ ticker })
-      if (!security) throw new Error(`Instrument with ticker "${ticker} was not found"`)
+      if (!security) return null
       securitiesCache.set(ticker, security)
       return security
     }
@@ -46,15 +46,15 @@ export class InfoModule extends AbstractInfoModule{
     return securitiesCache.get(ticker)
   }
 
-  async getInstrumentByExchangeId(id: string, ignoreCache: boolean = false): Promise<C_Instrument>{
+  async getInstrumentByExchangeId(id: string, ignoreCache: boolean = false): Promise<C_Instrument | null>{
     const { exchangeClient } = this
     if (!securitiesCache.has(id) || ignoreCache){
       const security = await exchangeClient.api.searchOne({ figi: id })
-      if (!security) throw new Error(`Instrument with id "${id} was not found"`)
+      if (!security) return null
       securitiesCache.set(id, security)
       return security
     }
     // @ts-ignore
-    return securitiesCache.get(ticker)
+    return securitiesCache.get(id)
   }
 }

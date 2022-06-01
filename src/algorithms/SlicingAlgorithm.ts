@@ -47,7 +47,7 @@ export class SlicingAlgorithm extends AbstractTradeAlgorithm<SlicingInput, Slici
       const lots = lotsInOrders[i]
       const sendOrderTime: Date = addMinutesToDate(startPoint, minutes/(parts - 1) * i)
       trader.scheduleAction(() => {
-        trader.sendOrder({...order, lots})
+        trader.sendOrder({...order, lots}, algorithmRun.id)
         if (i < lotsInOrders.length - 1) this.saveProgress(algorithmRun.id, { orders_sended: i + 1, lots_in_orders: lotsInOrders })
         else this.finish(algorithmRun.id)
       }, sendOrderTime)
@@ -67,7 +67,7 @@ export class SlicingAlgorithm extends AbstractTradeAlgorithm<SlicingInput, Slici
       const lots = lots_in_orders[i]
       const sendOrderTime: Date = addMinutesToDate(startPoint, minutesRemain/(parts - 1) * i)
       trader.scheduleAction(() => {
-        trader.sendOrder({...order, lots})
+        trader.sendOrder({...order, lots}, algorithmRun.id)
         if (i < lots_in_orders.length - 1) this.saveProgress(algorithmRun.id, { orders_sended: i + 1, lots_in_orders })
         else this.finish(algorithmRun.id)
       }, sendOrderTime)

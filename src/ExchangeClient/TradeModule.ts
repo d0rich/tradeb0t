@@ -14,7 +14,16 @@ export class TradeModule extends AbstractTradeModule{
     // @ts-ignore
     const { figi } = await exchangeClient.api.searchOne({ ticker });
     const placedOrder = await exchangeClient.api.limitOrder({figi, operation: 'Sell', lots, price})
-    return placedOrder
+    return {
+      figi,
+      operation: placedOrder.operation,
+      price,
+      status: placedOrder.status,
+      orderId: placedOrder.orderId,
+      requestedLots: placedOrder.requestedLots,
+      type: "Limit",
+      executedLots: placedOrder.executedLots
+    }
   }
 
   public async buy({ ticker, lots, price }: OrderDetails): Promise<C_Order> {
@@ -22,7 +31,16 @@ export class TradeModule extends AbstractTradeModule{
     // @ts-ignore
     const { figi } = await exchangeClient.api.searchOne({ ticker });
     const placedOrder = await exchangeClient.api.limitOrder({figi, operation: 'Buy', lots, price})
-    return placedOrder
+    return {
+      figi,
+      operation: placedOrder.operation,
+      price,
+      status: placedOrder.status,
+      orderId: placedOrder.orderId,
+      requestedLots: placedOrder.requestedLots,
+      type: "Limit",
+      executedLots: placedOrder.executedLots
+    }
   }
 
   public async sellOrCancel(): Promise<C_Order> {

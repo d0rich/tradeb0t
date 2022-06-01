@@ -32,7 +32,8 @@ model D_Instrument {
   currency              D_Currency  @relation(fields: [currency_ticker], references: [ticker])
   followed_instruments  D_FollowedInstrument[]
   portfolio_positions   D_PortfolioPosition[]
-  transactions          D_Operation[]
+  operations            D_Operation[]
+  orders                D_Order[]
 }
 
 model D_FollowedInstrument {
@@ -53,23 +54,38 @@ model D_PortfolioPosition {
   instrument           D_Instrument @relation(fields: [instrument_ticker], references: [ticker])
 }
 
-model D_Operation {
-  @@map("Operations")
+model D_Order {
+  @@map("Orders")
 
   exchange_id         String?   @unique
   instrument_ticker   String
-  status              String
+  status_first        String
   operation_type      String
   amount              Int
   price               Float
   run_id              Int?
-  updated_at          DateTime  @updatedAt
   created_at          DateTime  @default(now())
 
   instrument          D_Instrument @relation(fields: [instrument_ticker], references: [ticker])
   algorithm_run       D_AlgorithmRun?  @relation(fields: [run_id], references: [id])
 
   @@id([instrument_ticker, created_at])
+}
+
+model D_Operation {
+  @@map("Operations")
+
+  exchange_id         String?   @unique
+  instrument_ticker   String?
+  status              String
+  operation_type      String
+  amount              Int?
+  amount_requested    Int?
+  price               Float
+  updated_at          DateTime  @updatedAt
+  created_at          DateTime  @default(now()) @id
+
+  instrument          D_Instrument? @relation(fields: [instrument_ticker], references: [ticker])
 }
 
 model D_Algorithm {
@@ -90,8 +106,8 @@ model D_AlgorithmRun {
   inputs             String
   state              String
   updated_at         DateTime   @updatedAt
-  created_at         DateTime   @default(now()) 
+  created_at         DateTime   @default(now())
 
   algorithm          D_Algorithm  @relation(fields: [algorithm_name], references: [name])
-  operations         D_Operation[]
+  operations         D_Order[]
 }

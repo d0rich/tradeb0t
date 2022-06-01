@@ -16,7 +16,7 @@ export abstract class AbstractInfoModule {
 
   abstract getInstrumentName(ticker: string): Promise<string>
 
-  abstract getInstrument(ticker: string, ignoreCache: boolean): Promise<C_Instrument>
+  abstract getInstrument(ticker: string, ignoreCache: boolean): Promise<C_Instrument | null>
 
-  abstract getInstrumentByExchangeId(id: string, ignoreCache: boolean): Promise<C_Instrument>
+  abstract getInstrumentByExchangeId(id: string, ignoreCache: boolean): Promise<C_Instrument | null>
 }

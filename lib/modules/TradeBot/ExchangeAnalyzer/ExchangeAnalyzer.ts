@@ -1,8 +1,18 @@
-import {GetOperationsOptions, OperationId} from "lib/utils";
+import {GetOperationsOptions, GetOrdersOptions, OperationId, OperationType} from "lib/utils";
 import {ExchangeTrader, ExchangeWatcher} from "../index";
 import {TradeAlgorithms} from "./TradeAlgorithms";
 import {TradeBot} from "lib/TradeBot";
-import { D_Currency, D_PortfolioPosition, PrismaClient, D_Instrument, D_FollowedInstrument, D_Operation, D_Algorithm, D_AlgorithmRun } from "@prisma/client";
+import {
+    D_Currency,
+    D_PortfolioPosition,
+    PrismaClient,
+    D_Instrument,
+    D_FollowedInstrument,
+    D_Operation,
+    D_Algorithm,
+    D_AlgorithmRun,
+    D_Order
+} from "@prisma/client";
 
 const db = new PrismaClient()
 
@@ -10,15 +20,6 @@ export class ExchangeAnalyzer {
     readonly tradebot: TradeBot
     get trader(): ExchangeTrader { return this.tradebot.trader }
     get watcher(): ExchangeWatcher { return this.tradebot.watcher }
-    private static getOperationId(operation: D_Operation): OperationId{
-        if (!!operation.exchange_id) return { exchange_id: operation.exchange_id }
-        return {
-            instrument_ticker_created_at: {
-                instrument_ticker: operation.instrument_ticker,
-                created_at: operation.created_at
-            }
-        }
-    }
     readonly tradeAlgos: TradeAlgorithms
 
     constructor(tradebot: TradeBot) {
@@ -183,12 +184,6 @@ export class ExchangeAnalyzer {
             countOperations++
             boughtStats = await getBoughtStats(countOperations)
         }
-        // for ( let boughtStats = await getBoughtStats(countOperations);
-        //     (!!boughtStats._sum.amount ? boughtStats._sum.amount < (position?.amount || 0) : false) && boughtStats._count._all !== 0 ;
-        //     countOperations++ ){
-        //     console.log(boughtStats)
-        //     console.log(countOperations)
-        // }
         const lastInstrumentBuyOperations: D_Operation[] = await db.d_Operation.findMany({
             orderBy: { created_at: 'desc' },
                 where: {
@@ -200,6 +195,7 @@ export class ExchangeAnalyzer {
         let buyPrice = 0
         let boughtAmount = position?.amount || 0
         for ( let buyOperation of lastInstrumentBuyOperations ){
+            if (!buyOperation.amount) continue
             if (buyOperation.amount >= boughtAmount){
                 buyPrice += boughtAmount * buyOperation.price
                 break
@@ -213,8 +209,9 @@ export class ExchangeAnalyzer {
     // Operations
 
     async fixOperation(operation: D_Operation): Promise<D_Operation> {
-        const { getOperationId } = ExchangeAnalyzer
-        const operationId: OperationId = getOperationId(operation)
+        const operationId: OperationId = operation.exchange_id ?
+            { exchange_id: operation.exchange_id} :
+            { created_at: operation.created_at }
         return db.d_Operation.upsert({
             where: operationId,
             update: { amount: operation.amount, updated_at: new Date() },
@@ -237,6 +234,26 @@ export class ExchangeAnalyzer {
     }
     async getOperations({ from, to, operation, instrumentTicker }: GetOperationsOptions): Promise<D_Operation[]> {
         return db.d_Operation.findMany({
+            orderBy: { created_at: 'desc' },
+            where: {
+                AND: [
+                    { created_at: { gte: from || new Date(0) } },
+                    { created_at: { lte: to || new Date() } }
+                ],
+                operation_type: operation,
+                instrument_ticker: instrumentTicker
+            }
+        })
+    }
+
+    // Orders
+
+    async saveOrder(order: D_Order, operation_type: OperationType, run_id: number | null = null): Promise<D_Order> {
+        return db.d_Order.create({ data: {...order, run_id, operation_type} })
+    }
+
+    async getOrders({ from, to, operation, instrumentTicker }: GetOrdersOptions): Promise<D_Order[]> {
+        return db.d_Order.findMany({
             orderBy: { created_at: 'desc' },
             where: {
                 AND: [

@@ -21,36 +21,34 @@ export class ExchangeTrader {
         return schedule.scheduleJob(date, action)
     }
 
-    scheduleOrder(order: OrderDetails, date: Date): Job {
+    scheduleOrder(date: Date, order: OrderDetails, run_id: number | null = null, ): Job {
         return schedule.scheduleJob(date, async () => {
-            await this.sendOrder(order)
+            await this.sendOrder(order, run_id)
         })
     }
 
-    async sendOrder({ ticker, lots, price, operation }: OrderDetails) {
-        this.logger.log(`Sending order: ${JSON.stringify({operation, ticker, lots, price})}`)
+    async sendOrder({ ticker, lots, price, operation }: OrderDetails, run_id: number | null = null) {
+        const { watcher } = this
+        this.logger.log(`${run_id ? `[algo:${run_id}] `: ''}Sending order: ${JSON.stringify({operation, ticker, lots, price})}`)
         let order: C_Order
-        try {
-            switch (operation){
-                case 'buy':
-                    order = await this.exchangeClient.tradeModule.buy({ ticker, lots, price, operation })
-                    break
-                case 'buy_or_cancel':
-                    order = await this.exchangeClient.tradeModule.buyOrCancel()
-                    break
-                case 'sell':
-                    order = await this.exchangeClient.tradeModule.sell({ ticker, lots, price, operation })
-                    break
-                case 'sell_or_cancel':
-                    order = await this.exchangeClient.tradeModule.sellOrCancel()
-                    break
-                default:
-                    throw new Error('Incorrect operation type')
-                    break
-            }
-        } catch (e: any) {
-            console.error(e)
+        switch (operation){
+            case 'buy':
+                order = await this.exchangeClient.tradeModule.buy({ ticker, lots, price, operation })
+                break
+            case 'buy_or_cancel':
+                order = await this.exchangeClient.tradeModule.buyOrCancel()
+                break
+            case 'sell':
+                order = await this.exchangeClient.tradeModule.sell({ ticker, lots, price, operation })
+                break
+            case 'sell_or_cancel':
+                order = await this.exchangeClient.tradeModule.sellOrCancel()
+                break
+            default:
+                return
         }
+        const placedOrder = await watcher.onOrderSent(order, operation, run_id)
+
     }
 
 }

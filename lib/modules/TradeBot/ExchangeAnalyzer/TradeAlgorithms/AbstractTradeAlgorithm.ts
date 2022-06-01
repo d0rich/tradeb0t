@@ -22,24 +22,24 @@ export abstract class AbstractTradeAlgorithm<InputsType, StateType>{
   protected async start(inputs: InputsType, state: StateType): Promise<D_AlgorithmRun> {
     const { name, analyzer, logger } = this
     const algoRun: D_AlgorithmRun = await analyzer.runAlgorithm(name, inputs, state)
-    logger.log(`Starting algorithm ${name}:${algoRun.id}. Inputs: ${JSON.stringify(inputs)}`)
+    logger.log(`[algo:${algoRun.id}] Starting algorithm "${name}". Inputs: ${JSON.stringify(inputs)}`)
     return algoRun
   }
   protected async saveProgress(id: number, progress: StateType): Promise<D_AlgorithmRun> {
     const { name, analyzer, logger } = this
-    logger.log(`Saving process of algorithm ${name}:${id}. State: ${JSON.stringify(progress)}`)
+    logger.log(`[algo:${id}] Saving process of algorithm "${name}". State: ${JSON.stringify(progress)}`)
     return await analyzer.saveAlgorithmRunProgress(id, progress)
   }
   protected async loadProgress(id: number): Promise<D_AlgorithmRun> {
     const { name, analyzer, logger } = this
     const algoRun: D_AlgorithmRun | null = await analyzer.loadAlgorithmRunProgress(id)
-    if (!algoRun) throw new Error(`Algorithm ${name}:${id} was not found`)
-    logger.log(`Loading progress of algorithm ${name}:${id}. State: ${JSON.stringify(algoRun?.state)}`)
+    if (!algoRun) throw new Error(`[algo:${id}] Algorithm "${name}" was not found`)
+    logger.log(`[algo:${id}] Loading progress of algorithm "${name}". State: ${JSON.stringify(algoRun?.state)}`)
     return algoRun
   }
   protected async finish(id: number): Promise<D_AlgorithmRun>{
     const { name, analyzer, logger } = this
-    logger.log(`Finishing algorithm ${name}:${id}`)
+    logger.log(`[algo:${id}] Finishing algorithm "${name}"`)
     return await analyzer.finishAlgorithmRun(id)
   }
 

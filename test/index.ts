@@ -16,7 +16,7 @@ import { OperationType, awaitTime } from "../lib/utils";
   await tradeBot.trader.sendOrder({ ticker: 'AAPL', lots: 5, operation: 'buy', price: 200 })
   await tradeBot.trader.sendOrder({ ticker: 'AAPL', lots: 5, operation: 'buy', price: 300 })
   await tradeBot.trader.sendOrder({ ticker: 'AAPL', lots: 2, operation: 'sell', price: 100 })
-  console.table(await tradeBot.exchangeClient.api.orders())
+  console.table(await tradeBot.exchangeClient.api.instrumentPortfolio({ticker: 'AAPL' }))
   console.log(tradeBot.analyzer.tradeAlgos.description)
 })()
 
