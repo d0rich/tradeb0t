@@ -310,7 +310,8 @@ export class ExchangeAnalyzer {
             data: {
                 algorithm_name: algorithmName,
                 inputs: JSON.stringify(inputs),
-                state: JSON.stringify(state)
+                state: JSON.stringify(state),
+                status: 'running'
             }
         })
     }
@@ -328,18 +329,30 @@ export class ExchangeAnalyzer {
         return db.d_AlgorithmRun.findUnique({ where: { id } })
     }
 
+    async stopAlgorithmRun(id: number): Promise<D_AlgorithmRun>{
+        return db.d_AlgorithmRun.update({
+            where: { id },
+            data: { status: 'stopped'}
+        })
+    }
+
+    async continueAlgorithmRun(id: number): Promise<D_AlgorithmRun>{
+        return db.d_AlgorithmRun.update({
+            where: { id },
+            data: { status: 'continued'}
+        })
+    }
+
     async finishAlgorithmRun(id: number): Promise<D_AlgorithmRun>{
         return db.d_AlgorithmRun.update({
             where: { id },
-            data: {
-                state: JSON.stringify({ status: 'finished' })
-            }
+            data: { status: 'finished'}
         })
     }
 
     async getUnfinishedAlgorithmRuns(): Promise<D_AlgorithmRun[]>{
         return db.d_AlgorithmRun.findMany({
-            where: { NOT: { state: JSON.stringify({ status: 'finished' }) } }
+            where: { status: { notIn: [ 'finished', 'stopped' ] }  }
         })
     }
 }

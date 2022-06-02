@@ -104,6 +104,7 @@ model D_AlgorithmRun {
   id                 Int        @id @default(autoincrement())
   algorithm_name     String
   inputs             String
+  status             String
   state              String
   updated_at         DateTime   @updatedAt
   created_at         DateTime   @default(now())

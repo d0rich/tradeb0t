@@ -2,6 +2,7 @@ import { D_AlgorithmRun } from "@prisma/client";
 import { ExchangeAnalyzer } from "../../lib/modules";
 import { AbstractTradeAlgorithm } from "../../lib/modules/TradeBot/ExchangeAnalyzer/TradeAlgorithms";
 import { addMinutesToDate, addSecondsToDate, OrderDetails } from '../../lib/utils'
+import {Job} from "node-schedule";
 
 type SlicingInput = {
   order: OrderDetails,
@@ -12,8 +13,13 @@ type SlicingState = {
   orders_sended: number,
   lots_in_orders: number[]
 }
+type SlicingStopData = {
+  jobs: Job[]
+}
 
-export class SlicingAlgorithm extends AbstractTradeAlgorithm<SlicingInput, SlicingState> {
+
+
+export class SlicingAlgorithm extends AbstractTradeAlgorithm<SlicingInput, SlicingState, SlicingStopData> {
   get name(): string { return 'slicing' }
   get description(): string { return 'slicing' }
   get inputs(): any {
@@ -40,39 +46,55 @@ export class SlicingAlgorithm extends AbstractTradeAlgorithm<SlicingInput, Slici
     }
     lotsInOrders.push(lotsInOrder + lastLots)
 
-    const algorithmRun: D_AlgorithmRun = await this.start(inputs, { orders_sended: 0, lots_in_orders: lotsInOrders })
+    const algorithmRun: D_AlgorithmRun = await this.fixStart(inputs, { orders_sended: 0, lots_in_orders: lotsInOrders })
+    const stopData: SlicingStopData = { jobs: [] }
 
     const startPoint = addSecondsToDate(new Date(), 10)
     for (let i = 0; i < lotsInOrders.length; i++) {
       const lots = lotsInOrders[i]
       const sendOrderTime: Date = addMinutesToDate(startPoint, minutes/(parts - 1) * i)
-      trader.scheduleAction(() => {
+      const newJob = trader.scheduleAction(() => {
         trader.sendOrder({...order, lots}, algorithmRun.id)
         if (i < lotsInOrders.length - 1) this.saveProgress(algorithmRun.id, { orders_sended: i + 1, lots_in_orders: lotsInOrders })
-        else this.finish(algorithmRun.id)
+        else this.fixFinish(algorithmRun.id)
       }, sendOrderTime)
+      stopData.jobs.push(newJob)
     }
+    this.stopData.set(algorithmRun.id, stopData)
 
     return algorithmRun
   }
   async continue(id: number): Promise<D_AlgorithmRun> {
     const algorithmRun: D_AlgorithmRun = await this.loadProgress(id)
+    await this.fixContinue(id)
     const { order, parts, minutes } = JSON.parse(algorithmRun.inputs)
     const { orders_sended, lots_in_orders } = JSON.parse(algorithmRun.state)
     const { trader } = this
+    const stopData: SlicingStopData = { jobs: [] }
 
     const minutesRemain = minutes * (1 - orders_sended / parts)
     const startPoint = addSecondsToDate(new Date(), 10)
     for (let i = orders_sended; i < lots_in_orders.length; i++) {
       const lots = lots_in_orders[i]
       const sendOrderTime: Date = addMinutesToDate(startPoint, minutesRemain/(parts - 1) * i)
-      trader.scheduleAction(() => {
+      const newJob = trader.scheduleAction(() => {
         trader.sendOrder({...order, lots}, algorithmRun.id)
         if (i < lots_in_orders.length - 1) this.saveProgress(algorithmRun.id, { orders_sended: i + 1, lots_in_orders })
-        else this.finish(algorithmRun.id)
+        else this.fixFinish(algorithmRun.id)
       }, sendOrderTime)
+      stopData.jobs.push(newJob)
     }
+    this.stopData.set(algorithmRun.id, stopData)
     return algorithmRun
+  }
+
+  async stop(id: number): Promise<D_AlgorithmRun> {
+    const stopData = this.stopData.get(id)
+    if (!stopData) throw new Error(`Algorithm run with id:${id} was not found.`)
+    stopData.jobs.forEach(job => {
+      job.cancel()
+    })
+    return await this.fixStop(id)
   }
 
 }
