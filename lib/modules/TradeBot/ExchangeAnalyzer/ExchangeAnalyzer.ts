@@ -375,6 +375,12 @@ export class ExchangeAnalyzer {
         })
     }
 
+    async getAlgorithmRunsByAlgorithm(algorithmName: string): Promise<D_AlgorithmRun[]>{
+        return db.d_AlgorithmRun.findMany({
+            where: { algorithm_name: algorithmName }
+        })
+    }
+
     async getUnfinishedAlgorithmRuns(): Promise<D_AlgorithmRun[]>{
         return db.d_AlgorithmRun.findMany({
             where: { status: { notIn: [ 'finished', 'stopped' ] }  }

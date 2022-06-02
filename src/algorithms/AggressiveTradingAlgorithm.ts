@@ -85,16 +85,16 @@ export class AggressiveTradingAlgorithm
     })
   }
 
-  async main(inputs: AggressiveTraderInput): Promise<D_AlgorithmRun> {
+  async main({security_ticker}: AggressiveTraderInput): Promise<D_AlgorithmRun> {
     const { watcher } = this
-    const security = await watcher.getSecurity(inputs.security_ticker)
+    const security = await watcher.getSecurity(security_ticker)
     const state: AggressiveTraderState = {
       last_price: security.price,
       sold: 0,
       bought: 0
     }
-    const algorithmRun: D_AlgorithmRun = await this.fixStart(inputs, state)
-    const job = await this.watchSecurity(inputs.security_ticker, algorithmRun.id, state)
+    const algorithmRun: D_AlgorithmRun = await this.fixStart({security_ticker}, state)
+    const job = await this.watchSecurity(security_ticker, algorithmRun.id, state)
     this.stopData.set(algorithmRun.id, { job })
 
     return algorithmRun

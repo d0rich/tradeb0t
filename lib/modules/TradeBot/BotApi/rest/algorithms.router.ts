@@ -1,11 +1,19 @@
 import {Router} from "express";
-import { getTradeBotFromExpress } from "../../../../utils";
+import {awaitTime, getTradeBotFromExpress} from "../../../../utils";
 
 const router = Router();
 
 router.get('/', (req, res) => {
     try {
         res.send(getTradeBotFromExpress(req).analyzer.tradeAlgos.description)
+    } catch (e) {
+        res.status(400).send(e)
+    }
+})
+
+router.get('/:algoritmName/runs', async (req, res) => {
+    try {
+        res.send(await getTradeBotFromExpress(req).analyzer.getAlgorithmRunsByAlgorithm(req.params.algoritmName))
     } catch (e) {
         res.status(400).send(e)
     }
