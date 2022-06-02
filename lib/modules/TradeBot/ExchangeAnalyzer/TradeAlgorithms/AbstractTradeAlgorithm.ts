@@ -2,7 +2,7 @@ import { D_AlgorithmRun, D_Algorithm } from "@prisma/client";
 import { BotLogger, ExchangeAnalyzer, ExchangeTrader, ExchangeWatcher } from "lib/modules/TradeBot/index";
 
 export abstract class AbstractTradeAlgorithm<InputsType, StateType, StopDataType>{
-  private readonly analyzer: ExchangeAnalyzer
+  protected readonly analyzer: ExchangeAnalyzer
   protected get watcher(): ExchangeWatcher { return this.analyzer.watcher }
   protected get trader(): ExchangeTrader { return this.analyzer.trader }
   protected stopData: Map<number, StopDataType> = new Map<number, StopDataType>()
