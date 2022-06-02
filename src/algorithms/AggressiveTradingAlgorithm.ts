@@ -43,7 +43,7 @@ export class AggressiveTradingAlgorithm
     let security = await this.followSecurity(securityTicker)
     let lastPrice: number = security.price
     let oldPrice: number = lastPrice
-    return scheduleJob('*/15 * * * *', async () => {
+    return scheduleJob('*/1 * * * *', async () => {
       const updatedSecurities = await analyzer.updateFollowedSecurities()
       const updatedSecurity = updatedSecurities.find(s => s.ticker === securityTicker)
       if (!updatedSecurity) {
