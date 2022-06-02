@@ -43,7 +43,7 @@ export class AggressiveTradingAlgorithm
     let security = await this.followSecurity(securityTicker)
     let lastPrice: number = security.price
     let oldPrice: number = lastPrice
-    return scheduleJob('*/15 * * * *', async () => {
+    return scheduleJob('*/1 * * * *', async () => {
       const updatedSecurities = await analyzer.updateFollowedSecurities()
       const updatedSecurity = updatedSecurities.find(s => s.ticker === securityTicker)
       if (!updatedSecurity) {
@@ -55,7 +55,8 @@ export class AggressiveTradingAlgorithm
       }
       state.last_price = lastPrice
       await this.saveProgress(runId, state)
-      if (Math.abs((oldPrice - lastPrice) / oldPrice - 1) > 0.05){
+      const priceDiffPercents = Math.abs((oldPrice - lastPrice) / oldPrice )
+      if (Math.abs(priceDiffPercents) > 0.05){
         if (lastPrice > oldPrice) {
           const {currencies} = await analyzer.tradebot.exchangeClient.api.portfolioCurrencies()
           const currency = currencies.find(c => c.currency === security.currency_ticker)
