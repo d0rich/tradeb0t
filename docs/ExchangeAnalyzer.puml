@@ -4,12 +4,14 @@ class ExchangeAnalyzer {
     +trader: ExchangeTrader
     +watcher: ExchangeWatcher
     +tradeAlgos: TradeAlgorithms
+    -initUpdaters(): void
     -loadSecurityIfNotExist(ticker: string): Promise<D_Security | null>
     -loadSecuritiesIfNotExist(tickers: string[]): Promise<D_Security[]>
     +updateCurrencies(): Promise<D_Currency[]>
     +getCurrencies(): Promise<D_Currency[]>
     +updateSecurities(): Promise<D_Security[]>
     +getSecurities(): Promise<D_Security[]>
+    +getSecurity(ticker: string): Promise<D_Security>
     +addSecurities(securities: D_Security[]): Promise<D_Security[]>
     +getFollowedSecurities(): Promise<D_FollowedSecurity[]>
     +followSecurity(securityTicker: string): Promise<D_FollowedSecurity>
@@ -34,6 +36,7 @@ class ExchangeAnalyzer {
     +stopAlgorithmRun(id: number): Promise<D_AlgorithmRun>
     +continueAlgorithmRun(id: number): Promise<D_AlgorithmRun>
     +finishAlgorithmRun(id: number): Promise<D_AlgorithmRun>
+    +getAlgorithmRunsByAlgorithm(algorithmName: string): Promise<D_AlgorithmRun[]>
     +getUnfinishedAlgorithmRuns(): Promise<D_AlgorithmRun[]>
 }
 @enduml

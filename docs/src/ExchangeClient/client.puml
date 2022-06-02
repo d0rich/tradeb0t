@@ -1,0 +1,23 @@
+@startuml
+class ExchangeClient extends AbstractExchangeClient {
+    +api: OpenAPI
+    +tradeModule: TradeModule
+    +infoModule: InfoModule
+    #initAccount(): Promise<void>
+    +getPortfolio(): Promise<Portfolio>
+    +getOperationsAll(from?: Date, to?: Date): Promise<Operation[]>
+    +getOperationsBySecurity(ticker: string, from?: Date, to?: Date): Promise<Operation[]>
+}
+abstract class AbstractExchangeClient {
+    +{abstract} api: OpenAPI
+    +{abstract} tradeModule: AbstractTradeModule
+    +{abstract} infoModule: AbstractInfoModule
+    -_isAccountInitialized: boolean
+    +isAccountInitialized: boolean
+    #isAccountInitialized: boolean
+    #{abstract} initAccount(): Promise<unknown>
+    +{abstract} getPortfolio(): Promise<Portfolio>
+    +{abstract} getOperationsAll(from: Date, to: Date): Promise<Operation[]>
+    +{abstract} getOperationsBySecurity(ticker: string, from: Date, to: Date): Promise<Operation[]>
+}
+@enduml

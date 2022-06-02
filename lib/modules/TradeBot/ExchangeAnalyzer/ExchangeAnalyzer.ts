@@ -213,14 +213,14 @@ export class ExchangeAnalyzer {
                     security_ticker: ticker
                 },
                 take,
-                _sum: { amount: true },
+                _sum: { amount_requested: true },
                 _count: { _all: true }
             })
             return boughtStats
         }
         let countOperations = 5
         let boughtStats = await getBoughtStats(countOperations)
-        while ((!!boughtStats._sum.amount ? boughtStats._sum.amount < (position?.amount || 0) : false) && boughtStats._count._all !== 0) {
+        while ((!!boughtStats._sum.amount_requested ? boughtStats._sum.amount_requested < (position?.amount || 0) : false) && boughtStats._count._all !== 0) {
             countOperations++
             boughtStats = await getBoughtStats(countOperations)
         }
@@ -235,13 +235,13 @@ export class ExchangeAnalyzer {
         let buyPrice = 0
         let boughtAmount = position?.amount || 0
         for ( let buyOperation of lastSecurityBuyOperations ){
-            if (!buyOperation.amount) continue
-            if (buyOperation.amount >= boughtAmount){
+            if (!buyOperation.amount_requested) continue
+            if (buyOperation.amount_requested >= boughtAmount){
                 buyPrice += boughtAmount * buyOperation.price
                 break
             }
-            buyPrice += buyOperation.amount * buyOperation.price
-            boughtAmount -= buyOperation.amount
+            buyPrice += buyOperation.amount_requested * buyOperation.price
+            boughtAmount -= buyOperation.amount_requested
         }
         return buyPrice / (position?.amount || 1)
     }
