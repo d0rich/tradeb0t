@@ -27,10 +27,10 @@ export class ExchangeAnalyzer {
         this.tradebot = tradebot
         this.tradeAlgos = new TradeAlgorithms(this)
         this.saveAlgorithms()
-        this.initListeners()
+        this.initUpdaters()
     }
 
-    private initListeners(){
+    private initUpdaters(){
         scheduleJob('updatePortfolio', '*/1 * * * *', () => {
             this.tradebot.logger.log('Updating portfolio...')
             this.updatePortfolio()
