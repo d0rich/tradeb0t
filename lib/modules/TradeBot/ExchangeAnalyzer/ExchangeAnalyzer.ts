@@ -13,6 +13,7 @@ import {
     D_AlgorithmRun,
     D_Order
 } from "@prisma/client";
+import {scheduleJob} from "node-schedule";
 
 const db = new PrismaClient()
 
@@ -26,6 +27,22 @@ export class ExchangeAnalyzer {
         this.tradebot = tradebot
         this.tradeAlgos = new TradeAlgorithms(this)
         this.saveAlgorithms()
+        this.initListeners()
+    }
+
+    private initListeners(){
+        scheduleJob('updatePortfolio', '*/1 * * * *', () => {
+            this.tradebot.logger.log('Updating portfolio...')
+            this.updatePortfolio()
+        })
+        scheduleJob('updateFollowedSecurities', '*/1 * * * *', () => {
+            this.tradebot.logger.log('Updating followed securities...')
+            this.updateFollowedSecurities()
+        })
+        scheduleJob('updateOperations', '*/30 * * * *', () => {
+            this.tradebot.logger.log('Updating operations...')
+            this.updateOperationsAll()
+        })
     }
 
     private async loadSecurityIfNotExist(ticker: string): Promise<D_Security | null> {
@@ -84,6 +101,12 @@ export class ExchangeAnalyzer {
 
     async getSecurities(): Promise<D_Security[]> {
         return db.d_Security.findMany({})
+    }
+
+    async getSecurity(ticker: string): Promise<D_Security> {
+        const security = await db.d_Security.findUnique({ where: { ticker } })
+        if (!security) throw new Error(`Security with ticker:${ticker} was not found`)
+        return security
     }
 
     async addSecurities(...securities: D_Security[]): Promise<D_Security[]> {
