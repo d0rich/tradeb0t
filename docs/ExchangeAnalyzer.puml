@@ -4,15 +4,17 @@ class ExchangeAnalyzer {
     +trader: ExchangeTrader
     +watcher: ExchangeWatcher
     +tradeAlgos: TradeAlgorithms
+    -loadSecurityIfNotExist(ticker: string): Promise<D_Security | null>
+    -loadSecuritiesIfNotExist(tickers: string[]): Promise<D_Security[]>
     +updateCurrencies(): Promise<D_Currency[]>
     +getCurrencies(): Promise<D_Currency[]>
-    +updateInstruments(): Promise<D_Instrument[]>
-    +getInstruments(): Promise<D_Instrument[]>
-    +addInstruments(instruments: D_Instrument[]): Promise<D_Instrument[]>
-    +getFollowedInstruments(): Promise<D_FollowedInstrument[]>
-    +followInstrument(instrumentTicker: string): Promise<D_FollowedInstrument>
-    +unfollowInstrument(instrumentTicker: string): Promise<D_FollowedInstrument>
-    +updateFollowedInstruments(): Promise<D_Instrument[]>
+    +updateSecurities(): Promise<D_Security[]>
+    +getSecurities(): Promise<D_Security[]>
+    +addSecurities(securities: D_Security[]): Promise<D_Security[]>
+    +getFollowedSecurities(): Promise<D_FollowedSecurity[]>
+    +followSecurity(securityTicker: string): Promise<D_FollowedSecurity>
+    +unfollowSecurity(securityTicker: string): Promise<D_FollowedSecurity>
+    +updateFollowedSecurities(): Promise<D_Security[]>
     +updatePortfolio(): Promise<D_PortfolioPosition[]>
     +getPortfolio(): Promise<D_PortfolioPosition[]>
     +clearPortfolio(): Promise<number>
@@ -21,14 +23,17 @@ class ExchangeAnalyzer {
     +getPositionAverageBuyPrice(ticker: string): Promise<number>
     +fixOperation(operation: D_Operation): Promise<D_Operation>
     +updateOperationsAll(): Promise<D_Operation[]>
-    +updateOperationsByInstrument(ticker: string): Promise<D_Operation[]>
+    +updateOperationsBySecurity(ticker: string): Promise<D_Operation[]>
     +getOperations(__0: GetOperationsOptions): Promise<D_Operation[]>
+    +saveOrder(order: D_Order, operation_type: OperationType, run_id?: number | null): Promise<D_Order>
+    +getOrders(__0: GetOrdersOptions): Promise<D_Order[]>
     +saveAlgorithms(): Promise<D_Algorithm[]>
     +runAlgorithm(algorithmName: string, inputs: any, state?: any): Promise<D_AlgorithmRun>
     +saveAlgorithmRunProgress(id: number, state: any): Promise<D_AlgorithmRun>
     +loadAlgorithmRunProgress(id: number): Promise<D_AlgorithmRun | null>
+    +stopAlgorithmRun(id: number): Promise<D_AlgorithmRun>
+    +continueAlgorithmRun(id: number): Promise<D_AlgorithmRun>
     +finishAlgorithmRun(id: number): Promise<D_AlgorithmRun>
     +getUnfinishedAlgorithmRuns(): Promise<D_AlgorithmRun[]>
-    -{static} getOperationId(operation: D_Operation): OperationId
 }
 @enduml

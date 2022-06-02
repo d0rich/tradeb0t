@@ -7,11 +7,12 @@ class ExchangeWatcher {
     -exchangeClient: ExchangeClient
     +getPortfolio(): Promise<D_PortfolioPosition[]>
     +getCurrencies(): Promise<D_Currency[]>
-    +getInstrument(ticker: string): Promise<D_Instrument>
-    +getInstrumentName(ticker: string): Promise<string>
-    +getInstrumentLastPrice(ticker: string): Promise<number>
-    +getInstrumentCurrency(ticker: string): Promise<D_Currency>
+    +getSecurity(ticker: string): Promise<D_Security>
+    +getSecurityName(ticker: string): Promise<string>
+    +getSecurityLastPrice(ticker: string): Promise<number>
+    +getSecurityCurrency(ticker: string): Promise<D_Currency>
     +getOperations(from?: Date, to?: Date): Promise<D_Operation[]>
-    +getOperationsByInstrument(ticker: string, from?: Date, to?: Date): Promise<D_Operation[]>
+    +getOperationsBySecurity(ticker: string, from?: Date, to?: Date): Promise<D_Operation[]>
+    +onOrderSent(order: C_Order, operation_type: OperationType, run_id?: number | null): OrderStatus
 }
 @enduml

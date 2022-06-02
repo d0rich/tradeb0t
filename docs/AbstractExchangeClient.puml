@@ -9,17 +9,17 @@ abstract class AbstractExchangeClient {
     #{abstract} initAccount(): Promise<unknown>
     +{abstract} getPortfolio(): Promise<C_Portfolio>
     +{abstract} getOperationsAll(from: Date, to: Date): Promise<C_Operation[]>
-    +{abstract} getOperationsByInstrument(ticker: string, from: Date, to: Date): Promise<C_Operation[]>
+    +{abstract} getOperationsBySecurity(ticker: string, from: Date, to: Date): Promise<C_Operation[]>
 }
 
 abstract class AbstractInfoModule {
     #exchangeClient: AbstractExchangeClient
     +{abstract} getCurrencies(): Promise<Currency[]>
-    +{abstract} getInstrumentLastPrice(ticker: string): Promise<number>
-    +{abstract} getInstrumentCurrency(ticker: string): Promise<C_Currency>
-    +{abstract} getInstrumentName(ticker: string): Promise<string>
-    +{abstract} getInstrument(ticker: string, ignoreCache: boolean): Promise<C_Instrument>
-    +{abstract} getInstrumentByExchangeId(id: string, ignoreCache: boolean): Promise<C_Instrument>
+    +{abstract} getSecurityLastPrice(ticker: string): Promise<number>
+    +{abstract} getSecurityCurrency(ticker: string): Promise<C_Currency>
+    +{abstract} getSecurityName(ticker: string): Promise<string>
+    +{abstract} getSecurity(ticker: string, ignoreCache: boolean): Promise<C_Security>
+    +{abstract} getSecurityByExchangeId(id: string, ignoreCache: boolean): Promise<C_Security>
 }
 
 abstract class AbstractTradeModule {

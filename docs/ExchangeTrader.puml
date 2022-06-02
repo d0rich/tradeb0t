@@ -5,8 +5,8 @@ class ExchangeTrader {
     -logger: BotLogger
     -exchangeClient: ExchangeClient
     +scheduleAction(action: Function, date: Date): Job
-    +scheduleOrder(order: OrderDetails, date: Date): Job
-    +sendOrder(__0: OrderDetails): Promise<void>
+    +scheduleOrder(date: Date, order: OrderDetails, run_id?: number | null): Job
+    +sendOrder(__0: OrderDetails, run_id?: number | null): Promise<OrderStatus>
 }
 
 @enduml

@@ -2,70 +2,21 @@
 abstract class AbstractInfoModule {
     #exchangeClient: AbstractExchangeClient
     +{abstract} getCurrencies(): Promise<Currency[]>
-    +{abstract} getInstrumentLastPrice(ticker: string): Promise<number>
-    +{abstract} getInstrumentCurrency(ticker: string): Promise<Currency>
-    +{abstract} getInstrumentName(ticker: string): Promise<string>
-    +{abstract} getInstrument(ticker: string, ignoreCache: boolean): Promise<MarketInstrument>
-    +{abstract} getInstrumentByExchangeId(id: string, ignoreCache: boolean): Promise<MarketInstrument>
+    +{abstract} getSecurityLastPrice(ticker: string): Promise<number>
+    +{abstract} getSecurityCurrency(ticker: string): Promise<Currency>
+    +{abstract} getSecurityName(ticker: string): Promise<string>
+    +{abstract} getSecurity(ticker: string, ignoreCache: boolean): Promise<MarketInstrument | null>
+    +{abstract} getSecurityByExchangeId(id: string, ignoreCache: boolean): Promise<MarketInstrument | null>
 }
 interface ITranslatorsCD {
     +currency(currency: Currency): Promise<D_Currency>
     +portfolio(portfolio: Portfolio): Promise<D_PortfolioPosition[]>
-    +instrument(instrument: MarketInstrument): Promise<D_Instrument>
+    +security(security: MarketInstrument): Promise<D_Security>
     +operation(operation: Operation): Promise<D_Operation>
     +operations(operations: Operation[]): Promise<D_Operation[]>
-}
-abstract class AbstractTradeModule {
-    #exchangeClient: AbstractExchangeClient
-    +{abstract} sell(__0: OrderDetails): Promise<PlacedLimitOrder>
-    +{abstract} buy(__0: OrderDetails): Promise<PlacedLimitOrder>
-    +{abstract} sellOrCancel(): Promise<PlacedLimitOrder>
-    +{abstract} buyOrCancel(): Promise<PlacedLimitOrder>
-}
-abstract class AbstractExchangeClient {
-    +{abstract} api: OpenAPI
-    +{abstract} tradeModule: AbstractTradeModule
-    +{abstract} infoModule: AbstractInfoModule
-    -_isAccountInitialized: boolean
-    +isAccountInitialized: boolean
-    #isAccountInitialized: boolean
-    #{abstract} initAccount(): Promise<unknown>
-    +{abstract} getPortfolio(): Promise<Portfolio>
-    +{abstract} getOperationsAll(from: Date, to: Date): Promise<Operation[]>
-    +{abstract} getOperationsByInstrument(ticker: string, from: Date, to: Date): Promise<Operation[]>
-}
-class InfoModule extends AbstractInfoModule {
-    +getCurrencies(): Promise<Currency[]>
-    +getInstrumentLastPrice(ticker: string): Promise<number>
-    +getInstrumentCurrency(ticker: string): Promise<Currency>
-    +getInstrumentName(ticker: string): Promise<string>
-    +getInstrument(ticker: string, ignoreCache?: boolean): Promise<MarketInstrument>
-    +getInstrumentByExchangeId(id: string, ignoreCache?: boolean): Promise<MarketInstrument>
-}
-class ExchangeClient extends AbstractExchangeClient {
-    +api: OpenAPI
-    +tradeModule: TradeModule
-    +infoModule: InfoModule
-    #initAccount(): Promise<void>
-    +getPortfolio(): Promise<Portfolio>
-    +getOperationsAll(from?: Date, to?: Date): Promise<Operation[]>
-    +getOperationsByInstrument(ticker: string, from?: Date, to?: Date): Promise<Operation[]>
-}
-class TradeModule extends AbstractTradeModule {
-    +sell(__0: OrderDetails): Promise<PlacedLimitOrder>
-    +buy(__0: OrderDetails): Promise<PlacedLimitOrder>
-    +sellOrCancel(): Promise<PlacedLimitOrder>
-    +buyOrCancel(): Promise<PlacedLimitOrder>
-}
-class TradeBot {
-    +exchangeClient: ExchangeClient
-    +analyzer: ExchangeAnalyzer
-    +trader: ExchangeTrader
-    +watcher: ExchangeWatcher
-    +api: BotApi
-    +logger: BotLogger
-    +auth: BotAuth
-    +{static} createBotByEnv(): TradeBot
+    +order(order: C_Order): Promise<D_Order>
+    +orderStatus(order: C_Order): OrderStatus
+    +orderOperation(order: C_Order): OperationType
 }
 class ExchangeWatcher {
     -tradebot: TradeBot
@@ -75,28 +26,33 @@ class ExchangeWatcher {
     -exchangeClient: ExchangeClient
     +getPortfolio(): Promise<D_PortfolioPosition[]>
     +getCurrencies(): Promise<D_Currency[]>
-    +getInstrument(ticker: string): Promise<D_Instrument>
-    +getInstrumentName(ticker: string): Promise<string>
-    +getInstrumentLastPrice(ticker: string): Promise<number>
-    +getInstrumentCurrency(ticker: string): Promise<D_Currency>
+    +getSecurity(ticker: string): Promise<D_Security>
+    +getSecurityName(ticker: string): Promise<string>
+    +getSecurityLastPrice(ticker: string): Promise<number>
+    +getSecurityCurrency(ticker: string): Promise<D_Currency>
     +getOperations(from?: Date, to?: Date): Promise<D_Operation[]>
-    +getOperationsByInstrument(ticker: string, from?: Date, to?: Date): Promise<D_Operation[]>
+    +getOperationsBySecurity(ticker: string, from?: Date, to?: Date): Promise<D_Operation[]>
+    +onOrderSent(order: C_Order, operation_type: OperationType, run_id?: number | null): OrderStatus
 }
-abstract class AbstractTradeAlgorithm<InputsType, StateType> {
+abstract class AbstractTradeAlgorithm<InputsType, StateType, StopDataType> {
     -analyzer: ExchangeAnalyzer
     #watcher: ExchangeWatcher
     #trader: ExchangeTrader
+    #stopData: Map<number, StopDataType>
     -logger: BotLogger
     +details: D_Algorithm
-    #start(inputs: InputsType, state: StateType): Promise<D_AlgorithmRun>
+    #fixStart(inputs: InputsType, state: StateType): Promise<D_AlgorithmRun>
+    #fixStop(id: number): Promise<D_AlgorithmRun>
+    #fixContinue(id: number): Promise<D_AlgorithmRun>
+    #fixFinish(id: number): Promise<D_AlgorithmRun>
     #saveProgress(id: number, progress: StateType): Promise<D_AlgorithmRun>
     #loadProgress(id: number): Promise<D_AlgorithmRun>
-    #finish(id: number): Promise<D_AlgorithmRun>
     +{abstract} name: string
     +{abstract} description: string
     +{abstract} inputs: any
     +{abstract} main(inputs: InputsType): Promise<D_AlgorithmRun>
     +{abstract} continue(id: number): Promise<D_AlgorithmRun>
+    +{abstract} stop(id: number): Promise<D_AlgorithmRun>
 }
 class SlicingAlgorithm extends AbstractTradeAlgorithm {
     +name: string
@@ -104,31 +60,45 @@ class SlicingAlgorithm extends AbstractTradeAlgorithm {
     +inputs: any
     +main(inputs: SlicingInput): Promise<D_AlgorithmRun>
     +continue(id: number): Promise<D_AlgorithmRun>
+    +stop(id: number): Promise<D_AlgorithmRun>
+}
+class HammerAlgorithm extends AbstractTradeAlgorithm {
+    +name: string
+    +description: string
+    +inputs: any
+    +sendUntilNotRejected(order: OrderDetails, run_id: number): Promise<void>
+    +main(inputs: HammerInput): Promise<D_AlgorithmRun>
+    +continue(id: number): Promise<D_AlgorithmRun>
+    +stop(id: number): Promise<D_AlgorithmRun>
 }
 class TradeAlgorithms {
     -analyzer: ExchangeAnalyzer
     -trader: ExchangeTrader
     -watcher: ExchangeWatcher
     -tradebot: TradeBot
-    -algorithms: AbstractTradeAlgorithm<any, any>[]
+    -algorithms: AbstractTradeAlgorithm<any, any, any>[]
     +description: D_Algorithm[]
     +runAlgorithm(name: string, inputs: any): Promise<D_AlgorithmRun>
     +continueAlgorithms(): Promise<void>
+    +continueAlgorithm(name: string, id: number): Promise<D_AlgorithmRun>
+    +stopAlgorithm(name: string, id: number): Promise<D_AlgorithmRun>
 }
 class ExchangeAnalyzer {
     +tradebot: TradeBot
     +trader: ExchangeTrader
     +watcher: ExchangeWatcher
     +tradeAlgos: TradeAlgorithms
+    -loadSecurityIfNotExist(ticker: string): Promise<D_Security | null>
+    -loadSecuritiesIfNotExist(tickers: string[]): Promise<D_Security[]>
     +updateCurrencies(): Promise<D_Currency[]>
     +getCurrencies(): Promise<D_Currency[]>
-    +updateInstruments(): Promise<D_Instrument[]>
-    +getInstruments(): Promise<D_Instrument[]>
-    +addInstruments(instruments: D_Instrument[]): Promise<D_Instrument[]>
-    +getFollowedInstruments(): Promise<D_FollowedInstrument[]>
-    +followInstrument(instrumentTicker: string): Promise<D_FollowedInstrument>
-    +unfollowInstrument(instrumentTicker: string): Promise<D_FollowedInstrument>
-    +updateFollowedInstruments(): Promise<D_Instrument[]>
+    +updateSecurities(): Promise<D_Security[]>
+    +getSecurities(): Promise<D_Security[]>
+    +addSecurities(securities: D_Security[]): Promise<D_Security[]>
+    +getFollowedSecurities(): Promise<D_FollowedSecurity[]>
+    +followSecurity(securityTicker: string): Promise<D_FollowedSecurity>
+    +unfollowSecurity(securityTicker: string): Promise<D_FollowedSecurity>
+    +updateFollowedSecurities(): Promise<D_Security[]>
     +updatePortfolio(): Promise<D_PortfolioPosition[]>
     +getPortfolio(): Promise<D_PortfolioPosition[]>
     +clearPortfolio(): Promise<number>
@@ -137,18 +107,18 @@ class ExchangeAnalyzer {
     +getPositionAverageBuyPrice(ticker: string): Promise<number>
     +fixOperation(operation: D_Operation): Promise<D_Operation>
     +updateOperationsAll(): Promise<D_Operation[]>
-    +updateOperationsByInstrument(ticker: string): Promise<D_Operation[]>
+    +updateOperationsBySecurity(ticker: string): Promise<D_Operation[]>
     +getOperations(__0: GetOperationsOptions): Promise<D_Operation[]>
+    +saveOrder(order: D_Order, operation_type: OperationType, run_id?: number | null): Promise<D_Order>
+    +getOrders(__0: GetOrdersOptions): Promise<D_Order[]>
     +saveAlgorithms(): Promise<D_Algorithm[]>
     +runAlgorithm(algorithmName: string, inputs: any, state?: any): Promise<D_AlgorithmRun>
     +saveAlgorithmRunProgress(id: number, state: any): Promise<D_AlgorithmRun>
     +loadAlgorithmRunProgress(id: number): Promise<D_AlgorithmRun | null>
+    +stopAlgorithmRun(id: number): Promise<D_AlgorithmRun>
+    +continueAlgorithmRun(id: number): Promise<D_AlgorithmRun>
     +finishAlgorithmRun(id: number): Promise<D_AlgorithmRun>
     +getUnfinishedAlgorithmRuns(): Promise<D_AlgorithmRun[]>
-    -{static} getOperationId(operation: D_Operation): OperationId
-}
-interface IExpressAppCarrier {
-    +app: Application
 }
 class BotApi {
     -_tradeBot: TradeBot
@@ -175,12 +145,77 @@ class ExchangeTrader {
     -logger: BotLogger
     -exchangeClient: ExchangeClient
     +scheduleAction(action: Function, date: Date): Job
-    +scheduleOrder(order: OrderDetails, date: Date): Job
-    +sendOrder(__0: OrderDetails): Promise<void>
+    +scheduleOrder(date: Date, order: OrderDetails, run_id?: number | null): Job
+    +sendOrder(__0: OrderDetails, run_id?: number | null): Promise<OrderStatus>
 }
 class BotAuth {
     -botToken: string
     +authByToken(token: string): boolean
-    +authByRequest(request: Request<ParamsDictionary, any, any, QueryString.ParsedQs, Record<string, any>> | IncomingMessage): boolean
+    +authByRequest(request: IHttpHeadersCarrier): boolean
+}
+class InfoModule extends AbstractInfoModule {
+    +getCurrencies(): Promise<Currency[]>
+    +getSecurityLastPrice(ticker: string): Promise<number>
+    +getSecurityCurrency(ticker: string): Promise<Currency>
+    +getSecurityName(ticker: string): Promise<string>
+    +getSecurity(ticker: string, ignoreCache?: boolean): Promise<MarketInstrument | null>
+    +getSecurityByExchangeId(id: string, ignoreCache?: boolean): Promise<MarketInstrument | null>
+}
+class ExchangeClient extends AbstractExchangeClient {
+    +api: OpenAPI
+    +tradeModule: TradeModule
+    +infoModule: InfoModule
+    #initAccount(): Promise<void>
+    +getPortfolio(): Promise<Portfolio>
+    +getOperationsAll(from?: Date, to?: Date): Promise<Operation[]>
+    +getOperationsBySecurity(ticker: string, from?: Date, to?: Date): Promise<Operation[]>
+}
+class TradeModule extends AbstractTradeModule {
+    -placedMarketOrderToOrder(order: PlacedMarketOrder, figi: string, ticker: string): Promise<C_Order>
+    -getFigi(ticker: string): Promise<string>
+    +sell(__0: OrderDetails): Promise<C_Order>
+    +buy(__0: OrderDetails): Promise<C_Order>
+    +marketSell(__0: OrderDetails): Promise<C_Order>
+    +marketBuy(__0: OrderDetails): Promise<C_Order>
+    +sellOrCancel(): Promise<C_Order>
+    +buyOrCancel(): Promise<C_Order>
+    -{static} placedLimitOrderToOrder(order: PlacedLimitOrder, figi: string, price: number): C_Order
+}
+class TradeBot {
+    +exchangeClient: ExchangeClient
+    +analyzer: ExchangeAnalyzer
+    +trader: ExchangeTrader
+    +watcher: ExchangeWatcher
+    +api: BotApi
+    +logger: BotLogger
+    +auth: BotAuth
+    +{static} createBotByEnv(): TradeBot
+}
+interface IHttpHeadersCarrier {
+    +headers: IncomingHttpHeaders
+}
+interface IExpressAppCarrier {
+    +app: Application
+}
+abstract class AbstractTradeModule {
+    #exchangeClient: AbstractExchangeClient
+    +{abstract} sell(__0: OrderDetails): Promise<C_Order>
+    +{abstract} buy(__0: OrderDetails): Promise<C_Order>
+    +{abstract} marketSell(__0: OrderDetails): Promise<C_Order>
+    +{abstract} marketBuy(__0: OrderDetails): Promise<C_Order>
+    +{abstract} sellOrCancel(): Promise<C_Order>
+    +{abstract} buyOrCancel(): Promise<C_Order>
+}
+abstract class AbstractExchangeClient {
+    +{abstract} api: OpenAPI
+    +{abstract} tradeModule: AbstractTradeModule
+    +{abstract} infoModule: AbstractInfoModule
+    -_isAccountInitialized: boolean
+    +isAccountInitialized: boolean
+    #isAccountInitialized: boolean
+    #{abstract} initAccount(): Promise<unknown>
+    +{abstract} getPortfolio(): Promise<Portfolio>
+    +{abstract} getOperationsAll(from: Date, to: Date): Promise<Operation[]>
+    +{abstract} getOperationsBySecurity(ticker: string, from: Date, to: Date): Promise<Operation[]>
 }
 @enduml

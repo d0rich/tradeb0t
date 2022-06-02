@@ -56,5 +56,5 @@ We have [Postman workspace](https://www.postman.com/bad-labs/workspace/tradebots
 Generate class diagram:
 
 ```sh
-tplant --input bot/**/*.ts --output class-diagram.svg
+tplant --input lib/**/*.ts --output docs/class-diagram.puml
 ```
