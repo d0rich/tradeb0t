@@ -1,6 +1,6 @@
 import {ExchangeWatcher} from "../lib/modules";
-import {C_Currency, C_Instrument, C_Operation, C_Order, C_Portfolio} from "./exchangeClientTypes";
-import {D_Currency, D_Instrument, D_Operation, D_Order, D_PortfolioPosition} from "@prisma/client";
+import {C_Currency, C_Security, C_Operation, C_Order, C_Portfolio} from "./exchangeClientTypes";
+import {D_Currency, D_Security, D_Operation, D_Order, D_PortfolioPosition} from "@prisma/client";
 import {ExchangeClient} from "./ExchangeClient/ExchangeClient";
 import {ITranslatorsCD, OperationType, OrderStatus} from "../lib/utils";
 
@@ -14,26 +14,26 @@ export function initTranslators(watcher: ExchangeWatcher, exchangeClient: Exchan
             return portfolio.positions
                 .map(position => {
                     return {
-                        instrument_ticker: position.ticker || 'undefined',
+                        security_ticker: position.ticker || 'undefined',
                         amount: position.balance
                     }
                 })
         },
-        async instrument(instrument: C_Instrument): Promise<D_Instrument> {
-            if (!instrument.currency) throw new Error(`Instrument with ticker "${instrument.ticker}" have no currency`)
+        async security(security: C_Security): Promise<D_Security> {
+            if (!security.currency) throw new Error(`Security with ticker "${security.ticker}" have no currency`)
             return {
-                currency_ticker: instrument.currency,
-                name: instrument.name,
-                price: await watcher.getInstrumentLastPrice(instrument.ticker),
-                ticker: instrument.ticker
+                currency_ticker: security.currency,
+                name: security.name,
+                price: await watcher.getSecurityLastPrice(security.ticker),
+                ticker: security.ticker
             }
         },
         async operation(operation: C_Operation): Promise<D_Operation> {
-            const instrument = operation?.figi ?
-                await exchangeClient.infoModule.getInstrumentByExchangeId(operation?.figi) :
+            const security = operation?.figi ?
+                await exchangeClient.infoModule.getSecurityByExchangeId(operation?.figi) :
                 null
             return {
-                instrument_ticker: instrument?.ticker || null,
+                security_ticker: security?.ticker || null,
                 amount: operation?.quantityExecuted || null,
                 amount_requested: operation?.quantity || null,
                 created_at: new Date(operation.date),
@@ -45,15 +45,15 @@ export function initTranslators(watcher: ExchangeWatcher, exchangeClient: Exchan
             }
         },
         async operations(operations: C_Operation[]): Promise<D_Operation[]> {
-            const instrumentIds = Array.from(new Set(operations.map(op => op.figi)))
-            await Promise.all(instrumentIds.map(async (id) => {
+            const securityIds = Array.from(new Set(operations.map(op => op.figi)))
+            await Promise.all(securityIds.map(async (id) => {
                 if (id)
-                    await exchangeClient.infoModule.getInstrumentByExchangeId(id)
+                    await exchangeClient.infoModule.getSecurityByExchangeId(id)
             }))
             return await Promise.all(operations.map(op => this.operation(op)))
         },
         async order(order: C_Order): Promise<D_Order> {
-            const instrument = await exchangeClient.infoModule.getInstrumentByExchangeId(order.figi)
+            const security = await exchangeClient.infoModule.getSecurityByExchangeId(order.figi)
             return {
                 operation_type: this.orderOperation(order),
                 run_id: null,
@@ -62,7 +62,7 @@ export function initTranslators(watcher: ExchangeWatcher, exchangeClient: Exchan
                 created_at: new Date(),
                 amount: order.requestedLots,
                 price: order.price,
-                instrument_ticker: instrument?.ticker || 'undefined'
+                security_ticker: security?.ticker || 'undefined'
             }
         },
         orderStatus(order: C_Order): OrderStatus {

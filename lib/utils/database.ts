@@ -6,13 +6,13 @@ export type OrderId = { exchange_id: string } | { created_at: Date }
 export type GetOperationsOptions = {
     from?: Date,
     to?: Date,
-    instrumentTicker?: string,
+    securityTicker?: string,
     operation?: OperationType
 }
 
 export type GetOrdersOptions = {
     from?: Date,
     to?: Date,
-    instrumentTicker?: string,
+    securityTicker?: string,
     operation?: OperationType
 }

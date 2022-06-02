@@ -24,7 +24,7 @@ export class TradeModule extends AbstractTradeModule{
   }
 
   private async placedMarketOrderToOrder(order: PlacedMarketOrder, figi: string, ticker: string): Promise<C_Order> {
-    const price = await this.exchangeClient.infoModule.getInstrumentLastPrice(ticker)
+    const price = await this.exchangeClient.infoModule.getSecurityLastPrice(ticker)
     return {
       figi,
       operation: order.operation,
@@ -39,9 +39,9 @@ export class TradeModule extends AbstractTradeModule{
 
   private async getFigi(ticker: string): Promise<string> {
     const { exchangeClient } = this
-    const instrument = await exchangeClient.infoModule.getInstrument(ticker, false)
-    if (!instrument) throw new Error(`Instrument ${ticker} not found`)
-    const { figi } = instrument
+    const security = await exchangeClient.infoModule.getSecurity(ticker, false)
+    if (!security) throw new Error(`Security ${ticker} not found`)
+    const { figi } = security
     return figi
   }
 

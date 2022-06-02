@@ -19,5 +19,5 @@ export abstract class AbstractExchangeClient {
 
   abstract getOperationsAll(from: Date, to: Date): Promise<C_Operation[]>
 
-  abstract getOperationsByInstrument(ticker: string, from: Date, to: Date): Promise<C_Operation[]>
+  abstract getOperationsBySecurity(ticker: string, from: Date, to: Date): Promise<C_Operation[]>
 }

@@ -1,4 +1,4 @@
-import { C_Currency, C_Instrument, C_Operation } from "../../../src/exchangeClientTypes";
+import { C_Currency, C_Security, C_Operation } from "../../../src/exchangeClientTypes";
 import {AbstractExchangeClient} from "../../AbstractExchangeClient";
 
 export abstract class AbstractInfoModule {
@@ -10,13 +10,13 @@ export abstract class AbstractInfoModule {
 
   abstract getCurrencies(): Promise<C_Currency[]>
 
-  abstract getInstrumentLastPrice(ticker: string): Promise<number>
+  abstract getSecurityLastPrice(ticker: string): Promise<number>
 
-  abstract getInstrumentCurrency(ticker: string): Promise<C_Currency>
+  abstract getSecurityCurrency(ticker: string): Promise<C_Currency>
 
-  abstract getInstrumentName(ticker: string): Promise<string>
+  abstract getSecurityName(ticker: string): Promise<string>
 
-  abstract getInstrument(ticker: string, ignoreCache: boolean): Promise<C_Instrument | null>
+  abstract getSecurity(ticker: string, ignoreCache: boolean): Promise<C_Security | null>
 
-  abstract getInstrumentByExchangeId(id: string, ignoreCache: boolean): Promise<C_Instrument | null>
+  abstract getSecurityByExchangeId(id: string, ignoreCache: boolean): Promise<C_Security | null>
 }

@@ -1,8 +1,8 @@
 import { ExchangeClient } from "./ExchangeClient";
-import { C_Currency, C_Instrument, C_Operation } from "../exchangeClientTypes";
+import { C_Currency, C_Security, C_Operation } from "../exchangeClientTypes";
 import {AbstractInfoModule} from "../../lib/modules";
 
-const securitiesCache = new Map<string, C_Instrument>()
+const securitiesCache = new Map<string, C_Security>()
 
 export class InfoModule extends AbstractInfoModule{
 
@@ -15,26 +15,26 @@ export class InfoModule extends AbstractInfoModule{
     return currencies
   }
 
-  async getInstrumentLastPrice(ticker: string): Promise<number> {
+  async getSecurityLastPrice(ticker: string): Promise<number> {
     const { exchangeClient } = this
-    const security = await this.getInstrument(ticker, true)
+    const security = await this.getSecurity(ticker, true)
     const orderBook = await exchangeClient.api.orderbookGet({ figi: security?.figi || '' })
     return orderBook?.lastPrice || 0
   }
 
-  async getInstrumentCurrency(ticker: string): Promise<C_Currency> {
-    const { getInstrument } = this
-    const security = await getInstrument(ticker)
+  async getSecurityCurrency(ticker: string): Promise<C_Currency> {
+    const { getSecurity } = this
+    const security = await getSecurity(ticker)
     return security?.currency || 'USD'
   }
 
-  async getInstrumentName(ticker: string): Promise<string> {
-    const { getInstrument } = this
-    const security = await getInstrument(ticker)
+  async getSecurityName(ticker: string): Promise<string> {
+    const { getSecurity } = this
+    const security = await getSecurity(ticker)
     return security?.name || ''
   }
 
-  async getInstrument(ticker: string, ignoreCache: boolean = false): Promise<C_Instrument | null> {
+  async getSecurity(ticker: string, ignoreCache: boolean = false): Promise<C_Security | null> {
     const { exchangeClient } = this
     if (!securitiesCache.has(ticker) || ignoreCache){
       const security = await exchangeClient.api.searchOne({ ticker })
@@ -46,7 +46,7 @@ export class InfoModule extends AbstractInfoModule{
     return securitiesCache.get(ticker)
   }
 
-  async getInstrumentByExchangeId(id: string, ignoreCache: boolean = false): Promise<C_Instrument | null>{
+  async getSecurityByExchangeId(id: string, ignoreCache: boolean = false): Promise<C_Security | null>{
     const { exchangeClient } = this
     if (!securitiesCache.has(id) || ignoreCache){
       const security = await exchangeClient.api.searchOne({ figi: id })

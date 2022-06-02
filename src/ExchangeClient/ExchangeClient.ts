@@ -46,9 +46,9 @@ export class ExchangeClient extends AbstractExchangeClient{
     return operations.operations
   }
 
-  async getOperationsByInstrument(ticker: string, from: Date = new Date(0), to: Date = new Date()): Promise<C_Operation[]> {
+  async getOperationsBySecurity(ticker: string, from: Date = new Date(0), to: Date = new Date()): Promise<C_Operation[]> {
     const { api, infoModule } = this
-    const security = await infoModule.getInstrument(ticker)
+    const security = await infoModule.getSecurity(ticker)
     const operations = await api.operations({
       from: from.toISOString(),
       to: to.toISOString(),

@@ -17,11 +17,11 @@ model D_Currency {
   name                String
   ticker              String  @id
 
-  instruments         D_Instrument[]
+  securities         D_Security[]
 }
 
-model D_Instrument {
-  @@map("Instruments")
+model D_Security {
+  @@map("Securities")
 
   name                String
   ticker              String  @id
@@ -30,35 +30,35 @@ model D_Instrument {
   currency_ticker     String
 
   currency              D_Currency  @relation(fields: [currency_ticker], references: [ticker])
-  followed_instruments  D_FollowedInstrument[]
+  followed_securities   D_FollowedSecurity[]
   portfolio_positions   D_PortfolioPosition[]
   operations            D_Operation[]
   orders                D_Order[]
 }
 
-model D_FollowedInstrument {
-  @@map("FollowedInstruments")
+model D_FollowedSecurity {
+  @@map("FollowedSecurities")
 
-  instrument_ticker     String  @id
+  security_ticker     String  @id
   followed_since      DateTime
 
-  instrument            D_Instrument @relation(fields: [instrument_ticker], references: [ticker])
+  security            D_Security @relation(fields: [security_ticker], references: [ticker])
 }
 
 model D_PortfolioPosition {
   @@map("PortfolioPositions")
 
-  instrument_ticker   String @id
+  security_ticker   String @id
   amount              Int
 
-  instrument           D_Instrument @relation(fields: [instrument_ticker], references: [ticker])
+  security           D_Security @relation(fields: [security_ticker], references: [ticker])
 }
 
 model D_Order {
   @@map("Orders")
 
   exchange_id         String?   @unique
-  instrument_ticker   String
+  security_ticker     String
   status_first        String
   operation_type      String
   amount              Int
@@ -66,17 +66,17 @@ model D_Order {
   run_id              Int?
   created_at          DateTime  @default(now())
 
-  instrument          D_Instrument @relation(fields: [instrument_ticker], references: [ticker])
+  security          D_Security @relation(fields: [security_ticker], references: [ticker])
   algorithm_run       D_AlgorithmRun?  @relation(fields: [run_id], references: [id])
 
-  @@id([instrument_ticker, created_at])
+  @@id([security_ticker, created_at])
 }
 
 model D_Operation {
   @@map("Operations")
 
   exchange_id         String?   @unique
-  instrument_ticker   String?
+  security_ticker     String?
   status              String
   operation_type      String
   amount              Int?
@@ -85,7 +85,7 @@ model D_Operation {
   updated_at          DateTime  @updatedAt
   created_at          DateTime  @default(now()) @id
 
-  instrument          D_Instrument? @relation(fields: [instrument_ticker], references: [ticker])
+  security          D_Security? @relation(fields: [security_ticker], references: [ticker])
 }
 
 model D_Algorithm {

@@ -15,38 +15,38 @@ router.post('/currencies', (async (req, res) => {
   res.send(currencies)
 }))
 
-// Instruments
+// Securities
 
-router.get('/instruments', (async (req, res) => {
-  const instruments = await getTradeBotFromExpress(req).analyzer.getInstruments()
-  res.send(instruments)
+router.get('/securities', (async (req, res) => {
+  const securities = await getTradeBotFromExpress(req).analyzer.getSecurities()
+  res.send(securities)
 }))
 
-router.post('/instruments', (async (req, res) => {
-  const instruments = await getTradeBotFromExpress(req).analyzer.updateInstruments()
-  res.send(instruments)
+router.post('/securities', (async (req, res) => {
+  const securities = await getTradeBotFromExpress(req).analyzer.updateSecurities()
+  res.send(securities)
 }))
 
-// Followed Instruments
+// Followed Securities
 
-router.get('/instruments/followed', (async (req, res) => {
-  const instruments = await getTradeBotFromExpress(req).analyzer.getFollowedInstruments()
-  res.send(instruments)
+router.get('/securities/followed', (async (req, res) => {
+  const securities = await getTradeBotFromExpress(req).analyzer.getFollowedSecurities()
+  res.send(securities)
 }))
 
-router.post('/instruments/followed', (async (req, res) => {
-  const instruments = await getTradeBotFromExpress(req).analyzer.updateFollowedInstruments()
-  res.send(instruments)
+router.post('/securities/followed', (async (req, res) => {
+  const securities = await getTradeBotFromExpress(req).analyzer.updateFollowedSecurities()
+  res.send(securities)
 }))
 
-router.post('/instruments/follow', (async (req, res) => {
-  const instruments = await getTradeBotFromExpress(req).analyzer.followInstrument(req.body.ticker)
-  res.send(instruments)
+router.post('/securities/follow', (async (req, res) => {
+  const securities = await getTradeBotFromExpress(req).analyzer.followSecurity(req.body.ticker)
+  res.send(securities)
 }))
 
-router.post('/instruments/unfollow', (async (req, res) => {
-  const instruments = await getTradeBotFromExpress(req).analyzer.unfollowInstrument(req.body.ticker)
-  res.send(instruments)
+router.post('/securities/unfollow', (async (req, res) => {
+  const securities = await getTradeBotFromExpress(req).analyzer.unfollowSecurity(req.body.ticker)
+  res.send(securities)
 }))
 
 // Portfolio
@@ -77,7 +77,7 @@ router.get('/operations', (async (req, res) => {
   const options: GetOperationsOptions = {
     from: req.query['from'] ? new Date(String(req.query['from']) ) : undefined,
     to: req.query['to'] ? new Date(String(req.query['to']) ) : undefined,
-    instrumentTicker: req.query['instrumentTicker'] ? String(req.query['instrumentTicker']) : undefined,
+    securityTicker: req.query['securityTicker'] ? String(req.query['securityTicker']) : undefined,
     operation: stringToOperationType(String(req.query['operation']))
   }
   const portfolio = await getTradeBotFromExpress(req).analyzer.getOperations(options)
@@ -90,7 +90,7 @@ router.post('/operations', (async (req, res) => {
 }))
 
 router.post('/operations/:ticker', (async (req, res) => {
-  const portfolio = await getTradeBotFromExpress(req).analyzer.updateOperationsByInstrument(req.params.ticker)
+  const portfolio = await getTradeBotFromExpress(req).analyzer.updateOperationsBySecurity(req.params.ticker)
   res.send(portfolio)
 }))
 
@@ -100,7 +100,7 @@ router.get('/orders', (async (req, res) => {
   const options: GetOrdersOptions = {
     from: req.query['from'] ? new Date(String(req.query['from']) ) : undefined,
     to: req.query['to'] ? new Date(String(req.query['to']) ) : undefined,
-    instrumentTicker: req.query['instrumentTicker'] ? String(req.query['instrumentTicker']) : undefined,
+    securityTicker: req.query['securityTicker'] ? String(req.query['securityTicker']) : undefined,
     operation: stringToOperationType(String(req.query['operation']))
   }
   const portfolio = await getTradeBotFromExpress(req).analyzer.getOrders(options)

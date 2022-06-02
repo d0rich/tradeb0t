@@ -1,7 +1,7 @@
 import {ExchangeAnalyzer, ExchangeTrader} from "./index";
 import {TradeBot} from "../../TradeBot";
-import {D_PortfolioPosition, D_Currency, D_Operation, D_Instrument, D_Order} from "@prisma/client";
-import {C_Currency, C_Portfolio, C_Instrument, C_Order} from "../../../src/exchangeClientTypes";
+import {D_PortfolioPosition, D_Currency, D_Operation, D_Security, D_Order} from "@prisma/client";
+import {C_Currency, C_Portfolio, C_Security, C_Order} from "../../../src/exchangeClientTypes";
 import { ExchangeClient } from "src/ExchangeClient/ExchangeClient";
 import {initTranslators} from "../../../src/cdTranslators";
 import {ITranslatorsCD, OperationType, OrderStatus} from "../../utils";
@@ -30,26 +30,26 @@ export class ExchangeWatcher {
         return await Promise.all(currencies.map(c => translators.currency(c)))
     }
 
-    async getInstrument(ticker: string): Promise<D_Instrument>{
+    async getSecurity(ticker: string): Promise<D_Security>{
         const { exchangeClient, translators } = this
-        const instrument = await exchangeClient.infoModule.getInstrument(ticker)
-        if (!instrument) throw new Error(`Instrument with ticker "${ticker}" was not found`)
-        return translators.instrument(instrument)
+        const security = await exchangeClient.infoModule.getSecurity(ticker)
+        if (!security) throw new Error(`Security with ticker "${ticker}" was not found`)
+        return translators.security(security)
     }
 
-    async getInstrumentName(ticker: string): Promise<string> {
+    async getSecurityName(ticker: string): Promise<string> {
         const { exchangeClient } = this
-        return await exchangeClient.infoModule.getInstrumentName(ticker)
+        return await exchangeClient.infoModule.getSecurityName(ticker)
     }
 
-    async getInstrumentLastPrice(ticker: string): Promise<number> {
+    async getSecurityLastPrice(ticker: string): Promise<number> {
         const { exchangeClient } = this
-        return await exchangeClient.infoModule.getInstrumentLastPrice(ticker)
+        return await exchangeClient.infoModule.getSecurityLastPrice(ticker)
     }
 
-    async getInstrumentCurrency(ticker: string): Promise<D_Currency> {
+    async getSecurityCurrency(ticker: string): Promise<D_Currency> {
         const { exchangeClient, translators } = this
-        const currency: C_Currency = await exchangeClient.infoModule.getInstrumentCurrency(ticker)
+        const currency: C_Currency = await exchangeClient.infoModule.getSecurityCurrency(ticker)
         return translators.currency(currency)
     }
 
@@ -61,9 +61,9 @@ export class ExchangeWatcher {
         )
     }
 
-    async getOperationsByInstrument(ticker: string, from: Date = new Date(0), to: Date = new Date()): Promise<D_Operation[]>{
+    async getOperationsBySecurity(ticker: string, from: Date = new Date(0), to: Date = new Date()): Promise<D_Operation[]>{
         const { exchangeClient, translators } = this
-        const relevantOperations = await exchangeClient.getOperationsByInstrument(ticker, from, to)
+        const relevantOperations = await exchangeClient.getOperationsBySecurity(ticker, from, to)
         return translators.operations(relevantOperations
             .filter(operation => operation.operationType === "Buy" || operation.operationType === "Sell")
         )

@@ -10,7 +10,7 @@ import { OperationType, awaitTime } from "../lib/utils";
   while (!tradeBot.exchangeClient.isAccountInitialized){
     await awaitTime(10)
   }
-
+  await tradeBot.analyzer.updateCurrencies()
   console.info(`${new Date()} Starting tests...`)
 
   await tradeBot.trader.sendOrder({ ticker: 'AAPL', lots: 5, operation: 'limit_buy', price: 200 })
