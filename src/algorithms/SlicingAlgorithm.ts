@@ -38,13 +38,16 @@ export class SlicingAlgorithm extends AbstractTradeAlgorithm<SlicingInput, Slici
     const { order, parts, minutes } = inputs
     const { trader } = this
     const lotsInOrder: number = Math.floor(order.lots / parts)
-    const lastLots: number =  order.lots % lotsInOrder
+    let lastLots: number =  order.lots % parts
     const lotsInOrders: number[] = []
 
-    for (let i = 0; i < parts - 1; i++) {
+    for (let i = 0; i < parts; i++) {
       lotsInOrders.push(lotsInOrder)
     }
-    lotsInOrders.push(lotsInOrder + lastLots)
+    for (let i = lotsInOrders.length - 1; lastLots > 0; i--){
+      lotsInOrders[i] += 1
+      lastLots -= 1
+    }
 
     const algorithmRun: D_AlgorithmRun = await this.fixStart(inputs, { orders_sended: 0, lots_in_orders: lotsInOrders })
     const stopData: SlicingStopData = { jobs: [] }
