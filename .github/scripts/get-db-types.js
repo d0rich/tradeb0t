@@ -9,10 +9,10 @@ function getTypes(){
   if (!clientTypesContent) throw new Error('File with types not found')
 
 
-  const fileStart = 
+  const fileStart =
   `/**\n * Model `
 
-  const fileEnd = 
+  const fileEnd =
   `/**\n * ##  Prisma Client`
 
   function stringToRegExpPattern(string){
@@ -36,8 +36,9 @@ function getTypes(){
 ${match[0]
   .replace(fileEnd, '')
   .replaceAll('D_', '')
-  .replaceAll('export type ', 'export interface I')}
-` 
+  .replaceAll('export type ', 'export interface I')
+  .replaceAll('=', '')}
+`
 
   console.log('Generated types: \n', generatedTypes)
 
@@ -84,7 +85,7 @@ function updateCompatibleVersions({ tradebotV, dbTypesV }){
     })
   if (!table.some(line => line.tradebot === tradebotV && line.dbTypes === dbTypesV))
     table.push({ tradebot: tradebotV, dbTypes: dbTypesV })
-  const newTableMd = 
+  const newTableMd =
 `<!--versions-compatability-start-->
 
 ${tableHeader}
