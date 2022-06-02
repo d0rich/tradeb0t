@@ -126,8 +126,10 @@ export class ExchangeAnalyzer {
         return db.d_FollowedSecurity.findMany({})
     }
     async followSecurity(securityTicker: string): Promise<D_FollowedSecurity> {
-        return db.d_FollowedSecurity.create({
-            data: {
+        return db.d_FollowedSecurity.upsert({
+            where: { security_ticker: securityTicker },
+            update: {},
+            create: {
                 security_ticker: securityTicker,
                 followed_since: new Date()
             }

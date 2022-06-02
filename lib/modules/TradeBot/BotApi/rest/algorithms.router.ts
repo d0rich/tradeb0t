@@ -4,26 +4,44 @@ import { getTradeBotFromExpress } from "../../../../utils";
 const router = Router();
 
 router.get('/', (req, res) => {
-    res.send(getTradeBotFromExpress(req).analyzer.tradeAlgos.description)
+    try {
+        res.send(getTradeBotFromExpress(req).analyzer.tradeAlgos.description)
+    } catch (e) {
+        res.status(400).send(e)
+    }
 })
 
 router.post('/:algoritmName', async (req, res) => {
-    const algoName = req.params.algoritmName
-    const inputs: any = req.body
-    res.status(200)
-    res.send(await getTradeBotFromExpress(req).analyzer.tradeAlgos.runAlgorithm(algoName, inputs))
+    try {
+        const algoName = req.params.algoritmName
+        const inputs: any = req.body
+        res.send(await getTradeBotFromExpress(req).analyzer.tradeAlgos.runAlgorithm(algoName, inputs))
+    } catch (e) {
+        res.status(400).send(e)
+    }
+
 })
 
 router.post('/:algoritmName/stop/:id', async (req, res) => {
-    const algoName = req.params.algoritmName
-    const id = +req.params.id
-    res.send(await getTradeBotFromExpress(req).analyzer.tradeAlgos.stopAlgorithm(algoName, id))
+    try {
+        const algoName = req.params.algoritmName
+        const id = +req.params.id
+        res.send(await getTradeBotFromExpress(req).analyzer.tradeAlgos.stopAlgorithm(algoName, id))
+    } catch (e) {
+        res.status(400).send(e)
+    }
+
 })
 
 router.post('/:algoritmName/continue/:id', async (req, res) => {
-    const algoName = req.params.algoritmName
-    const id = +req.params.id
-    res.send(await getTradeBotFromExpress(req).analyzer.tradeAlgos.continueAlgorithm(algoName, id))
+    try {
+        const algoName = req.params.algoritmName
+        const id = +req.params.id
+        res.send(await getTradeBotFromExpress(req).analyzer.tradeAlgos.continueAlgorithm(algoName, id))
+    } catch (e) {
+        res.status(403).send(e)
+    }
+
 })
 
 export const algosRouter = router

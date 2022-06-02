@@ -18,8 +18,8 @@ type AggressiveTraderStopData = {
 
 export class AggressiveTradingAlgorithm
     extends AbstractTradeAlgorithm<AggressiveTraderInput, AggressiveTraderState, AggressiveTraderStopData> {
-  get name(): string { return 'hammer' }
-  get description(): string { return 'hammer' }
+  get name(): string { return 'aggressive-trading' }
+  get description(): string { return 'aggressive-trading' }
   get inputs(): any {
     return {
       security_ticker: 'string'
@@ -41,7 +41,6 @@ export class AggressiveTradingAlgorithm
   private async watchSecurity(securityTicker: string, runId: number, state: AggressiveTraderState): Promise<Job> {
     const { analyzer, watcher, trader } = this
     let security = await this.followSecurity(securityTicker)
-
     let lastPrice: number = security.price
     let oldPrice: number = lastPrice
     return scheduleJob('*/15 * * * *', async () => {
