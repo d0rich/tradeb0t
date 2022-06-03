@@ -11,7 +11,7 @@ import {
     D_Operation,
     D_Algorithm,
     D_AlgorithmRun,
-    D_Order
+    D_Order, D_CurrencyBalance
 } from "@prisma/client";
 import {scheduleJob} from "node-schedule";
 
@@ -30,7 +30,11 @@ export class ExchangeAnalyzer {
         this.initUpdaters()
     }
 
-    private initUpdaters(){
+    private async initUpdaters(){
+        scheduleJob('updateBalance', '*/1 * * * *', () => {
+            this.tradebot.logger.log('Updating balance...')
+            this.updateCurrenciesBalance()
+        })
         scheduleJob('updatePortfolio', '*/1 * * * *', () => {
             this.tradebot.logger.log('Updating portfolio...')
             this.updatePortfolio()
@@ -80,6 +84,24 @@ export class ExchangeAnalyzer {
 
     async getCurrencies(): Promise<D_Currency[]> {
         return db.d_Currency.findMany({})
+    }
+
+    // Currencies Balance
+
+    async updateCurrenciesBalance(): Promise<D_CurrencyBalance[]> {
+        const { watcher } = this
+        const relevantCurrencies = await watcher.getCurrenciesBalance()
+        return await Promise.all(relevantCurrencies
+            .map(currency => db.d_CurrencyBalance.upsert({
+                where: { currency_ticker: currency.currency_ticker },
+                update: { balance: currency.balance },
+                create: currency
+            }))
+        )
+    }
+
+    async getCurrenciesBalance(): Promise<D_CurrencyBalance[]> {
+        return db.d_CurrencyBalance.findMany({})
     }
 
     // Securities

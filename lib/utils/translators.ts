@@ -1,10 +1,18 @@
-import {C_Currency, C_Security, C_Operation, C_Order, C_Portfolio} from "../../src/exchangeClientTypes";
-import {D_Currency, D_PortfolioPosition, D_Security, D_Operation, D_Order} from "@prisma/client";
+import {
+    C_Currency,
+    C_Security,
+    C_Operation,
+    C_Order,
+    C_Portfolio,
+    C_CurrencyBalance
+} from "../../src/exchangeClientTypes";
+import {D_Currency, D_PortfolioPosition, D_Security, D_Operation, D_Order, D_CurrencyBalance} from "@prisma/client";
 import {OrderStatus} from "./orderDetails";
 import {OperationType} from "./database";
 
 export interface ITranslatorsCD {
     currency(currency: C_Currency): Promise<D_Currency>,
+    currencyBalance(currency: C_CurrencyBalance): Promise<D_CurrencyBalance>,
     portfolio(portfolio: C_Portfolio): Promise<D_PortfolioPosition[]>
     security(security: C_Security): Promise<D_Security>
     operation(operation: C_Operation): Promise<D_Operation>

@@ -1,6 +1,6 @@
 import {ExchangeWatcher} from "../lib/modules";
-import {C_Currency, C_Security, C_Operation, C_Order, C_Portfolio} from "./exchangeClientTypes";
-import {D_Currency, D_Security, D_Operation, D_Order, D_PortfolioPosition} from "@prisma/client";
+import {C_Currency, C_Security, C_Operation, C_Order, C_Portfolio, C_CurrencyBalance} from "./exchangeClientTypes";
+import {D_Currency, D_Security, D_Operation, D_Order, D_PortfolioPosition, D_CurrencyBalance} from "@prisma/client";
 import {ExchangeClient} from "./ExchangeClient/ExchangeClient";
 import {ITranslatorsCD, OperationType, OrderStatus} from "../lib/utils";
 
@@ -9,6 +9,9 @@ export function initTranslators(watcher: ExchangeWatcher, exchangeClient: Exchan
     return {
         async currency(currency: C_Currency): Promise<D_Currency> {
             return { name: currency, ticker: currency }
+        },
+        async currencyBalance(currency: C_CurrencyBalance): Promise<D_CurrencyBalance> {
+            return { currency_ticker: currency.currency, balance: currency.balance }
         },
         async portfolio(portfolio: C_Portfolio): Promise<D_PortfolioPosition[]> {
             return portfolio.positions

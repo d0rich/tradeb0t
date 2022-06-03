@@ -26,6 +26,7 @@ export class TradeBot {
         this.api = new BotApi(this)
         this.auth = new BotAuth(botToken || config.auth.token)
         this.logger.log('All modules are initialized...')
+        this.analyzer.updateCurrencies()
     }
 
     public static createBotByEnv() {

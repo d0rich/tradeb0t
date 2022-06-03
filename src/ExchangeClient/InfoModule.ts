@@ -25,7 +25,9 @@ export class InfoModule extends AbstractInfoModule{
   async getSecurityCurrency(ticker: string): Promise<C_Currency> {
     const { getSecurity } = this
     const security = await getSecurity(ticker)
-    return security?.currency || 'USD'
+    if (!security) throw new Error(`Security with ticker "${ticker}" was not found`)
+    if (!security.currency) throw new Error(`Security with ticker "${ticker}" has no currency`)
+    return security.currency
   }
 
   async getSecurityName(ticker: string): Promise<string> {

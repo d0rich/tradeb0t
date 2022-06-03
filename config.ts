@@ -12,7 +12,7 @@ export const config = {
   },
   api: {
     port: 4268,
-    host: '10.8.0.22'
+    host: '0.0.0.0'
   },
   logs: {
     directory: './logs'

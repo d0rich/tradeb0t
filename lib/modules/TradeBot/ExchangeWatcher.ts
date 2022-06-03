@@ -1,7 +1,7 @@
 import {ExchangeAnalyzer, ExchangeTrader} from "./index";
 import {TradeBot} from "../../TradeBot";
-import {D_PortfolioPosition, D_Currency, D_Operation, D_Security, D_Order} from "@prisma/client";
-import {C_Currency, C_Portfolio, C_Security, C_Order} from "../../../src/exchangeClientTypes";
+import {D_PortfolioPosition, D_Currency, D_Operation, D_Security, D_Order, D_CurrencyBalance} from "@prisma/client";
+import {C_Currency, C_Portfolio, C_Security, C_Order, C_CurrencyBalance} from "../../../src/exchangeClientTypes";
 import { ExchangeClient } from "src/ExchangeClient/ExchangeClient";
 import {initTranslators} from "../../../src/cdTranslators";
 import {ITranslatorsCD, OperationType, OrderStatus} from "../../utils";
@@ -22,6 +22,12 @@ export class ExchangeWatcher {
         const { exchangeClient, translators } = this
         const portfolio: C_Portfolio = await exchangeClient.getPortfolio()
         return translators.portfolio(portfolio)
+    }
+
+    async getCurrenciesBalance(): Promise<D_CurrencyBalance[]> {
+        const { exchangeClient, translators } = this
+        const currencies: C_CurrencyBalance[] = await exchangeClient.getCurrenciesBalance()
+        return await Promise.all(currencies.map(c => translators.currencyBalance(c)))
     }
 
     async getCurrencies(): Promise<D_Currency[]> {

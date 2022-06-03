@@ -18,6 +18,16 @@ model D_Currency {
   ticker              String  @id
 
   securities         D_Security[]
+  balance            D_CurrencyBalance[]
+}
+
+model D_CurrencyBalance {
+  @@map("CurrenciesBalance")
+
+  currency_ticker     String @id
+  balance             Float  @default(0)
+
+  currency            D_Currency  @relation(fields: [currency_ticker], references: [ticker])
 }
 
 model D_Security {
@@ -49,7 +59,7 @@ model D_PortfolioPosition {
   @@map("PortfolioPositions")
 
   security_ticker   String @id
-  amount              Int
+  amount            Int
 
   security           D_Security @relation(fields: [security_ticker], references: [ticker])
 }

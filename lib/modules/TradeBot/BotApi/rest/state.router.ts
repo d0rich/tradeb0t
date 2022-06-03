@@ -25,6 +25,29 @@ router.post('/currencies', (async (req, res) => {
   }
 }))
 
+// Currencies Balance
+
+router.get('/currencies/balance', (async (req, res) => {
+  try {
+    const currencies = await getTradeBotFromExpress(req).analyzer.getCurrenciesBalance()
+    res.send(currencies)
+  }
+  catch (e) {
+    res.status(400).send(e)
+  }
+}))
+
+router.post('/currencies/balance', (async (req, res) => {
+  try {
+    const currencies = await getTradeBotFromExpress(req).analyzer.updateCurrenciesBalance()
+    res.send(currencies)
+  }
+  catch (e) {
+    res.status(400).send(e)
+  }
+}))
+
+
 // Securities
 
 router.get('/securities', (async (req, res) => {

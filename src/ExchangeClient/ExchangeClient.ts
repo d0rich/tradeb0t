@@ -1,5 +1,5 @@
 import OpenAPI from '@tinkoff/invest-openapi-js-sdk';
-import {C_ExchangeApi, C_Operation, C_Portfolio} from '../exchangeClientTypes';
+import {C_CurrencyBalance, C_ExchangeApi, C_Operation, C_Portfolio} from '../exchangeClientTypes';
 
 import { TradeModule } from './TradeModule';
 import { InfoModule } from './InfoModule';
@@ -26,6 +26,8 @@ export class ExchangeClient extends AbstractExchangeClient{
     const { api } = this
     await api.sandboxClear()
     await api.setCurrenciesBalance({ currency: 'USD', balance: 1_000_000 })
+    await api.setCurrenciesBalance({ currency: 'RUB', balance: 1_000_000 })
+    await api.setCurrenciesBalance({ currency: 'EUR', balance: 1_000_000 })
     // @ts-ignore
     const { figi: appleFigi } = await api.searchOne({ ticker: 'AAPL' })
     await api.setPositionBalance({ balance: 100, figi: appleFigi })
@@ -35,6 +37,11 @@ export class ExchangeClient extends AbstractExchangeClient{
   async getPortfolio(): Promise<C_Portfolio> {
     const { api } = this
     return await api.portfolio()
+  }
+
+  async getCurrenciesBalance(): Promise<C_CurrencyBalance[]> {
+    const { api } = this
+    return (await api.portfolioCurrencies()).currencies
   }
 
   async getOperationsAll(from: Date = new Date(0), to: Date = new Date()): Promise<C_Operation[]> {
