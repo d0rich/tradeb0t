@@ -323,7 +323,7 @@ export class ExchangeAnalyzer {
         return db.d_Order.create({ data: {...order, run_id, operation_type} })
     }
 
-    async getOrders({ from, to, operation, securityTicker }: GetOrdersOptions): Promise<D_Order[]> {
+    async getOrders({ from, to, operation, securityTicker, runId }: GetOrdersOptions): Promise<D_Order[]> {
         return db.d_Order.findMany({
             orderBy: { created_at: 'desc' },
             where: {
@@ -332,7 +332,8 @@ export class ExchangeAnalyzer {
                     { created_at: { lte: to || new Date() } }
                 ],
                 operation_type: operation,
-                security_ticker: securityTicker
+                security_ticker: securityTicker,
+                run_id: runId
             }
         })
     }
@@ -408,6 +409,7 @@ export class ExchangeAnalyzer {
 
     async getAlgorithmRunsByAlgorithm(algorithmName: string): Promise<D_AlgorithmRun[]>{
         return db.d_AlgorithmRun.findMany({
+            orderBy: { id: 'desc' },
             where: { algorithm_name: algorithmName }
         })
     }

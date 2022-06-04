@@ -14,5 +14,6 @@ export type GetOrdersOptions = {
     from?: Date,
     to?: Date,
     securityTicker?: string,
-    operation?: OperationType
+    operation?: OperationType,
+    runId?: number
 }

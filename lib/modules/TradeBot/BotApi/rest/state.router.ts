@@ -200,7 +200,8 @@ router.get('/orders', (async (req, res) => {
       from: req.query['from'] ? new Date(String(req.query['from']) ) : undefined,
       to: req.query['to'] ? new Date(String(req.query['to']) ) : undefined,
       securityTicker: req.query['securityTicker'] ? String(req.query['securityTicker']) : undefined,
-      operation: req.query['operation'] ? stringToOperationType(String(req.query['operation'])) : undefined
+      operation: req.query['operation'] ? stringToOperationType(String(req.query['operation'])) : undefined,
+      runId: req.query['runId'] ? isNaN(Number(req.query['runId'])) ? undefined : Number(req.query['runId']) : undefined
     }
     const portfolio = await getTradeBotFromExpress(req).analyzer.getOrders(options)
     res.send(portfolio)
