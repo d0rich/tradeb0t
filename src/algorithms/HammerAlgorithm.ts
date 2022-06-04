@@ -56,7 +56,6 @@ export class HammerAlgorithm extends AbstractTradeAlgorithm<HammerInput, HammerS
 
   async continue(id: number): Promise<D_AlgorithmRun> {
     const algorithmRun: D_AlgorithmRun = await this.loadProgress(id)
-    await this.fixContinue(id)
     const { order } = JSON.parse(algorithmRun.inputs)
     const { send_date } = JSON.parse(algorithmRun.state)
     const { trader } = this
@@ -68,7 +67,7 @@ export class HammerAlgorithm extends AbstractTradeAlgorithm<HammerInput, HammerS
 
     this.stopData.set(algorithmRun.id, { job })
 
-    return algorithmRun
+    return await this.fixContinue(id)
   }
 
   async stop(id: number): Promise<D_AlgorithmRun> {

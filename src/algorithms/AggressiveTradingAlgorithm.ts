@@ -106,11 +106,10 @@ export class AggressiveTradingAlgorithm
     const algorithmRun: D_AlgorithmRun = await this.loadProgress(id)
     const { security_ticker }: AggressiveTraderInput = JSON.parse(algorithmRun.inputs)
     const state: AggressiveTraderState = JSON.parse(algorithmRun.state)
-    await this.fixContinue(id)
     const job = await this.watchSecurity(security_ticker, algorithmRun.id, state)
     this.stopData.set(algorithmRun.id, { job })
 
-    return algorithmRun
+    return await this.fixContinue(id)
   }
 
   async stop(id: number): Promise<D_AlgorithmRun> {

@@ -69,7 +69,6 @@ export class SlicingAlgorithm extends AbstractTradeAlgorithm<SlicingInput, Slici
   }
   async continue(id: number): Promise<D_AlgorithmRun> {
     const algorithmRun: D_AlgorithmRun = await this.loadProgress(id)
-    await this.fixContinue(id)
     const { order, parts, minutes } = JSON.parse(algorithmRun.inputs)
     const { orders_sended, lots_in_orders } = JSON.parse(algorithmRun.state)
     const { trader } = this
@@ -88,7 +87,7 @@ export class SlicingAlgorithm extends AbstractTradeAlgorithm<SlicingInput, Slici
       stopData.jobs.push(newJob)
     }
     this.stopData.set(algorithmRun.id, stopData)
-    return algorithmRun
+    return await this.fixContinue(id)
   }
 
   async stop(id: number): Promise<D_AlgorithmRun> {
