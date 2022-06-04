@@ -44,46 +44,49 @@ export class AggressiveTradingAlgorithm
     let lastPrice: number = security.price
     let oldPrice: number = lastPrice
     return scheduleJob('*/1 * * * *', async () => {
-      const updatedSecurities = await analyzer.updateFollowedSecurities()
-      const updatedSecurity = updatedSecurities.find(s => s.ticker === securityTicker)
-      if (!updatedSecurity) {
-        oldPrice = lastPrice
-        lastPrice = (await this.followSecurity(securityTicker)).price
-      } else {
-        oldPrice = lastPrice
-        lastPrice = updatedSecurity.price
-      }
-      state.last_price = lastPrice
-      await this.saveProgress(runId, state)
-      const priceDiffPercents = Math.abs((oldPrice - lastPrice) / oldPrice )
-      if (Math.abs(priceDiffPercents) > 0.05){
-        if (lastPrice > oldPrice) {
-          const {currencies} = await analyzer.tradebot.exchangeClient.api.portfolioCurrencies()
-          const currency = currencies.find(c => c.currency === security.currency_ticker)
-          if (!currency) return
-          if (Math.ceil(lastPrice) * 3 < currency.balance) {
+      try {
+        const updatedSecurities = await analyzer.updateFollowedSecurities()
+        const updatedSecurity = updatedSecurities.find(s => s.ticker === securityTicker)
+        if (!updatedSecurity) {
+          oldPrice = lastPrice
+          lastPrice = (await this.followSecurity(securityTicker)).price
+        } else {
+          oldPrice = lastPrice
+          lastPrice = updatedSecurity.price
+        }
+        state.last_price = lastPrice
+        await this.saveProgress(runId, state)
+        const priceDiffPercents = Math.abs((oldPrice - lastPrice) / oldPrice )
+        if (Math.abs(priceDiffPercents) > 0.05){
+          if (lastPrice > oldPrice) {
+            const {currencies} = await analyzer.tradebot.exchangeClient.api.portfolioCurrencies()
+            const currency = currencies.find(c => c.currency === security.currency_ticker)
+            if (!currency) return
+            if (Math.ceil(lastPrice) * 3 < currency.balance) {
+              await trader.sendOrder({
+                ticker: securityTicker,
+                price: lastPrice,
+                lots: Math.floor(currency.balance / 3 / lastPrice),
+                operation: "market_buy"
+              }, runId)
+              state.bought += Math.floor(currency.balance / 3 / lastPrice)
+            }
+          }
+          else {
+            const portfolioPosition = (await analyzer.getPortfolio()).find(p => p.security_ticker === securityTicker)
+            if (!portfolioPosition) return
             await trader.sendOrder({
               ticker: securityTicker,
               price: lastPrice,
-              lots: Math.floor(currency.balance / 3 / lastPrice),
-              operation: "market_buy"
+              lots: Math.ceil(portfolioPosition.amount * 2 / 3),
+              operation: "market_sell"
             }, runId)
-            state.bought += Math.floor(currency.balance / 3 / lastPrice)
+            state.sold += Math.ceil(portfolioPosition.amount * 2 / 3)
           }
+          await this.saveProgress(runId, state)
         }
-        else {
-          const portfolioPosition = (await analyzer.getPortfolio()).find(p => p.security_ticker === securityTicker)
-          if (!portfolioPosition) return
-          await trader.sendOrder({
-            ticker: securityTicker,
-            price: lastPrice,
-            lots: Math.ceil(portfolioPosition.amount * 2 / 3),
-            operation: "market_sell"
-          }, runId)
-          state.sold += Math.ceil(portfolioPosition.amount * 2 / 3)
-        }
-        await this.saveProgress(runId, state)
       }
+      catch (e) { await this.fixError(runId, e) }
     })
   }
 

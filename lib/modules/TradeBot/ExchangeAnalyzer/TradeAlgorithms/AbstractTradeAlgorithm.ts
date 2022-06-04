@@ -42,6 +42,12 @@ export abstract class AbstractTradeAlgorithm<InputsType, StateType, StopDataType
     logger.log(`[algo:${id}] Finishing algorithm "${name}"`)
     return await analyzer.finishAlgorithmRun(id)
   }
+  protected async fixError(id: number, error: Error): Promise<D_AlgorithmRun>{
+    const { name, analyzer, logger } = this
+    await this.stop(id)
+    logger.log(`[algo:${id}] Error in algorithm "${name}": ${JSON.stringify(error)}`)
+    return await analyzer.errorAlgorithmRun(id, error)
+  }
   protected async saveProgress(id: number, progress: StateType): Promise<D_AlgorithmRun> {
     const { name, analyzer, logger } = this
     logger.log(`[algo:${id}] Saving process of algorithm "${name}". State: ${JSON.stringify(progress)}`)

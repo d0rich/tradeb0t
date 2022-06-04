@@ -397,6 +397,15 @@ export class ExchangeAnalyzer {
         })
     }
 
+    async errorAlgorithmRun(id: number, error: Error): Promise<D_AlgorithmRun>{
+        const run = await db.d_AlgorithmRun.findUnique({where: {id} })
+        const state = { ...JSON.parse(run?.state || '{}'), error }
+        return db.d_AlgorithmRun.update({
+            where: { id },
+            data: { status: 'error', state: JSON.stringify(state)}
+        })
+    }
+
     async getAlgorithmRunsByAlgorithm(algorithmName: string): Promise<D_AlgorithmRun[]>{
         return db.d_AlgorithmRun.findMany({
             where: { algorithm_name: algorithmName }
@@ -405,7 +414,7 @@ export class ExchangeAnalyzer {
 
     async getUnfinishedAlgorithmRuns(): Promise<D_AlgorithmRun[]>{
         return db.d_AlgorithmRun.findMany({
-            where: { status: { notIn: [ 'finished', 'stopped' ] }  }
+            where: { status: { notIn: [ 'finished', 'stopped', 'error' ] }  }
         })
     }
 }

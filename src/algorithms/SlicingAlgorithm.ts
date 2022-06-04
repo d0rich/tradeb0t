@@ -1,7 +1,7 @@
 import { D_AlgorithmRun } from "@prisma/client";
 import { ExchangeAnalyzer } from "../../lib/modules";
 import { AbstractTradeAlgorithm } from "../../lib/modules/TradeBot/ExchangeAnalyzer/TradeAlgorithms";
-import { addMinutesToDate, addSecondsToDate, OrderDetails } from '../../lib/utils'
+import {addMinutesToDate, addSecondsToDate, awaitTime, OrderDetails} from '../../lib/utils'
 import {Job} from "node-schedule";
 
 type SlicingInput = {
@@ -56,10 +56,13 @@ export class SlicingAlgorithm extends AbstractTradeAlgorithm<SlicingInput, Slici
     for (let i = 0; i < lotsInOrders.length; i++) {
       const lots = lotsInOrders[i]
       const sendOrderTime: Date = addMinutesToDate(startPoint, minutes/(parts - 1) * i)
-      const newJob = trader.scheduleAction(() => {
-        trader.sendOrder({...order, lots}, algorithmRun.id)
-        if (i < lotsInOrders.length - 1) this.saveProgress(algorithmRun.id, { orders_sended: i + 1, lots_in_orders: lotsInOrders })
-        else this.fixFinish(algorithmRun.id)
+      const newJob = trader.scheduleAction(async () => {
+        try {
+          await trader.sendOrder({...order, lots}, algorithmRun.id)
+          if (i < lotsInOrders.length - 1) await this.saveProgress(algorithmRun.id, { orders_sended: i + 1, lots_in_orders: lotsInOrders })
+          else await this.fixFinish(algorithmRun.id)
+        }
+        catch (e) { await this.fixError(algorithmRun.id, e) }
       }, sendOrderTime)
       stopData.jobs.push(newJob)
     }
@@ -79,10 +82,13 @@ export class SlicingAlgorithm extends AbstractTradeAlgorithm<SlicingInput, Slici
     for (let i = orders_sended; i < lots_in_orders.length; i++) {
       const lots = lots_in_orders[i]
       const sendOrderTime: Date = addMinutesToDate(startPoint, minutesRemain/(parts - 1) * i)
-      const newJob = trader.scheduleAction(() => {
-        trader.sendOrder({...order, lots}, algorithmRun.id)
-        if (i < lots_in_orders.length - 1) this.saveProgress(algorithmRun.id, { orders_sended: i + 1, lots_in_orders })
-        else this.fixFinish(algorithmRun.id)
+      const newJob = trader.scheduleAction(async () => {
+        try {
+          await trader.sendOrder({...order, lots}, algorithmRun.id)
+          if (i < lots_in_orders.length - 1) await this.saveProgress(algorithmRun.id, { orders_sended: i + 1, lots_in_orders })
+          else await this.fixFinish(algorithmRun.id)
+        }
+        catch (e) { await this.fixError(algorithmRun.id, e) }
       }, sendOrderTime)
       stopData.jobs.push(newJob)
     }

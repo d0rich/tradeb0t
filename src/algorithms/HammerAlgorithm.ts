@@ -32,8 +32,11 @@ export class HammerAlgorithm extends AbstractTradeAlgorithm<HammerInput, HammerS
   }
 
   async sendUntilNotRejected(order: OrderDetails, run_id: number) {
-    const status = await this.trader.sendOrder(order, run_id)
-    if (status === 'rejected') await this.sendUntilNotRejected(order, run_id)
+    try {
+      const status = await this.trader.sendOrder(order, run_id)
+      if (status === 'rejected') await this.sendUntilNotRejected(order, run_id)
+    }
+    catch (e) { await this.fixError(run_id, e) }
   }
 
   async main(inputs: HammerInput): Promise<D_AlgorithmRun> {
