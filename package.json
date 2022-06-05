@@ -37,6 +37,7 @@
     "@tinkoff/invest-openapi-js-sdk": "^1.5.0",
     "@types/ws": "^8.5.3",
     "axios": "^0.24.0",
+    "cors": "^2.8.5",
     "express": "^4.17.2",
     "node-schedule": "^2.1.0",
     "prisma": "^3.10.0",

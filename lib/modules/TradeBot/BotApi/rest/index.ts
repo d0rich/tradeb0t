@@ -1,4 +1,5 @@
 import express from 'express'
+var cors = require('cors')
 import { NextFunction, Router, Request, Response } from "express";
 
 const app = express()
@@ -7,13 +8,9 @@ app.use(express.json())
 // create routes
 const router = Router();
 
-app.use((req: Request, res: Response, next: NextFunction) => {
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Headers', '*');
-    next();
-});
+app.use(cors());
 
-router.get('/', function (req, res) {
+app.get('/', function (req, res) {
     res.send('This is tradebot v0.5.0')
 })
 

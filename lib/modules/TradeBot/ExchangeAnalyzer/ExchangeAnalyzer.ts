@@ -182,6 +182,11 @@ export class ExchangeAnalyzer {
         const relevantPortfolio = await watcher.getPortfolio()
         const securities = await Promise.all(relevantPortfolio.map(p => watcher.getSecurity(p.security_ticker)))
         await this.addSecurities(...securities)
+        await db.d_PortfolioPosition.deleteMany({
+            where: {
+                security_ticker: { notIn: securities.map(s => s.ticker) }
+            }
+        })
         return await Promise.all(relevantPortfolio.map(position => db.d_PortfolioPosition.upsert(
             {
                 where: { security_ticker: position.security_ticker },
@@ -245,6 +250,7 @@ export class ExchangeAnalyzer {
         while ((!!boughtStats._sum.amount_requested ? boughtStats._sum.amount_requested < (position?.amount || 0) : false) && boughtStats._count._all !== 0) {
             countOperations++
             boughtStats = await getBoughtStats(countOperations)
+            if (countOperations > boughtStats._count._all) break
         }
         const lastSecurityBuyOperations: D_Operation[] = await db.d_Operation.findMany({
             orderBy: { created_at: 'desc' },
@@ -265,7 +271,7 @@ export class ExchangeAnalyzer {
             buyPrice += buyOperation.amount_requested * buyOperation.price
             boughtAmount -= buyOperation.amount_requested
         }
-        return buyPrice / (position?.amount || 1)
+        return buyPrice / (boughtStats?._sum?.amount_requested || 1)
     }
 
     // Operations
@@ -276,7 +282,7 @@ export class ExchangeAnalyzer {
             { created_at: operation.created_at }
         return db.d_Operation.upsert({
             where: operationId,
-            update: { amount: operation.amount, updated_at: new Date() },
+            update: { operation_type: operation.operation_type, amount: operation.amount, updated_at: new Date() },
             create: {
                 ...operation,
                 updated_at: new Date()
@@ -284,9 +290,9 @@ export class ExchangeAnalyzer {
         })
     }
 
-    async updateOperationsAll(): Promise<D_Operation[]> {
+    async updateOperationsAll(from?: Date, to?: Date ): Promise<D_Operation[]> {
         const { watcher, fixOperation } = this
-        const allOperations = await watcher.getOperations(addDaysToDate(new Date(), -1))
+        const allOperations = await watcher.getOperations(from || addDaysToDate(new Date(), -1), to)
         // @ts-ignore
         await this.loadSecuritiesIfNotExist(allOperations
             .map(op => op.security_ticker)

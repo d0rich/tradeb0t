@@ -162,7 +162,7 @@ router.get('/operations', (async (req, res) => {
       from: req.query['from'] ? new Date(String(req.query['from']) ) : undefined,
       to: req.query['to'] ? new Date(String(req.query['to']) ) : undefined,
       securityTicker: req.query['securityTicker'] ? String(req.query['securityTicker']) : undefined,
-      operation: stringToOperationType(String(req.query['operation']))
+      operation: req.query['operation'] ? String(req.query['operation']) : undefined
     }
     const portfolio = await getTradeBotFromExpress(req).analyzer.getOperations(options)
     res.send(portfolio)
@@ -174,7 +174,10 @@ router.get('/operations', (async (req, res) => {
 
 router.post('/operations', (async (req, res) => {
   try {
-    const portfolio = await getTradeBotFromExpress(req).analyzer.updateOperationsAll()
+    const from = req.body?.from ? new Date(String(req.body.from) ) : undefined
+    const to = req.body?.to ? new Date(req.body.to) : undefined
+    const portfolio = await getTradeBotFromExpress(req).analyzer
+        .updateOperationsAll(from, to)
     res.send(portfolio)
   }
   catch (e) {

@@ -41,7 +41,7 @@ export function initTranslators(watcher: ExchangeWatcher, exchangeClient: Exchan
                 amount_requested: operation?.quantity || null,
                 created_at: new Date(operation.date),
                 exchange_id: operation.id,
-                operation_type: operation.operationType === "Buy" ? 'buy' : 'sell',
+                operation_type: operation.operationType === "Buy" ? 'buy' : operation.operationType === "Sell" ? 'sell' : 'other',
                 price: operation?.price || 0,
                 status: operation.status,
                 updated_at: new Date(),

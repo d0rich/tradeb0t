@@ -9,6 +9,8 @@ type AggressiveTraderInput = {
 }
 type AggressiveTraderState = {
   last_price: number,
+  last_diff_currency: number,
+  last_diff_percents: number,
   bought: number,
   sold: number
 }
@@ -38,12 +40,19 @@ export class AggressiveTradingAlgorithm
     return security
   }
 
-  private async watchSecurity(securityTicker: string, runId: number, state: AggressiveTraderState): Promise<Job> {
+  private async watchSecurity(securityTicker: string, runId: number, state: AggressiveTraderState): Promise<Job | undefined> {
     const { analyzer, watcher, trader } = this
-    let security = await this.followSecurity(securityTicker)
+    let security: D_Security
+    try {
+      security = await this.followSecurity(securityTicker)
+    }
+    catch (e) {
+      await this.fixError(runId, e)
+      return
+    }
     let lastPrice: number = security.price
     let oldPrice: number = lastPrice
-    return scheduleJob('*/1 * * * *', async () => {
+    return scheduleJob('*/15 * * * *', async () => {
       try {
         const updatedSecurities = await analyzer.updateFollowedSecurities()
         const updatedSecurity = updatedSecurities.find(s => s.ticker === securityTicker)
@@ -56,9 +65,11 @@ export class AggressiveTradingAlgorithm
         }
         state.last_price = lastPrice
         await this.saveProgress(runId, state)
-        const priceDiffPercents = Math.abs((oldPrice - lastPrice) / oldPrice )
-        if (Math.abs(priceDiffPercents) > 0.05){
-          if (lastPrice > oldPrice) {
+        const priceDiffPercents = (oldPrice - lastPrice) / oldPrice
+        state.last_diff_percents = priceDiffPercents * 100
+        state.last_diff_currency = oldPrice - lastPrice
+        if (Math.abs(priceDiffPercents) > 0.005){
+          if (priceDiffPercents > 0) {
             const {currencies} = await analyzer.tradebot.exchangeClient.api.portfolioCurrencies()
             const currency = currencies.find(c => c.currency === security.currency_ticker)
             if (!currency) return
@@ -95,12 +106,15 @@ export class AggressiveTradingAlgorithm
     const security = await watcher.getSecurity(security_ticker)
     const state: AggressiveTraderState = {
       last_price: security.price,
+      last_diff_currency: 0,
+      last_diff_percents: 0,
       sold: 0,
       bought: 0
     }
     const algorithmRun: D_AlgorithmRun = await this.fixStart({security_ticker}, state)
     const job = await this.watchSecurity(security_ticker, algorithmRun.id, state)
-    this.stopData.set(algorithmRun.id, { job })
+    if (job) this.stopData.set(algorithmRun.id, { job })
+
 
     return algorithmRun
   }
@@ -110,7 +124,7 @@ export class AggressiveTradingAlgorithm
     const { security_ticker }: AggressiveTraderInput = JSON.parse(algorithmRun.inputs)
     const state: AggressiveTraderState = JSON.parse(algorithmRun.state)
     const job = await this.watchSecurity(security_ticker, algorithmRun.id, state)
-    this.stopData.set(algorithmRun.id, { job })
+    if (job) this.stopData.set(algorithmRun.id, { job })
 
     return await this.fixContinue(id)
   }

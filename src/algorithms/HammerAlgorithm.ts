@@ -76,7 +76,7 @@ export class HammerAlgorithm extends AbstractTradeAlgorithm<HammerInput, HammerS
   async stop(id: number): Promise<D_AlgorithmRun> {
     const stopData = this.stopData.get(id)
     if (!stopData) throw new Error(`Algorithm run with id:${id} was not found.`)
-    stopData.job.cancel()
+    stopData?.job?.cancel()
     return await this.fixStop(id)
   }
 
