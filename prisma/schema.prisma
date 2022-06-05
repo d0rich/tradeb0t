@@ -18,7 +18,7 @@ model D_Currency {
   ticker              String  @id
 
   securities         D_Security[]
-  balance            D_CurrencyBalance[]
+  balance            D_CurrencyBalance?
 }
 
 model D_CurrencyBalance {
@@ -40,8 +40,8 @@ model D_Security {
   currency_ticker     String
 
   currency              D_Currency  @relation(fields: [currency_ticker], references: [ticker])
-  followed_securities   D_FollowedSecurity[]
-  portfolio_positions   D_PortfolioPosition[]
+  followed_security     D_FollowedSecurity?
+  portfolio_position    D_PortfolioPosition?
   operations            D_Operation[]
   orders                D_Order[]
 }
@@ -76,7 +76,7 @@ model D_Order {
   run_id              Int?
   created_at          DateTime  @default(now())
 
-  security          D_Security @relation(fields: [security_ticker], references: [ticker])
+  security            D_Security @relation(fields: [security_ticker], references: [ticker])
   algorithm_run       D_AlgorithmRun?  @relation(fields: [run_id], references: [id])
 
   @@id([security_ticker, created_at])
