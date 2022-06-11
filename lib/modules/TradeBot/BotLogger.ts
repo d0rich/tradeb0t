@@ -38,7 +38,7 @@ export class BotLogger {
 
   log(message: string){
     this.logger.info(message)
-    const messageWithTime = new Date().toLocaleString()+ ' ' + message
+    const messageWithTime = new Date().toLocaleString('ru-ru')+ ' ' + message
     console.log(messageWithTime)
     this.botApi?.webSocketServer.emit('log', messageWithTime)
     this.updateLastLogs(messageWithTime)
