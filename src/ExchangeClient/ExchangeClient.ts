@@ -24,13 +24,13 @@ export class ExchangeClient extends AbstractExchangeClient{
 
   protected async initAccount(){
     const { api } = this
-    await api.sandboxClear()
-    await api.setCurrenciesBalance({ currency: 'USD', balance: 1_000_000 })
-    await api.setCurrenciesBalance({ currency: 'RUB', balance: 1_000_000 })
-    await api.setCurrenciesBalance({ currency: 'EUR', balance: 1_000_000 })
-    // @ts-ignore
-    const { figi: appleFigi } = await api.searchOne({ ticker: 'AAPL' })
-    await api.setPositionBalance({ balance: 100, figi: appleFigi })
+    // await api.sandboxClear()
+    // await api.setCurrenciesBalance({ currency: 'USD', balance: 1_000_000 })
+    // await api.setCurrenciesBalance({ currency: 'RUB', balance: 1_000_000 })
+    // await api.setCurrenciesBalance({ currency: 'EUR', balance: 1_000_000 })
+    // // @ts-ignore
+    // const { figi: appleFigi } = await api.searchOne({ ticker: 'AAPL' })
+    // await api.setPositionBalance({ balance: 100, figi: appleFigi })
     this.isAccountInitialized = true
   }
 

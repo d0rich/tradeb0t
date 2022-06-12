@@ -1,0 +1,8 @@
+docs
+node_modules
+temp
+logs
+.idea
+.github
+*.db
+*.db-journal
