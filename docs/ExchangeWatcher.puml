@@ -6,6 +6,7 @@ class ExchangeWatcher {
     -trader: ExchangeTrader
     -exchangeClient: ExchangeClient
     +getPortfolio(): Promise<D_PortfolioPosition[]>
+    +getCurrenciesBalance(): Promise<D_CurrencyBalance[]>
     +getCurrencies(): Promise<D_Currency[]>
     +getSecurity(ticker: string): Promise<D_Security>
     +getSecurityName(ticker: string): Promise<string>

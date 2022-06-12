@@ -1,6 +1,7 @@
 @startuml
 interface ITranslatorsCD {
     +currency(currency: Currency): Promise<D_Currency>
+    +currencyBalance(currency: CurrencyPosition): Promise<D_CurrencyBalance>
     +portfolio(portfolio: Portfolio): Promise<D_PortfolioPosition[]>
     +security(security: MarketInstrument): Promise<D_Security>
     +operation(operation: Operation): Promise<D_Operation>

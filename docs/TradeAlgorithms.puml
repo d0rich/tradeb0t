@@ -13,7 +13,7 @@ class TradeAlgorithms {
 }
 
 abstract class AbstractTradeAlgorithm<InputsType, StateType, StopDataType> {
-    -analyzer: ExchangeAnalyzer
+    #analyzer: ExchangeAnalyzer
     #watcher: ExchangeWatcher
     #trader: ExchangeTrader
     #stopData: Map<number, StopDataType>
@@ -23,6 +23,7 @@ abstract class AbstractTradeAlgorithm<InputsType, StateType, StopDataType> {
     #fixStop(id: number): Promise<D_AlgorithmRun>
     #fixContinue(id: number): Promise<D_AlgorithmRun>
     #fixFinish(id: number): Promise<D_AlgorithmRun>
+    #fixError(id: number, error: Error): Promise<D_AlgorithmRun>
     #saveProgress(id: number, progress: StateType): Promise<D_AlgorithmRun>
     #loadProgress(id: number): Promise<D_AlgorithmRun>
     +{abstract} name: string

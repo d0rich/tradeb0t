@@ -5,6 +5,7 @@ class ExchangeClient extends AbstractExchangeClient {
     +infoModule: InfoModule
     #initAccount(): Promise<void>
     +getPortfolio(): Promise<Portfolio>
+    +getCurrenciesBalance(): Promise<CurrencyPosition[]>
     +getOperationsAll(from?: Date, to?: Date): Promise<Operation[]>
     +getOperationsBySecurity(ticker: string, from?: Date, to?: Date): Promise<Operation[]>
 }
@@ -17,6 +18,7 @@ abstract class AbstractExchangeClient {
     #isAccountInitialized: boolean
     #{abstract} initAccount(): Promise<unknown>
     +{abstract} getPortfolio(): Promise<Portfolio>
+    +{abstract} getCurrenciesBalance(): Promise<CurrencyPosition[]>
     +{abstract} getOperationsAll(from: Date, to: Date): Promise<Operation[]>
     +{abstract} getOperationsBySecurity(ticker: string, from: Date, to: Date): Promise<Operation[]>
 }
