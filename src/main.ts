@@ -1,6 +1,4 @@
 export * from './TradeBot'
 export * from './abstract'
-export * from './modules'
 export * from './types'
-export * from './types/extractors'
 export * from './utils'
