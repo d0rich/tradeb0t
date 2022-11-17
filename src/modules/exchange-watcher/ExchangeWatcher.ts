@@ -3,7 +3,7 @@ import {ExchangeAnalyzer, ExchangeTrader} from 'src/modules'
 import {AbstractTranslator, AbstractExchangeClient} from 'src/abstract'
 import {OperationType, OrderStatus, CommonDomain} from 'src/types'
 import {GetPortfolioType, GetCurrencyType,
-    GetOperationType, GetSecurityType, GetCurrencyBalanceType} from 'src/types/extractors'
+    GetSecurityType, GetCurrencyBalanceType} from 'src/types/extractors'
 import {GetOrderType} from "../../types/extractors";
 
 export class ExchangeWatcher<ExchangeClient extends AbstractExchangeClient>{
@@ -58,22 +58,6 @@ export class ExchangeWatcher<ExchangeClient extends AbstractExchangeClient>{
         const { exchangeClient, translator } = this
         const currency = await exchangeClient.infoModule.getSecurityCurrency(ticker)
         return translator.currency(currency)
-    }
-
-    async getOperations(from: Date = new Date(0), to: Date = new Date()): Promise<GetOperationType<CommonDomain>[]>{
-        const { exchangeClient, translator } = this
-        const relevantOperations = await exchangeClient.getOperationsAll(from, to)
-        return translator.operations(relevantOperations
-            .filter(operation => operation.operationType === "Buy" || operation.operationType === "Sell")
-        )
-    }
-
-    async getOperationsBySecurity(ticker: string, from: Date = new Date(0), to: Date = new Date()): Promise<GetOperationType<CommonDomain>[]>{
-        const { exchangeClient, translator } = this
-        const relevantOperations = await exchangeClient.getOperationsBySecurity(ticker, from, to)
-        return translator.operations(relevantOperations
-            .filter(operation => operation.operationType === "Buy" || operation.operationType === "Sell")
-        )
     }
 
     onOrderSent(order: GetOrderType<ExchangeClient>, operation_type: OperationType, run_id: number | null = null): OrderStatus {

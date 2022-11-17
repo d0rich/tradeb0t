@@ -1,12 +1,9 @@
-import {addDaysToDate} from "../../utils";
 import {
-    GetOperationsOptions,
     GetOrdersOptions,
     OperationType,
     CommonDomain} from "../../types";
-import {OperationId} from "../../types/db";
 import {GetSecurityType, GetCurrencyType, GetCurrencyBalanceType,
-    GetPortfolioType, GetOperationType, GetOrderType} from "../../types/extractors";
+    GetPortfolioType, GetOrderType} from "../../types/extractors";
 import {AbstractTradeAlgorithm, AbstractExchangeClient} from 'src/abstract'
 import {ExchangeTrader, ExchangeWatcher} from 'src/modules'
 import {TradeAlgorithmsEngine} from './trade-algorithms-engine'
@@ -46,10 +43,6 @@ export class ExchangeAnalyzer<ExchangeClient extends AbstractExchangeClient> {
         scheduleJob('updateFollowedSecurities', '*/1 * * * *', () => {
             this.tradebot.logger.log('Updating followed securities...')
             this.updateFollowedSecurities()
-        })
-        scheduleJob('updateOperations', '*/30 * * * *', () => {
-            this.tradebot.logger.log('Updating operations...')
-            this.updateOperationsAll()
         })
     }
 
@@ -208,125 +201,6 @@ export class ExchangeAnalyzer<ExchangeClient extends AbstractExchangeClient> {
     async clearPortfolio(): Promise<number> {
         const { count: deleted } = await db.portfolioPosition.deleteMany({})
         return deleted
-    }
-    async addPortfolioPosition(portfolioPosition: GetPortfolioType<CommonDomain>): Promise<GetPortfolioType<CommonDomain>> {
-        return await db.$transaction(async (db) => {
-            const positionToUpdate = await db.portfolioPosition.findUnique({
-                where: { security_ticker: portfolioPosition.security_ticker }
-            })
-            return db.portfolioPosition.upsert({
-                where: { security_ticker: portfolioPosition.security_ticker },
-                update: { amount: (positionToUpdate?.amount || 0) + portfolioPosition.amount },
-                create: portfolioPosition
-            })
-        })
-    }
-    async removePortfolioPosition(portfolioPosition: GetPortfolioType<CommonDomain>): Promise<GetPortfolioType<CommonDomain> | null> {
-        return await db.$transaction(async (db) => {
-            const positionToUpdate = await db.portfolioPosition.findUnique({
-                where: { security_ticker: portfolioPosition.security_ticker }
-            })
-            if ((positionToUpdate?.amount || 0) - portfolioPosition.amount > 0)
-                return db.portfolioPosition.update({
-                    where: { security_ticker: portfolioPosition.security_ticker },
-                    data: { amount: (positionToUpdate?.amount || 0) + portfolioPosition.amount }
-                })
-            return db.portfolioPosition.delete({ where: { security_ticker: portfolioPosition.security_ticker } })
-        })
-    }
-    async getPositionAverageBuyPrice(ticker: string): Promise<number> {
-        const position = await db.portfolioPosition.findUnique({where: { security_ticker: ticker }})
-        async function getBoughtStats(take: number){
-            const boughtStats = await db.operation.aggregate({
-                orderBy: { created_at: 'desc' },
-                where: {
-                    operation_type: 'buy',
-                    security_ticker: ticker
-                },
-                take,
-                _sum: { amount_requested: true },
-                _count: { _all: true }
-            })
-            return boughtStats
-        }
-        let countOperations = 5
-        let boughtStats = await getBoughtStats(countOperations)
-        while ((!!boughtStats._sum.amount_requested ? boughtStats._sum.amount_requested < (position?.amount || 0) : false) && boughtStats._count._all !== 0) {
-            countOperations++
-            boughtStats = await getBoughtStats(countOperations)
-            if (countOperations > boughtStats._count._all) break
-        }
-        const lastSecurityBuyOperations = await db.operation.findMany({
-            orderBy: { created_at: 'desc' },
-                where: {
-                    operation_type: 'buy',
-                    security_ticker: ticker
-                },
-                take: countOperations
-        })
-        let buyPrice = 0
-        let boughtAmount = position?.amount || 0
-        for ( let buyOperation of lastSecurityBuyOperations as GetOperationType<CommonDomain>[] ){
-            if (!buyOperation.amount_requested) continue
-            if (buyOperation.amount_requested >= boughtAmount){
-                buyPrice += boughtAmount * buyOperation.price
-                break
-            }
-            buyPrice += buyOperation.amount_requested * buyOperation.price
-            boughtAmount -= buyOperation.amount_requested
-        }
-        return buyPrice / (boughtStats?._sum?.amount_requested || 1)
-    }
-
-    // Operations
-
-    async fixOperation(operation: GetOperationType<CommonDomain>): Promise<GetOperationType<CommonDomain>> {
-        const operationId: OperationId = operation.exchange_id ?
-            { exchange_id: operation.exchange_id} :
-            { created_at: operation.created_at }
-        const result = await db.operation.upsert({
-            where: operationId,
-            update: { operation_type: operation.operation_type, amount: operation.amount, updated_at: new Date() },
-            create: {
-                ...operation,
-                updated_at: new Date()
-            }
-        })
-        return result as GetOperationType<CommonDomain>
-    }
-
-    async updateOperationsAll(from?: Date, to?: Date ): Promise<GetOperationType<CommonDomain>[]> {
-        const { watcher, fixOperation } = this
-        const allOperations = await watcher.getOperations(from || addDaysToDate(new Date(), -1), to)
-        // @ts-ignore
-        await this.loadSecuritiesIfNotExist(allOperations
-            .map(op => op.security_ticker)
-            .filter(t => t !== null))
-        return await Promise.all(allOperations.map(operation => fixOperation(operation)))
-    }
-    async updateOperationsBySecurity(ticker: string): Promise<GetOperationType<CommonDomain>[]> {
-        const { watcher, fixOperation } = this
-        const allOperations = await watcher.getOperationsBySecurity(ticker, addDaysToDate(new Date(), -1))
-        // @ts-ignore
-        await this.loadSecuritiesIfNotExist(allOperations
-            .map(op => op.security_ticker)
-            .filter(t => t !== null))
-        return await Promise.all(allOperations.map(operation => fixOperation(operation)))
-    }
-    async getOperations({ from, to, operation, securityTicker }: GetOperationsOptions): Promise<GetOperationType<CommonDomain>[]> {
-        const result = await db.operation.findMany({
-            orderBy: { created_at: 'desc' },
-            where: {
-                AND: [
-                    { created_at: { gte: from || new Date(0) } },
-                    { created_at: { lte: to || new Date() } }
-                ],
-                operation_type: operation,
-                security_ticker: securityTicker
-            }
-        })
-        // TODO: Replace 'as' with 'satisfies' when TS 4.9 is released
-        return result as GetOperationType<CommonDomain>[]
     }
 
     // Orders
