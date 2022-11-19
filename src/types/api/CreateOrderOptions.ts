@@ -1,4 +1,4 @@
-import {OperationType} from "../CommonDomain";
+import {OperationType} from "../index";
 
 export type CreateOrderOptions = {
     operation: OperationType

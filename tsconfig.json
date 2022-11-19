@@ -8,6 +8,7 @@
     "outDir": "lib",
     "removeComments": false,
     "target": "ES6",
+    "module": "CommonJS",
     "declaration": true,
     // Module resolution
     "baseUrl": "./",
@@ -29,7 +30,11 @@
     "noImplicitReturns": true,
     "noUncheckedIndexedAccess": false,
     "noUnusedLocals": false,
-    "noUnusedParameters": false
+    "noUnusedParameters": false,
+
+    // Decorators
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true
   },
   "include": [
     "src"

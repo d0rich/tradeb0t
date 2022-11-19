@@ -1,4 +1,5 @@
-import { AlgorithmRun, Algorithm } from '../types/analyzer'
+import { AlgorithmRun, Algorithm } from '../db'
+import { InputTypes } from "../db/Algorithm";
 import {AbstractExchangeClient} from './AbstractExchangeClient'
 import { BotLogger, ExchangeAnalyzer, ExchangeTrader, ExchangeWatcher } from '../modules'
 
@@ -14,7 +15,7 @@ export abstract class AbstractTradeAlgorithm<
     return {
       name: this.name,
       description: this.description,
-      input_types: JSON.stringify(this.inputs)
+      inputTypes: this.inputs
     }
   }
 
@@ -38,7 +39,7 @@ export abstract class AbstractTradeAlgorithm<
   protected async fixContinue(id: number): Promise<AlgorithmRun>{
     const { name, analyzer, logger } = this
     logger.log(`[algo:${id}] Continuing algorithm "${name}"`)
-    return await analyzer.continueAlgorithmRun(id)
+    return await analyzer.resumeAlgorithmRun(id)
   }
   protected async fixFinish(id: number): Promise<AlgorithmRun>{
     const { name, analyzer, logger } = this
@@ -67,7 +68,7 @@ export abstract class AbstractTradeAlgorithm<
 
   abstract get name(): string
   abstract get description(): string
-  abstract get inputs(): any
+  abstract get inputs(): InputTypes
   abstract main(inputs: InputsType): Promise<AlgorithmRun>
   abstract continue(id: number): Promise<AlgorithmRun>
   abstract stop(id: number): Promise<AlgorithmRun>

@@ -1,9 +1,9 @@
-import {TradeBot} from 'src/TradeBot'
-import {ExchangeAnalyzer, ExchangeTrader} from 'src/modules'
-import {AbstractTranslator, AbstractExchangeClient} from 'src/abstract'
-import {OperationType, OrderStatus, CommonDomain} from 'src/types'
-import {GetPortfolioType, GetCurrencyType,
-    GetSecurityType, GetCurrencyBalanceType} from 'src/types/extractors'
+import {TradeBot} from '../../TradeBot'
+import {ExchangeAnalyzer, ExchangeTrader} from '../../modules'
+import {AbstractTranslator, AbstractExchangeClient} from '../../abstract'
+import {OperationType, OrderStatus, CommonDomain} from '../../types'
+import {GetSecurityBalanceType, GetCurrencyType,
+    GetSecurityType, GetCurrencyBalanceType} from '../../types/extractors'
 import {GetOrderType} from "../../types/extractors";
 
 export class ExchangeWatcher<ExchangeClient extends AbstractExchangeClient>{
@@ -19,10 +19,11 @@ export class ExchangeWatcher<ExchangeClient extends AbstractExchangeClient>{
         this.tradebot = tradebot
     }
 
-    async getPortfolio(): Promise<GetPortfolioType<CommonDomain>[]> {
+    async getPortfolio(): Promise<GetSecurityBalanceType<CommonDomain>[]> {
         const { exchangeClient, translator } = this
         const portfolio = await exchangeClient.getPortfolio()
-        return translator.portfolio(portfolio)
+        const promises = portfolio.map(position => translator.securityBalance(position))
+        return Promise.all(promises)
     }
 
     async getCurrenciesBalance(): Promise<GetCurrencyBalanceType<CommonDomain>[]> {
@@ -60,11 +61,13 @@ export class ExchangeWatcher<ExchangeClient extends AbstractExchangeClient>{
         return translator.currency(currency)
     }
 
-    onOrderSent(order: GetOrderType<ExchangeClient>, operation_type: OperationType, run_id: number | null = null): OrderStatus {
+    onOrderSent(order: GetOrderType<ExchangeClient>,
+                operation_type: OperationType,
+                runId: number | undefined = undefined): OrderStatus {
         const { translator, analyzer } = this
         const status = translator.orderStatus(order)
         translator.order(order)
-            .then(d_order => analyzer.saveOrder({...d_order, status_first: status}, operation_type, run_id))
+            .then(order => analyzer.saveOrder({...order, status: status}, operation_type, runId))
         return status
     }
 }
