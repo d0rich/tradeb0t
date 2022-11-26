@@ -1,18 +1,31 @@
 import express from 'express'
 import cors from 'cors'
+import {createService} from "json-rpc-ts-wrapper";
 import { apiRouter } from './routers'
+import {initServiceMethods} from "./json-rpc";
+import {TradeBot} from "../../../TradeBot";
 
-const app = express()
-app.use(express.json())
-app.use(cors())
+export function initExpress(tradeBot: TradeBot){
+    const app = express()
+    app.use(express.json())
+    app.use(cors())
 
-const packageJson = require('../../../../package.json')
+    const packageJson = require('../../../../package.json')
 
-app.get('/', function (req, res) {
-    res.send(`This is tradebot v${packageJson.version}`)
-})
+    app.get('/', function (req, res) {
+        res.send(`This is tradebot v${packageJson.version}`)
+    })
 
-app.use('/api', apiRouter)
+    app.use('/api', apiRouter)
 
-// export app
-export const expressApp = app
+    app.set('tradeBot', tradeBot)
+    const jsonRpcService = createService(initServiceMethods(tradeBot))
+
+    app.post('/json-rpc', (req, res) => {
+        jsonRpcService
+            .receive(req.body)
+            .then(response => response ? res.send(response) : res.sendStatus(204))
+    })
+
+    return app
+}

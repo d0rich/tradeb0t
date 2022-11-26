@@ -9,11 +9,11 @@ export class TradeAlgorithmsEngine<ExchangeClient extends AbstractExchangeClient
     protected get watcher(): ExchangeWatcher<ExchangeClient> { return this.analyzer.watcher }
     protected get tradebot(): TradeBot<ExchangeClient> { return this.analyzer.tradebot }
 
-    protected readonly algorithms: AbstractTradeAlgorithm<ExchangeClient, any, any, any>[]
+    protected readonly algorithms: AbstractTradeAlgorithm<ExchangeClient>[]
 
     constructor(analyzer: ExchangeAnalyzer<ExchangeClient>,
                 initAlgorithmsCallback:
-                    (analyzer: ExchangeAnalyzer<ExchangeClient>) => AbstractTradeAlgorithm<ExchangeClient, any, any, any>[]
+                    (analyzer: ExchangeAnalyzer<ExchangeClient>) => AbstractTradeAlgorithm<ExchangeClient>[]
     ) {
         this.analyzer = analyzer
         this.algorithms = initAlgorithmsCallback(analyzer)
@@ -33,21 +33,24 @@ export class TradeAlgorithmsEngine<ExchangeClient extends AbstractExchangeClient
 
     async resumeAlgorithms(){
         const { tradebot, analyzer, algorithms } = this
-        tradebot.logger.log('Continue stopped algorithms runs...')
+        tradebot.logger.log({
+            type: 'info',
+            message: 'Resuming stopped algorithms runs...'
+        })
         const unfinishedRuns = await analyzer.getUnfinishedAlgorithmRuns()
         for (let run of unfinishedRuns){
             await algorithms.find(algo => algo.name === run.algorithmName)?.continue(run.id)
         }
     }
 
-    async continueAlgorithm(name:string, id: number){
+    async continueAlgorithm(name:string, id: number): Promise<AlgorithmRun>{
         const { algorithms } = this
         const algo = algorithms.find(a => a.name === name)
         if (!algo) throw new Error(`Algorithm with name "${name}" was not found`)
         return await algo.continue(id)
     }
 
-    async stopAlgorithm(name: string, id: number){
+    async stopAlgorithm(name: string, id: number): Promise<AlgorithmRun>{
         const { algorithms } = this
         const algo = algorithms.find(a => a.name === name)
         if (!algo) throw new Error(`Algorithm with name "${name}" was not found`)

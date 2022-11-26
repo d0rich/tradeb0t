@@ -11,6 +11,20 @@ import {
 import {AbstractExchangeClient, AbstractTradeAlgorithm} from './abstract'
 import {globalStore} from "./global/store";
 
+export type TradeBotInitOptions<ExchangeClient extends AbstractExchangeClient = AbstractExchangeClient> = {
+    mode: 'production'
+    exchangeClient: ExchangeClient,
+    botToken?: string,
+    initAlgorithmsCallback?:
+        (analyzer: ExchangeAnalyzer<ExchangeClient>) => AbstractTradeAlgorithm<ExchangeClient>[]
+} | {
+    /**
+     * Option for creation of `TradeBot` instance without running processes under hood.
+     * Used to extract types for api client.
+     */
+    mode: 'no_setup'
+}
+
 export class TradeBot<ExchangeClient extends AbstractExchangeClient = AbstractExchangeClient> {
     private _exchangeClient: ExchangeClient
     private _analyzer: ExchangeAnalyzer<ExchangeClient>
@@ -28,13 +42,11 @@ export class TradeBot<ExchangeClient extends AbstractExchangeClient = AbstractEx
     get logger() { return this._logger }
     get auth() { return this._auth }
 
-    constructor({exchangeClient, botToken, initAlgorithmsCallback}: {
-        exchangeClient: ExchangeClient,
-        botToken?: string,
-        initAlgorithmsCallback?:
-            (analyzer: ExchangeAnalyzer<ExchangeClient>) => AbstractTradeAlgorithm<ExchangeClient>[]
-    }) {
-        this.setup({exchangeClient, botToken, initAlgorithmsCallback})
+    constructor(options: TradeBotInitOptions<ExchangeClient>) {
+        if (options.mode === 'production'){
+            const {exchangeClient, botToken, initAlgorithmsCallback} = options
+            this.setup({exchangeClient, botToken, initAlgorithmsCallback})
+        }
     }
 
     private async setup({exchangeClient, botToken, initAlgorithmsCallback}: {
@@ -45,7 +57,10 @@ export class TradeBot<ExchangeClient extends AbstractExchangeClient = AbstractEx
     }){
         this._logger = new BotLogger(this)
         globalStore.logger = this.logger
-        this.logger.log('TradeBot Initialization...')
+        this.logger.log({
+            type: "info",
+            message: 'TradeBot Initialization...'
+        })
         await db.initialize()
         this._exchangeClient = exchangeClient
         this._analyzer = new ExchangeAnalyzer(this, initAlgorithmsCallback)
@@ -53,7 +68,10 @@ export class TradeBot<ExchangeClient extends AbstractExchangeClient = AbstractEx
         this._watcher = new ExchangeWatcher(this)
         this._api = new BotApi(this)
         this._auth = new BotAuth(botToken || config.auth.token)
-        this.logger.log('All modules are initialized...')
+        this.logger.log({
+            type: 'info',
+            message: 'All modules are initialized...'
+        })
         await this.analyzer.start()
         await this.analyzer.updateCurrencies()
     }
