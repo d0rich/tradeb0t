@@ -2,15 +2,15 @@
   "compilerOptions": {
     // project options
     "lib": [
-      "es2021"
+      "es2021", "dom"
     ],
-    "outDir": "lib",
+    "outDir": "../bin",
     "removeComments": false,
     "target": "ES6",
     "module": "CommonJS",
     "declaration": true,
     // Module resolution
-    "baseUrl": "./",
+    "baseUrl": "../",
     "esModuleInterop": true,
     "moduleResolution": "node",
     "paths": {},
@@ -33,11 +33,9 @@
 
     // Decorators
     "emitDecoratorMetadata": true,
-    "experimentalDecorators": true
+    "experimentalDecorators": true,
+    "jsx": "react"
   },
-  "include": [
-    "src"
-  ],
   "exclude": [
     "node_modules/**/*"
   ]
