@@ -1,9 +1,4 @@
-import {OperationType} from "../index";
+import {z} from "zod";
+import {getOrdersOptions} from "../../modules/bot-api/trpc/schemas";
 
-export type GetOrdersOptions = {
-    from?: Date,
-    to?: Date,
-    securityTicker?: string,
-    operation?: OperationType,
-    runId?: number
-}
+export type GetOrdersOptions = z.infer<typeof getOrdersOptions>
