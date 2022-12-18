@@ -7,3 +7,10 @@ logs
 .dockerignore
 Dockerfile
 .github
+
+*.db
+*.db-shm
+*.db-wal
+.eslintrc.js
+.prettierignore
+.prettierrc.json
