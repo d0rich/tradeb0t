@@ -1,7 +1,7 @@
 {
   "name": "tradeb0t-core",
   "version": "0.1.0",
-  "description": "Core library for trade bots",
+  "description": "🤖 Core library for trading software with high integration possibilities",
   "main": "index.js",
   "types": "./",
   "scripts": {
@@ -22,7 +22,7 @@
   },
   "keywords": [
     "robotics",
-    "backend",
+    "back-end",
     "trading",
     "core",
     "typescript",
