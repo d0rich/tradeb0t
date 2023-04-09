@@ -3,7 +3,7 @@
     "target": "ES6",
     "baseUrl": ".",
     "paths": {
-      "@badlabs/tradebot-core": ["../lib"]
+      "tradeb0t-core": ["../lib"]
     },
 
     "esModuleInterop": true,

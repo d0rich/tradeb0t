@@ -1,11 +1,11 @@
-# @badlabs/tradebot-core
+# tradeb0t-core
 
 ## Getting started
 
 Install core: 
 
 ```sh
-npm install @badlabs/tradebot-core
+npm install tradeb0t-core
 ```
 
 ### Describe your domain
@@ -15,7 +15,7 @@ Domain includes types of entities in the integrated exchange.
 Technically, you can provide `any` types for `DomainTemplate`. But it is not recommended, as these types will be helpful in process of creating other modules.
 
 ```typescript
-import {DomainTemplate} from '@badlabs/tradebot-core'
+import {DomainTemplate} from 'tradeb0t-core'
 import {
     CurrencyType,
     CurrencyBalanceType,
@@ -42,7 +42,7 @@ You can access `ExchangeClient` instance with `this.exchangeClient` from these m
 Note, that you can provide object containing API methods to exchange (`API` in example). It will be available in `ExchangeClient` instance as `api`.
 
 ```typescript
-import {AbstractExchangeClient} from '@badlabs/tradebot-core'
+import {AbstractExchangeClient} from 'tradeb0t-core'
 import API from '@exchange/sdk'
 
 import {Domain} from '../Domain'
@@ -78,7 +78,7 @@ export class ExchangeClient extends AbstractExchangeClient<Domain, API>{
 Don't forget to implement `InfoModule` and `TradeModule`.
 
 ```typescript
-import {AbstractInfoModule} from '@badlabs/tradebot-core'
+import {AbstractInfoModule} from 'tradeb0t-core'
 
 import {ExchangeClient} from './ExchangeClient'
 
@@ -86,7 +86,7 @@ export class InfoModule extends AbstractInfoModule<ExchangeClient>{/*...*/}
 ```
 
 ```typescript
-import {AbstractTradeModule} from '@badlabs/tradebot-core'
+import {AbstractTradeModule} from 'tradeb0t-core'
 
 import {ExchangeClient} from './ExchangeClient'
 
@@ -104,7 +104,7 @@ import {OperationType, OrderStatus, CommonDomain,
     GetCurrencyType,
     GetOrderType,
     GetSecurityBalanceType,
-    GetSecurityType} from '@badlabs/tradebot-core'
+    GetSecurityType} from 'tradeb0t-core'
 
 import {ExchangeClient} from './ExchangeClient'
 import {Domain} from "../Domain";
@@ -128,7 +128,7 @@ Note, that you can extract specific domains types from `Domain` or `ExchangeClie
 Finally, start tradebot with `runTradeBot` function:
 
 ```typescript
-import {runTradeBot} from '@badlabs/tradebot-core'
+import {runTradeBot} from 'tradeb0t-core'
 
 import {ExchangeClient} from './exchange-client'
 import {initAlgorithms} from './algorithms'

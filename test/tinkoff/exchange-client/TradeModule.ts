@@ -1,4 +1,4 @@
-import { CreateOrderOptions, AbstractTradeModule, GetOrderType } from '@badlabs/tradebot-core'
+import { CreateOrderOptions, AbstractTradeModule, GetOrderType } from 'tradeb0t-core'
 import {Domain} from "../Domain";
 import {ExchangeClient} from "./ExchangeClient";
 import {getFigi, placedLimitOrderToOrder, placedMarketOrderToOrder} from "../utils";

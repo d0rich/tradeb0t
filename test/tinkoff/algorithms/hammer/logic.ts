@@ -1,7 +1,7 @@
 import { 
   ExchangeAnalyzer, 
   AbstractTradeAlgorithm, 
-  addSecondsToDate, CreateOrderOptions } from '@badlabs/tradebot-core'
+  addSecondsToDate, CreateOrderOptions } from 'tradeb0t-core'
 import {ExchangeClient} from '../../exchange-client'
 import {HammerInput, HammerState, HammerStopData} from './types'
 

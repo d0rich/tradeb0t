@@ -1,4 +1,4 @@
-import {CreateOrderOptions} from '@badlabs/tradebot-core'
+import {CreateOrderOptions} from 'tradeb0t-core'
 import {Job} from 'node-schedule'
 
 export type SlicingInput = {

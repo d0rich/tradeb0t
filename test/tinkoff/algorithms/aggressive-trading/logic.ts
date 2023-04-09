@@ -2,7 +2,7 @@ import {
   ExchangeAnalyzer, 
   AbstractTradeAlgorithm,
   GetSecurityType, CommonDomain
- } from '@badlabs/tradebot-core'
+ } from 'tradeb0t-core'
 import {ExchangeClient} from '../../exchange-client'
 import {AggressiveTraderInput, AggressiveTraderState, AggressiveTraderStopData} from './types'
 import {Job, scheduleJob} from 'node-schedule'
