@@ -1,6 +1,6 @@
 {
-  "name": "@badlabs/tradebot-core",
-  "version": "1.0.0-beta",
+  "name": "tradeb0t-core",
+  "version": "0.1.0",
   "description": "Core library for trade bots",
   "main": "index.js",
   "types": "./",
@@ -14,11 +14,11 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/badlabs/tradebot-core.git"
+    "url": "https://github.com/d0rich/tradeb0t-core.git"
   },
-  "homepage": "https://github.com/badlabs/tradebot-core#readme",
+  "homepage": "https://tradeb0t.d0rich.me",
   "bugs": {
-    "url": "https://github.com/badlabs/tradebot-core/issues"
+    "url": "https://github.com/d0rich/tradeb0t-core/issues"
   },
   "keywords": [
     "robotics",
