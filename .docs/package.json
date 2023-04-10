@@ -1,0 +1,6 @@
+{
+  "private": true,
+  "dependencies": {
+    "d0xigen": "^0.1.4"
+  }
+}
