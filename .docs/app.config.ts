@@ -1,6 +1,6 @@
 export default defineAppConfig({
   d0xigen: {
-    title: 'tradeb0t-core',
+    title: 'tradeb0t',
     description: '🤖 Core library for trading software with high integration possibilities',
     url: 'https://tradeb0t.d0rich.me',
     social: {
