@@ -1,5 +1,9 @@
 # tradeb0t-core
 
+::alert{type="warning"}
+This project is under development. It might be updated in near future.
+::
+
 ## Getting started
 
 Install core: 
