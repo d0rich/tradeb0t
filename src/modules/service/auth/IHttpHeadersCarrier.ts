@@ -1,5 +1,5 @@
-import {IncomingHttpHeaders} from "http";
+import { IncomingHttpHeaders } from 'http'
 
 export interface IHttpHeadersCarrier {
-    headers: IncomingHttpHeaders
+  headers: IncomingHttpHeaders
 }
