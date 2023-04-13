@@ -10,9 +10,7 @@
     "lint": "npm run lint:js && npm run lint:prettier",
     "lintfix": "prettier --write --list-different ./src && eslint --fix --ext \".ts\" --ignore-path .gitignore ./src",
     "build": "tsc",
-    "clean": "tsc --build --clean && delete-empty ./",
-    "build:test": "tsc --project tsconfig.test.json",
-    "test:tinkoff": "ts-node test/tinkoff/index.ts --project test/tsconfig.json"
+    "clean": "tsc --build --clean && delete-empty ./"
   },
   "repository": {
     "type": "git",
@@ -43,7 +41,6 @@
     "logs": "./logs"
   },
   "devDependencies": {
-    "@tinkoff/invest-openapi-js-sdk": "^1.5.0",
     "@types/colors": "^1.2.1",
     "@types/cors": "^2.8.13",
     "@types/deepmerge": "^2.2.0",
