@@ -1,12 +1,7 @@
 import { AlgorithmRun, Algorithm } from '../db'
 import { InputTypes } from '../db/Algorithm'
 import { AbstractExchangeClient } from './AbstractExchangeClient'
-import {
-  LoggerService,
-  ExchangeAnalyzer,
-  ExchangeTrader,
-  ExchangeWatcher
-} from '../modules'
+import { LoggerService, ExchangeAnalyzer, ExchangeTrader, ExchangeWatcher } from '../modules'
 import { HandleError } from '../decorators'
 
 export abstract class AbstractTradeAlgorithm<
@@ -22,10 +17,7 @@ export abstract class AbstractTradeAlgorithm<
   protected get trader(): ExchangeTrader<ExchangeClient> {
     return this.analyzer.trader
   }
-  protected stopData: Map<number, StopDataType> = new Map<
-    number,
-    StopDataType
-  >()
+  protected stopData: Map<number, StopDataType> = new Map<number, StopDataType>()
   private get logger(): LoggerService {
     return this.analyzer.tradebot.logger
   }
@@ -42,16 +34,9 @@ export abstract class AbstractTradeAlgorithm<
   }
 
   @HandleError()
-  protected async fixStart(
-    inputs: InputsType,
-    state: StateType
-  ): Promise<AlgorithmRun> {
+  protected async fixStart(inputs: InputsType, state: StateType): Promise<AlgorithmRun> {
     const { name, analyzer, logger } = this
-    const algoRun: AlgorithmRun = await analyzer.runAlgorithm(
-      name,
-      inputs,
-      state
-    )
+    const algoRun: AlgorithmRun = await analyzer.runAlgorithm(name, inputs, state)
     logger.log({
       type: 'info',
       message: `Starting algorithm "${name}"`,
@@ -126,10 +111,7 @@ export abstract class AbstractTradeAlgorithm<
   }
 
   @HandleError()
-  protected async saveProgress(
-    id: number,
-    progress: StateType
-  ): Promise<AlgorithmRun> {
+  protected async saveProgress(id: number, progress: StateType): Promise<AlgorithmRun> {
     const { name, analyzer, logger } = this
     logger.log({
       type: 'info',
@@ -146,10 +128,8 @@ export abstract class AbstractTradeAlgorithm<
   @HandleError()
   protected async loadProgress(id: number): Promise<AlgorithmRun> {
     const { name, analyzer, logger } = this
-    const algoRun: AlgorithmRun | null =
-      await analyzer.loadAlgorithmRunProgress(id)
-    if (!algoRun)
-      throw new Error(`[algo:${id}] Algorithm "${name}" was not found`)
+    const algoRun: AlgorithmRun | null = await analyzer.loadAlgorithmRunProgress(id)
+    if (!algoRun) throw new Error(`[algo:${id}] Algorithm "${name}" was not found`)
     logger.log({
       type: 'info',
       message: `Loading progress of algorithm "${name}"`,

@@ -35,21 +35,15 @@ export class ExchangeWatcher<ExchangeClient extends AbstractExchangeClient> {
   async getPortfolio(): Promise<GetSecurityBalanceType<CommonDomain>[]> {
     const { exchangeClient, translator } = this
     const portfolio = await exchangeClient.getPortfolio()
-    const promises = portfolio.map((position) =>
-      translator.securityBalance(position)
-    )
+    const promises = portfolio.map((position) => translator.securityBalance(position))
     return Promise.all(promises)
   }
 
   @HandleError()
-  async getCurrenciesBalance(): Promise<
-    GetCurrencyBalanceType<CommonDomain>[]
-  > {
+  async getCurrenciesBalance(): Promise<GetCurrencyBalanceType<CommonDomain>[]> {
     const { exchangeClient, translator } = this
     const currencies = await exchangeClient.getCurrenciesBalance()
-    return await Promise.all(
-      currencies.map((c) => translator.currencyBalance(c))
-    )
+    return await Promise.all(currencies.map((c) => translator.currencyBalance(c)))
   }
 
   @HandleError()
@@ -63,8 +57,7 @@ export class ExchangeWatcher<ExchangeClient extends AbstractExchangeClient> {
   async getSecurity(ticker: string): Promise<GetSecurityType<CommonDomain>> {
     const { exchangeClient, translator } = this
     const security = await exchangeClient.infoModule.getSecurity(ticker, false)
-    if (!security)
-      throw new Error(`Security with ticker "${ticker}" was not found`)
+    if (!security) throw new Error(`Security with ticker "${ticker}" was not found`)
     return translator.security(security)
   }
 
@@ -81,9 +74,7 @@ export class ExchangeWatcher<ExchangeClient extends AbstractExchangeClient> {
   }
 
   @HandleError()
-  async getSecurityCurrency(
-    ticker: string
-  ): Promise<GetCurrencyType<CommonDomain>> {
+  async getSecurityCurrency(ticker: string): Promise<GetCurrencyType<CommonDomain>> {
     const { exchangeClient, translator } = this
     const currency = await exchangeClient.infoModule.getSecurityCurrency(ticker)
     return translator.currency(currency)
@@ -96,11 +87,7 @@ export class ExchangeWatcher<ExchangeClient extends AbstractExchangeClient> {
   ): OrderStatus {
     const { translator, analyzer } = this
     const status = translator.orderStatus(order)
-    translator
-      .order(order)
-      .then((order) =>
-        analyzer.saveOrder({ ...order, status: status }, operation_type, runId)
-      )
+    translator.order(order).then((order) => analyzer.saveOrder({ ...order, status: status }, operation_type, runId))
     return status
   }
 }

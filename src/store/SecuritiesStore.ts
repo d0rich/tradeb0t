@@ -32,8 +32,7 @@ export class SecuritiesStore {
   }
 
   follow(securityTicker: string) {
-    if (!this.followList.includes(securityTicker))
-      this.followList.push(securityTicker)
+    if (!this.followList.includes(securityTicker)) this.followList.push(securityTicker)
     return deepCopy(this.items.find((s) => s.ticker === securityTicker))
   }
   unfollow(securityTicker: string) {
@@ -44,9 +43,7 @@ export class SecuritiesStore {
 
   updateSecurities(...securities: Security[]) {
     for (const security of deepCopy(securities)) {
-      const foundSecurity = this.items.find(
-        (item) => item.ticker === security.ticker
-      )
+      const foundSecurity = this.items.find((item) => item.ticker === security.ticker)
       if (!foundSecurity) {
         this.items.push(deepCopy(security))
       } else {
@@ -60,9 +57,11 @@ export class SecuritiesStore {
     const security = this.items.find((s) => s.ticker === securityTicker)
     if (!security) return
     return (
-      this.portfolioStore.securities.find(
-        (sec) => sec.securityTicker === securityTicker
-      ) ?? { securityTicker, type: 'security', amount: 0 }
+      this.portfolioStore.securities.find((sec) => sec.securityTicker === securityTicker) ?? {
+        securityTicker,
+        type: 'security',
+        amount: 0
+      }
     )
   }
 }

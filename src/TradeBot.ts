@@ -1,25 +1,14 @@
 import { db } from './db'
-import {
-  ApiService,
-  AuthService,
-  LoggerService,
-  ExchangeAnalyzer,
-  ExchangeTrader,
-  ExchangeWatcher
-} from './modules'
+import { ApiService, AuthService, LoggerService, ExchangeAnalyzer, ExchangeTrader, ExchangeWatcher } from './modules'
 import { AbstractExchangeClient, AbstractTradeAlgorithm } from './abstract'
 import { globalStore } from './global/store'
 
-export type TradeBotInitOptions<
-  ExchangeClient extends AbstractExchangeClient = AbstractExchangeClient
-> =
+export type TradeBotInitOptions<ExchangeClient extends AbstractExchangeClient = AbstractExchangeClient> =
   | {
       mode: 'production'
       exchangeClient: ExchangeClient
       botToken?: string
-      initAlgorithmsCallback?: (
-        analyzer: ExchangeAnalyzer<ExchangeClient>
-      ) => AbstractTradeAlgorithm<ExchangeClient>[]
+      initAlgorithmsCallback?: (analyzer: ExchangeAnalyzer<ExchangeClient>) => AbstractTradeAlgorithm<ExchangeClient>[]
     }
   | {
       /**
@@ -29,9 +18,7 @@ export type TradeBotInitOptions<
       mode: 'no_setup'
     }
 
-export class TradeBot<
-  ExchangeClient extends AbstractExchangeClient = AbstractExchangeClient
-> {
+export class TradeBot<ExchangeClient extends AbstractExchangeClient = AbstractExchangeClient> {
   private _exchangeClient: ExchangeClient
   private _analyzer: ExchangeAnalyzer<ExchangeClient>
   private _trader: ExchangeTrader<ExchangeClient>
@@ -76,9 +63,7 @@ export class TradeBot<
   }: {
     exchangeClient: ExchangeClient
     botToken?: string
-    initAlgorithmsCallback?: (
-      analyzer: ExchangeAnalyzer<ExchangeClient>
-    ) => AbstractTradeAlgorithm<ExchangeClient>[]
+    initAlgorithmsCallback?: (analyzer: ExchangeAnalyzer<ExchangeClient>) => AbstractTradeAlgorithm<ExchangeClient>[]
   }) {
     this._logger = new LoggerService(this)
     globalStore.logger = this.logger

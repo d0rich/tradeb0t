@@ -32,9 +32,7 @@ const defaultConfig: ConfigOpts = {
   }
 }
 
-export const useConfig = <TExchange = unknown>(
-  config: DeepPartial<ConfigOpts<TExchange>> | null = null
-) => {
+export const useConfig = <TExchange = unknown>(config: DeepPartial<ConfigOpts<TExchange>> | null = null) => {
   if (config) {
     const keys = Object.keys(config) as (keyof ConfigOpts)[]
     for (const prop of keys) {

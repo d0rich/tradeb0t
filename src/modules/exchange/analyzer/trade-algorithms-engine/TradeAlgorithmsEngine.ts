@@ -1,18 +1,9 @@
 import { TradeBot } from '../../../../TradeBot'
-import {
-  AbstractExchangeClient,
-  AbstractTradeAlgorithm
-} from '../../../../abstract'
-import {
-  ExchangeAnalyzer,
-  ExchangeTrader,
-  ExchangeWatcher
-} from '../../../index'
+import { AbstractExchangeClient, AbstractTradeAlgorithm } from '../../../../abstract'
+import { ExchangeAnalyzer, ExchangeTrader, ExchangeWatcher } from '../../../index'
 import { Algorithm, AlgorithmRun } from '../../../../db'
 
-export class TradeAlgorithmsEngine<
-  ExchangeClient extends AbstractExchangeClient
-> {
+export class TradeAlgorithmsEngine<ExchangeClient extends AbstractExchangeClient> {
   protected readonly analyzer: ExchangeAnalyzer<ExchangeClient>
   protected get trader(): ExchangeTrader<ExchangeClient> {
     return this.analyzer.trader
@@ -28,9 +19,7 @@ export class TradeAlgorithmsEngine<
 
   constructor(
     analyzer: ExchangeAnalyzer<ExchangeClient>,
-    initAlgorithmsCallback: (
-      analyzer: ExchangeAnalyzer<ExchangeClient>
-    ) => AbstractTradeAlgorithm<ExchangeClient>[]
+    initAlgorithmsCallback: (analyzer: ExchangeAnalyzer<ExchangeClient>) => AbstractTradeAlgorithm<ExchangeClient>[]
   ) {
     this.analyzer = analyzer
     this.algorithms = initAlgorithmsCallback(analyzer)
@@ -52,9 +41,7 @@ export class TradeAlgorithmsEngine<
     const { tradebot, analyzer, algorithms } = this
     const unfinishedRuns = await analyzer.getUnfinishedAlgorithmRuns()
     for (const run of unfinishedRuns) {
-      const resumedRun = await algorithms
-        .find((algo) => algo.name === run.algorithmName)
-        ?.continue(run.id)
+      const resumedRun = await algorithms.find((algo) => algo.name === run.algorithmName)?.continue(run.id)
       if (resumedRun)
         tradebot.logger.log({
           type: 'info',

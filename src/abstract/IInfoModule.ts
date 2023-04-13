@@ -1,5 +1,5 @@
-import { DomainTemplate } from "src/domain"
-import { GetSecurityBalanceType, GetCurrencyType } from "src/domain/extractors"
+import { DomainTemplate } from 'src/domain'
+import { GetSecurityBalanceType, GetCurrencyType } from 'src/domain/extractors'
 
 export interface IInfoModule<Domain extends DomainTemplate> {
   getCurrencies(): Promise<GetCurrencyType<Domain>[]>

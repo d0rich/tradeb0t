@@ -14,9 +14,7 @@ export default (tradeBot: TradeBot) => {
         })
       )
       .query(async ({ input }) => {
-        return await tradeBot.analyzer.getAlgorithmRunsByAlgorithm(
-          input.algorithmName
-        )
+        return await tradeBot.analyzer.getAlgorithmRunsByAlgorithm(input.algorithmName)
       }),
     run: publicProcedure
       .input(
@@ -26,10 +24,7 @@ export default (tradeBot: TradeBot) => {
         })
       )
       .mutation(async ({ input }) => {
-        return await tradeBot.analyzer.tradeAlgos.runAlgorithm(
-          input.algorithmName,
-          input.inputs
-        )
+        return await tradeBot.analyzer.tradeAlgos.runAlgorithm(input.algorithmName, input.inputs)
       }),
     stop: publicProcedure
       .input(
@@ -39,10 +34,7 @@ export default (tradeBot: TradeBot) => {
         })
       )
       .mutation(async ({ input }) => {
-        return await tradeBot.analyzer.tradeAlgos.stopAlgorithm(
-          input.algorithmName,
-          input.runId
-        )
+        return await tradeBot.analyzer.tradeAlgos.stopAlgorithm(input.algorithmName, input.runId)
       }),
     resume: publicProcedure
       .input(
@@ -52,10 +44,7 @@ export default (tradeBot: TradeBot) => {
         })
       )
       .mutation(async ({ input }) => {
-        return await tradeBot.analyzer.tradeAlgos.continueAlgorithm(
-          input.algorithmName,
-          input.runId
-        )
+        return await tradeBot.analyzer.tradeAlgos.continueAlgorithm(input.algorithmName, input.runId)
       })
   })
 }

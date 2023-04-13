@@ -48,27 +48,15 @@ export class ApiService {
         }
         console.info(`    ${colors.blue('[i]')} REST API:`)
         for (const addr of ipAddresses) {
-          console.info(
-            `        ${colors.grey('-')} http://${addr}:${config.api.port}/`
-          )
+          console.info(`        ${colors.grey('-')} http://${addr}:${config.api.port}/`)
         }
         console.info(`    ${colors.blue('[i]')} WebSocket:`)
         for (const addr of ipAddresses) {
-          console.info(
-            `        ${colors.grey('-')} ws://${addr}:${config.api.port}/`
-          )
+          console.info(`        ${colors.grey('-')} ws://${addr}:${config.api.port}/`)
         }
       } else {
-        console.info(
-          `    ${colors.blue('[i]')} REST API - http://${config.api.host}:${
-            config.api.port
-          }/`
-        )
-        console.info(
-          `    ${colors.blue('[i]')} WebSocket - ws://${config.api.host}:${
-            config.api.port
-          }/`
-        )
+        console.info(`    ${colors.blue('[i]')} REST API - http://${config.api.host}:${config.api.port}/`)
+        console.info(`    ${colors.blue('[i]')} WebSocket - ws://${config.api.host}:${config.api.port}/`)
       }
     })
   }

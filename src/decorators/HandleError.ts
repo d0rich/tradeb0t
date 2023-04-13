@@ -1,11 +1,7 @@
 import { globalStore } from '../global/store'
 
 export function HandleError() {
-  return function (
-    target: unknown,
-    propertyKey: string,
-    descriptor: PropertyDescriptor
-  ) {
+  return function (target: unknown, propertyKey: string, descriptor: PropertyDescriptor) {
     // Check of the decorated property is a function
     if (typeof descriptor.value === 'function') {
       // The function that we are going to wrap

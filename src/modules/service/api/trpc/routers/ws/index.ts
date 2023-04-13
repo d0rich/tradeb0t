@@ -10,13 +10,7 @@ const initWSRouter = (tradeBot: TradeBot) => {
   })
 }
 
-export const registerWSSHandler = ({
-  wss,
-  tradeBot
-}: {
-  wss: WebSocketServer
-  tradeBot: TradeBot
-}) => {
+export const registerWSSHandler = ({ wss, tradeBot }: { wss: WebSocketServer; tradeBot: TradeBot }) => {
   const handler = applyWSSHandler({
     wss,
     router: initWSRouter(tradeBot),

@@ -18,13 +18,7 @@ const initHTTPRouter = (tradeBot: TradeBot) => {
   })
 }
 
-export const registerExpressRoutes = ({
-  tradeBot,
-  express
-}: {
-  tradeBot: TradeBot
-  express: Express
-}) => {
+export const registerExpressRoutes = ({ tradeBot, express }: { tradeBot: TradeBot; express: Express }) => {
   express.use(
     '/api/trpc',
     createExpressMiddleware({

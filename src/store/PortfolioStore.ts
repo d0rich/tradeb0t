@@ -20,10 +20,7 @@ export class PortfolioStore {
   private items: PortfolioPosition[] = []
   private securitiesStore: SecuritiesStore
 
-  private findPosition(
-    position: PortfolioPosition,
-    searchIn: PortfolioPosition[] = this.items
-  ) {
+  private findPosition(position: PortfolioPosition, searchIn: PortfolioPosition[] = this.items) {
     return searchIn.find((item) => {
       if (item.type === 'security' && position.type === 'security') {
         return item.securityTicker === position.securityTicker
@@ -43,14 +40,10 @@ export class PortfolioStore {
     return deepCopy(this.items)
   }
   get currencies() {
-    return this.portfolio.filter(
-      (item) => item.type === 'currency'
-    ) as CurrencyBalance[]
+    return this.portfolio.filter((item) => item.type === 'currency') as CurrencyBalance[]
   }
   get securities() {
-    return this.portfolio.filter(
-      (item) => item.type === 'security'
-    ) as SecurityBalance[]
+    return this.portfolio.filter((item) => item.type === 'security') as SecurityBalance[]
   }
 
   /**
