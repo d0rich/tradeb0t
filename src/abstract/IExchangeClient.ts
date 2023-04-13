@@ -4,7 +4,7 @@ import { ITradeModule } from './ITradeModule'
 import { IInfoModule } from './IInfoModule'
 import { IDomainMapper } from './IDomainMapper'
 
-export interface IExchangeClient<Domain extends DomainTemplate, TExchangeApi> {
+export interface IExchangeClient<Domain extends DomainTemplate, TExchangeApi = unknown> {
   get api(): TExchangeApi
   get tradeModule(): ITradeModule<Domain>
   get infoModule(): IInfoModule<Domain>

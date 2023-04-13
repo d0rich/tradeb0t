@@ -8,8 +8,17 @@ import { ITradeModule } from './ITradeModule'
 import { IInfoModule } from './IInfoModule'
 import { IDomainMapper } from './IDomainMapper'
 
-export abstract class AbstractExchangeClient<Domain extends DomainTemplate = DomainTemplate, ExchangeApiType = unknown>
-  implements IExchangeClient<Domain, ExchangeApiType>
+export type AbstractExchangeClientConstructorParams<Domain extends DomainTemplate, TExchangeApi> = {
+  modules: {
+    tradeModule: AbstractTradeModule<Domain, TExchangeApi>
+    infoModule: AbstractInfoModule<Domain, TExchangeApi>
+    domainMapper: AbstractDomainMapper<Domain, TExchangeApi>
+  }
+  api: TExchangeApi
+}
+
+export abstract class AbstractExchangeClient<Domain extends DomainTemplate = DomainTemplate, TExchangeApi = unknown>
+  implements IExchangeClient<Domain, TExchangeApi>
 {
   private _isAccountInitialized = false
   public get isAccountInitialized(): boolean {
@@ -19,26 +28,19 @@ export abstract class AbstractExchangeClient<Domain extends DomainTemplate = Dom
     this._isAccountInitialized = value
   }
 
-  readonly api: ExchangeApiType
+  readonly api: TExchangeApi
   readonly tradeModule: ITradeModule<Domain>
   readonly infoModule: IInfoModule<Domain>
-  readonly translator: IDomainMapper<Domain>
+  readonly domainMapper: IDomainMapper<Domain>
 
-  protected constructor(
-    modules: {
-      tradeModule: ITradeModule<Domain>
-      infoModule: IInfoModule<Domain>
-      translator: IDomainMapper<Domain>
-    },
-    api: ExchangeApiType
-  ) {
-    this.api = api
-    this.tradeModule = modules.tradeModule
-    this.infoModule = modules.infoModule
-    this.translator = modules.translator
-    this.tradeModule.setExchangeClient(this)
-    this.infoModule.setExchangeClient(this)
-    this.translator.setExchangeClient(this)
+  protected constructor(options: AbstractExchangeClientConstructorParams<Domain, TExchangeApi>) {
+    options.modules.tradeModule.setExchangeClient(this)
+    options.modules.infoModule.setExchangeClient(this)
+    options.modules.domainMapper.setExchangeClient(this)
+    this.tradeModule = options.modules.tradeModule
+    this.infoModule = options.modules.infoModule
+    this.domainMapper = options.modules.domainMapper
+    this.api = options.api
     this.initAccount()
   }
 

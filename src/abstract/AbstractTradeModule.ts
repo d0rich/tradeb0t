@@ -1,26 +1,27 @@
-import { AbstractExchangeClient } from './AbstractExchangeClient'
-import { GetOrderType, GetDomain } from '../domain/extractors'
+import { IExchangeClient } from './IExchangeClient'
+import { GetOrderType } from '../domain/extractors'
 import { CreateOrderOptions } from './CreateOrderOptions'
 import { ITradeModule } from './ITradeModule'
+import { DomainTemplate } from 'src/domain'
 
-export abstract class AbstractTradeModule<ExchangeClient extends AbstractExchangeClient>
-  implements ITradeModule<GetDomain<ExchangeClient>>
+export abstract class AbstractTradeModule<Domain extends DomainTemplate, TExchangeApi = unknown>
+  implements ITradeModule<Domain>
 {
-  protected exchangeClient: ExchangeClient
+  protected exchangeClient: IExchangeClient<Domain, TExchangeApi>
 
-  setExchangeClient(exchangeClient: ExchangeClient) {
+  setExchangeClient(exchangeClient: IExchangeClient<Domain, TExchangeApi>) {
     this.exchangeClient = exchangeClient
   }
 
-  abstract sell({ ticker, lots, price }: CreateOrderOptions): Promise<GetOrderType<ExchangeClient>>
+  abstract sell({ ticker, lots, price }: CreateOrderOptions): Promise<GetOrderType<Domain>>
 
-  abstract buy({ ticker, lots, price }: CreateOrderOptions): Promise<GetOrderType<ExchangeClient>>
+  abstract buy({ ticker, lots, price }: CreateOrderOptions): Promise<GetOrderType<Domain>>
 
-  abstract marketSell({ ticker, lots }: CreateOrderOptions): Promise<GetOrderType<ExchangeClient>>
+  abstract marketSell({ ticker, lots }: CreateOrderOptions): Promise<GetOrderType<Domain>>
 
-  abstract marketBuy({ ticker, lots }: CreateOrderOptions): Promise<GetOrderType<ExchangeClient>>
+  abstract marketBuy({ ticker, lots }: CreateOrderOptions): Promise<GetOrderType<Domain>>
 
-  abstract sellOrCancel(): Promise<GetOrderType<ExchangeClient>>
+  abstract sellOrCancel(): Promise<GetOrderType<Domain>>
 
-  abstract buyOrCancel(): Promise<GetOrderType<ExchangeClient>>
+  abstract buyOrCancel(): Promise<GetOrderType<Domain>>
 }

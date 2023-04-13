@@ -1,6 +1,6 @@
-import { AbstractExchangeClient } from './AbstractExchangeClient'
+import { IExchangeClient } from './IExchangeClient'
 import { OrderStatus, OperationType } from '../db'
-import { CommonDomain } from '../domain'
+import { CommonDomain, DomainTemplate } from '../domain'
 import {
   GetCurrencyType,
   GetCurrencyBalanceType,
@@ -11,30 +11,26 @@ import {
 } from '../domain/extractors'
 import { IDomainMapper } from './IDomainMapper'
 
-export abstract class AbstractDomainMapper<ExchangeClient extends AbstractExchangeClient = AbstractExchangeClient>
-  implements IDomainMapper<GetDomain<ExchangeClient>>
+export abstract class AbstractDomainMapper<Domain extends DomainTemplate, TExchangeApi = unknown>
+  implements IDomainMapper<Domain>
 {
-  protected exchangeClient: ExchangeClient
+  protected exchangeClient: IExchangeClient<Domain, TExchangeApi>
 
-  setExchangeClient(exchangeClient: ExchangeClient) {
+  setExchangeClient(exchangeClient: IExchangeClient<Domain, TExchangeApi>) {
     this.exchangeClient = exchangeClient
   }
 
-  abstract currency(currency: GetCurrencyType<ExchangeClient>): Promise<GetCurrencyType<CommonDomain>>
+  abstract currency(currency: GetCurrencyType<Domain>): Promise<GetCurrencyType<CommonDomain>>
 
-  abstract currencyBalance(
-    currency: GetCurrencyBalanceType<ExchangeClient>
-  ): Promise<GetCurrencyBalanceType<CommonDomain>>
+  abstract currencyBalance(currency: GetCurrencyBalanceType<Domain>): Promise<GetCurrencyBalanceType<CommonDomain>>
 
-  abstract security(security: GetSecurityType<ExchangeClient>): Promise<GetSecurityType<CommonDomain>>
+  abstract security(security: GetSecurityType<Domain>): Promise<GetSecurityType<CommonDomain>>
 
-  abstract securityBalance(
-    portfolio: GetSecurityBalanceType<ExchangeClient>
-  ): Promise<GetSecurityBalanceType<CommonDomain>>
+  abstract securityBalance(portfolio: GetSecurityBalanceType<Domain>): Promise<GetSecurityBalanceType<CommonDomain>>
 
-  abstract order(order: GetOrderType<ExchangeClient>): Promise<GetOrderType<CommonDomain>>
+  abstract order(order: GetOrderType<Domain>): Promise<GetOrderType<CommonDomain>>
 
-  abstract orderStatus(order: GetOrderType<ExchangeClient>): OrderStatus
+  abstract orderStatus(order: GetOrderType<Domain>): OrderStatus
 
-  abstract orderOperation(order: GetOrderType<ExchangeClient>): OperationType
+  abstract orderOperation(order: GetOrderType<Domain>): OperationType
 }
