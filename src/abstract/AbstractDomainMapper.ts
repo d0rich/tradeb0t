@@ -6,10 +6,14 @@ import {
   GetCurrencyBalanceType,
   GetSecurityBalanceType,
   GetSecurityType,
-  GetOrderType
+  GetOrderType,
+  GetDomain
 } from '../domain/extractors'
+import { IDomainMapper } from './IDomainMapper'
 
-export abstract class AbstractDomainMapper<ExchangeClient extends AbstractExchangeClient = AbstractExchangeClient> {
+export abstract class AbstractDomainMapper<ExchangeClient extends AbstractExchangeClient = AbstractExchangeClient>
+  implements IDomainMapper<GetDomain<ExchangeClient>>
+{
   protected exchangeClient: ExchangeClient
 
   setExchangeClient(exchangeClient: ExchangeClient) {
