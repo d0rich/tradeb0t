@@ -1,6 +1,6 @@
 import { AbstractInfoModule } from './AbstractInfoModule'
 import { AbstractTradeModule } from './AbstractTradeModule'
-import { AbstractTranslator } from './AbstractTranslator'
+import { AbstractDomainMapper } from './AbstractDomainMapper'
 import { DomainTemplate } from '../domain'
 import { GetCurrencyBalanceType, GetSecurityBalanceType } from '../domain/extractors'
 
@@ -19,13 +19,13 @@ export abstract class AbstractExchangeClient<
   readonly api: ExchangeApiType
   readonly tradeModule: AbstractTradeModule<AbstractExchangeClient<Domain, ExchangeApiType>>
   readonly infoModule: AbstractInfoModule<AbstractExchangeClient<Domain, ExchangeApiType>>
-  readonly translator: AbstractTranslator<AbstractExchangeClient<Domain, ExchangeApiType>>
+  readonly translator: AbstractDomainMapper<AbstractExchangeClient<Domain, ExchangeApiType>>
 
   protected constructor(
     modules: {
       tradeModule: AbstractTradeModule<AbstractExchangeClient<Domain, ExchangeApiType>>
       infoModule: AbstractInfoModule<AbstractExchangeClient<Domain, ExchangeApiType>>
-      translator: AbstractTranslator<AbstractExchangeClient<Domain, ExchangeApiType>>
+      translator: AbstractDomainMapper<AbstractExchangeClient<Domain, ExchangeApiType>>
     },
     api: ExchangeApiType
   ) {
