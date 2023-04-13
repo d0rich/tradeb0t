@@ -310,8 +310,8 @@ export class ExchangeAnalyzer<ExchangeClient extends AbstractExchangeClient> {
   @HandleError()
   async runAlgorithm(
     algorithmName: string,
-    inputs: any,
-    state: any = inputs
+    inputs: unknown,
+    state: unknown = inputs
   ): Promise<AlgorithmRun> {
     return db.manager.create(AlgorithmRun, {
       algorithmName,
@@ -324,8 +324,9 @@ export class ExchangeAnalyzer<ExchangeClient extends AbstractExchangeClient> {
   @HandleError()
   async saveAlgorithmRunProgress(
     id: number,
-    state: any
+    state: unknown
   ): Promise<AlgorithmRun> {
+    if (!state) throw new Error('State is required')
     await db.manager.update(AlgorithmRun, { id }, { state })
     const updatedRun = await db.manager.findOneBy(AlgorithmRun, { id })
     if (!updatedRun)

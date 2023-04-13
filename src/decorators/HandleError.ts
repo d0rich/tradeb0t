@@ -2,7 +2,7 @@ import { globalStore } from '../global/store'
 
 export function HandleError() {
   return function (
-    target: any,
+    target: unknown,
     propertyKey: string,
     descriptor: PropertyDescriptor
   ) {
@@ -11,7 +11,7 @@ export function HandleError() {
       // The function that we are going to wrap
       const declaredFn = descriptor.value
       // Provide a new function for this property that wraps the original function
-      descriptor.value = function (...args: any[]) {
+      descriptor.value = function (...args: unknown[]) {
         // Call the method with `this` set the object with the method,
         // in case that matters.
         const result = declaredFn.apply(this, args)

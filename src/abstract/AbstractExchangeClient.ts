@@ -9,7 +9,7 @@ import {
 
 export abstract class AbstractExchangeClient<
   Domain extends DomainTemplate = DomainTemplate,
-  ExchangeApiType = any
+  ExchangeApiType = unknown
 > {
   private _isAccountInitialized = false
   public get isAccountInitialized(): boolean {

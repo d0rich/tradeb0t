@@ -41,7 +41,7 @@ export class TradeAlgorithmsEngine<
     return this.algorithms.map((algo) => algo.details)
   }
 
-  async runAlgorithm(name: string, inputs: any): Promise<AlgorithmRun> {
+  async runAlgorithm(name: string, inputs: unknown): Promise<AlgorithmRun> {
     const { algorithms } = this
     const algo = algorithms.find((a) => a.name === name)
     if (!algo) throw new Error(`Algorithm with name "${name}" was not found`)

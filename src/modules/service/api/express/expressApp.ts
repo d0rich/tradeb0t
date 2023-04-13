@@ -9,6 +9,8 @@ export function initExpress(tradeBot: TradeBot) {
   app.use(express.json())
   app.use(cors())
 
+  // FIXME: get version of package in correct way
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
   const packageJson = require('../../../../../package.json')
 
   app.use((req, res, next) => {

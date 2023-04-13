@@ -35,6 +35,7 @@ export const initLogRouter = (tradeBot: TradeBot) => {
               },
               { internal: true }
             )
+            // eslint-disable-next-line @typescript-eslint/no-empty-function
             return () => {}
           }
           tradeBot.logger.log(

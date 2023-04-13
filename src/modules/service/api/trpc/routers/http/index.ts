@@ -1,7 +1,7 @@
 import { createExpressMiddleware } from '@trpc/server/adapters/express'
 import { Express } from 'express'
 import { TradeBot } from '../../../../../../TradeBot'
-import { createContext, publicProcedure, router } from './trpc'
+import { createContext, router } from './trpc'
 import initAlgorithmRouter from './algorithm'
 import initSecurityRouter from './security'
 import initCurrencyRouter from './currency'

@@ -11,9 +11,9 @@ import { HandleError } from '../decorators'
 
 export abstract class AbstractTradeAlgorithm<
   ExchangeClient extends AbstractExchangeClient = AbstractExchangeClient,
-  InputsType = any,
-  StateType = any,
-  StopDataType = any
+  InputsType = unknown,
+  StateType = unknown,
+  StopDataType = unknown
 > {
   protected readonly analyzer: ExchangeAnalyzer<ExchangeClient>
   protected get watcher(): ExchangeWatcher<ExchangeClient> {

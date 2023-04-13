@@ -19,7 +19,7 @@ export type AlgorithmRunStatus =
   | 'error'
 
 @Entity()
-export class AlgorithmRun<InputType = any, StateType = InputType> {
+export class AlgorithmRun<InputType = unknown, StateType = InputType> {
   @PrimaryGeneratedColumn()
   id: number
 

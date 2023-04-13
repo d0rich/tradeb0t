@@ -2,12 +2,12 @@ export type SocketLogs = {
   robot_id: string
   type: 'info' | 'error' | 'warning'
   message: string
-  attachment?: any
+  attachment?: unknown
   algorithm?: {
     name: string
     run_id?: number
-    inputs?: any
-    state?: any
+    inputs?: unknown
+    state?: unknown
   }
   timestamp: string
 }
