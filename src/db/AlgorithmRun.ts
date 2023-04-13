@@ -19,7 +19,9 @@ export type AlgorithmRunStatus =
   | 'error'
 
 @Entity()
-export class AlgorithmRun<InputType = unknown, StateType = InputType> {
+// FIXME: remove any (requires adding type checks in dependencies)
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export class AlgorithmRun<InputType = any, StateType = InputType> {
   @PrimaryGeneratedColumn()
   id: number
 
