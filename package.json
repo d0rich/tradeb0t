@@ -36,7 +36,7 @@
     "email": "d.orich@yandex.com",
     "url": "https://d0rich.github.io/"
   },
-  "license": "Apache-2.0",
+  "license": "MIT",
   "config": {
     "host": "0.0.0.0",
     "port": "4268",
