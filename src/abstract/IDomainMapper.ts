@@ -1,4 +1,4 @@
-import { DomainTemplate, CommonDomain } from 'src/domain'
+import { DomainTemplate, CommonDomain, StubDomain } from 'src/domain'
 import { OrderStatus, OperationType } from '../db'
 import {
   GetCurrencyType,
@@ -8,7 +8,7 @@ import {
   GetSecurityBalanceType
 } from 'src/domain/extractors'
 
-export interface IDomainMapper<Domain extends DomainTemplate> {
+export interface IDomainMapper<Domain extends DomainTemplate = StubDomain> {
   currency(currency: GetCurrencyType<Domain>): Promise<GetCurrencyType<CommonDomain>>
   currencyBalance(currency: GetCurrencyBalanceType<Domain>): Promise<GetCurrencyBalanceType<CommonDomain>>
   security(security: GetSecurityType<Domain>): Promise<GetSecurityType<CommonDomain>>
