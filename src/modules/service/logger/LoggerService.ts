@@ -1,10 +1,10 @@
 import fs from 'fs'
-import {createRollingFileLogger, Logger} from 'simple-node-logger'
-import {EventEmitter} from "events";
+import { createRollingFileLogger, Logger } from 'simple-node-logger'
+import { EventEmitter } from 'events'
 import colors from 'colors/safe'
 import { TradeBot } from '../../../TradeBot'
 import { useConfig } from '../../../config'
-import { SocketLogs } from "./SocketLogs";
+import { SocketLogs } from './SocketLogs'
 
 export class LoggerService {
   private readonly tradebot: TradeBot
@@ -12,12 +12,15 @@ export class LoggerService {
   private readonly lastLogs: SocketLogs[]
   private readonly eventEmitter = new EventEmitter()
 
-  private createLogsDirIfNotExist(){
+  private createLogsDirIfNotExist() {
     const config = useConfig()
-    if (!fs.existsSync(config.logs.directory)) fs.mkdirSync(config.logs.directory)
+    if (!fs.existsSync(config.logs.directory))
+      fs.mkdirSync(config.logs.directory)
   }
 
-  private logToString(log: SocketLogs, {
+  private logToString(
+    log: SocketLogs,
+    {
       useColors = false,
       showRobotId = true,
       showType = true,
@@ -26,24 +29,45 @@ export class LoggerService {
       showAlgorithmRunId = true,
       showAlgorithmState = true,
       showAttachment = true
-  } = {}){
+    } = {}
+  ) {
     // Show or hide
     let robotId = showRobotId ? log.robot_id : ''
     let type = showType ? log.type : ''
     let timestamp = showTimestamp ? log.timestamp : ''
-    let algorithmName = showAlgorithmName ? log.algorithm?.name ?? '' : ''
-    let algorithmRunId = showAlgorithmRunId ? log.algorithm?.run_id ?? '' : ''
-    let algorithmState = showAlgorithmState ? log.algorithm?.state ? JSON.stringify(log.algorithm.state) : '' : ''
-    let algorithmInputs = showAlgorithmState ? log.algorithm?.inputs ? JSON.stringify(log.algorithm.inputs) : '' : ''
-    let attachment = showAttachment ? log.attachment ? JSON.stringify(log.attachment) : '' : ''
+    const algorithmName = showAlgorithmName ? log.algorithm?.name ?? '' : ''
+    const algorithmRunId = showAlgorithmRunId ? log.algorithm?.run_id ?? '' : ''
+    let algorithmState = showAlgorithmState
+      ? log.algorithm?.state
+        ? JSON.stringify(log.algorithm.state)
+        : ''
+      : ''
+    let algorithmInputs = showAlgorithmState
+      ? log.algorithm?.inputs
+        ? JSON.stringify(log.algorithm.inputs)
+        : ''
+      : ''
+    let attachment = showAttachment
+      ? log.attachment
+        ? JSON.stringify(log.attachment)
+        : ''
+      : ''
 
     // Apply layout
     robotId = robotId ? `<${robotId}>` : ''
     type = type ? `[${type.toUpperCase()}]` : ''
-    let algorithmRun = (algorithmName || algorithmRunId) ?
-      `<${algorithmName ?? 'algo'}${algorithmRunId ? ':' : ''}${algorithmRunId}>` : ''
-    algorithmState = algorithmState ? `${algorithmRun ? 'Algorithm state' : 'State'}: ${algorithmState}` : ''
-    algorithmInputs = algorithmInputs ? `${algorithmRun ? 'Algorithm inputs' : 'Inputs'}: ${algorithmInputs}` : ''
+    let algorithmRun =
+      algorithmName || algorithmRunId
+        ? `<${algorithmName ?? 'algo'}${
+            algorithmRunId ? ':' : ''
+          }${algorithmRunId}>`
+        : ''
+    algorithmState = algorithmState
+      ? `${algorithmRun ? 'Algorithm state' : 'State'}: ${algorithmState}`
+      : ''
+    algorithmInputs = algorithmInputs
+      ? `${algorithmRun ? 'Algorithm inputs' : 'Inputs'}: ${algorithmInputs}`
+      : ''
     attachment = attachment ? `Attachment: ${attachment}` : ''
 
     // Apply colors
@@ -68,13 +92,16 @@ export class LoggerService {
       attachment = attachment ? colors.bgGreen(attachment) : ''
     }
 
-    const result = `${timestamp} ${robotId} ${type} ${log.message}` +
-        `${algorithmRun || algorithmState ? ' | ' : ''} ${algorithmRun} ${algorithmState} ${algorithmInputs}` +
-        `${attachment ? ' | ' : ''} ${attachment}`
+    const result =
+      `${timestamp} ${robotId} ${type} ${log.message}` +
+      `${
+        algorithmRun || algorithmState ? ' | ' : ''
+      } ${algorithmRun} ${algorithmState} ${algorithmInputs}` +
+      `${attachment ? ' | ' : ''} ${attachment}`
     return result.trim()
   }
 
-  private logToFile(log: SocketLogs){
+  private logToFile(log: SocketLogs) {
     const output = this.logToString(log, {
       showTimestamp: false,
       showRobotId: false,
@@ -85,17 +112,19 @@ export class LoggerService {
     else if (log.type === 'warning') this.logger.warn(output)
   }
 
-  private logToConsole(log: SocketLogs){
-    console.log(this.logToString(log, {
-      useColors: true
-    }))
+  private logToConsole(log: SocketLogs) {
+    console.log(
+      this.logToString(log, {
+        useColors: true
+      })
+    )
   }
 
-  private logToSocket(log: SocketLogs){
+  private logToSocket(log: SocketLogs) {
     this.eventEmitter.emit('log', log)
   }
 
-  constructor(tradeBot: TradeBot){
+  constructor(tradeBot: TradeBot) {
     this.createLogsDirIfNotExist()
     this.tradebot = tradeBot
     this.logger = createRollingFileLogger({
@@ -105,9 +134,9 @@ export class LoggerService {
     this.lastLogs = []
   }
 
-  private updateLastLogs(log: SocketLogs){
+  private updateLastLogs(log: SocketLogs) {
     this.lastLogs.push(log)
-    if (this.lastLogs.length > 30){
+    if (this.lastLogs.length > 30) {
       this.lastLogs.shift()
     }
   }
@@ -116,9 +145,10 @@ export class LoggerService {
     return this.lastLogs
   }
 
-  log(body: Omit<Omit<SocketLogs, 'robot_id'>, 'timestamp'>, {
-    internal = false
-  } = {}){
+  log(
+    body: Omit<Omit<SocketLogs, 'robot_id'>, 'timestamp'>,
+    { internal = false } = {}
+  ) {
     const newLog: SocketLogs = {
       robot_id: 'test',
       timestamp: new Date().toISOString(),
@@ -126,16 +156,15 @@ export class LoggerService {
     }
     this.logToFile(newLog)
     this.logToConsole(newLog)
-    if (!internal)
-      this.logToSocket(newLog)
+    if (!internal) this.logToSocket(newLog)
     this.updateLastLogs(newLog)
   }
 
-  subscribe(callback: (logs: SocketLogs) => void){
+  subscribe(callback: (logs: SocketLogs) => void) {
     this.eventEmitter.on('log', callback)
   }
 
-  unsubscribe(callback: (logs: SocketLogs) => void){
+  unsubscribe(callback: (logs: SocketLogs) => void) {
     this.eventEmitter.off('log', callback)
   }
 }

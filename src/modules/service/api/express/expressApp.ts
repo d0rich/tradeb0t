@@ -1,36 +1,41 @@
 import express from 'express'
 import cors from 'cors'
 import { apiRouter } from './routers'
-import {TradeBot} from "../../../../TradeBot";
-import {getTradeBotFromExpress} from "../../../../utils/express";
+import { TradeBot } from '../../../../TradeBot'
+import { getTradeBotFromExpress } from '../../../../utils/express'
 
-export function initExpress(tradeBot: TradeBot){
-    const app = express()
-    app.use(express.json())
-    app.use(cors())
+export function initExpress(tradeBot: TradeBot) {
+  const app = express()
+  app.use(express.json())
+  app.use(cors())
 
-    const packageJson = require('../../../../../package.json')
+  // FIXME: get version of package in correct way
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  const packageJson = require('../../../../../package.json')
 
-    app.use((req, res, next) => {
-        getTradeBotFromExpress(req).logger.log({
-            type: 'info',
-            message: `Incoming HTTP request: ${req.method} ${req.path}`,
-            attachment: {
-                remote: req.socket.remoteAddress,
-                params: req.query,
-                body: req.body
-            }
-        }, { internal: true })
-        next()
-    })
+  app.use((req, res, next) => {
+    getTradeBotFromExpress(req).logger.log(
+      {
+        type: 'info',
+        message: `Incoming HTTP request: ${req.method} ${req.path}`,
+        attachment: {
+          remote: req.socket.remoteAddress,
+          params: req.query,
+          body: req.body
+        }
+      },
+      { internal: true }
+    )
+    next()
+  })
 
-    app.get('/', function (req, res) {
-        res.send(`This is tradebot v${packageJson.version}`)
-    })
+  app.get('/', function (req, res) {
+    res.send(`This is tradebot v${packageJson.version}`)
+  })
 
-    app.use('/api', apiRouter)
+  app.use('/api', apiRouter)
 
-    app.set('tradeBot', tradeBot)
+  app.set('tradeBot', tradeBot)
 
-    return app
+  return app
 }
