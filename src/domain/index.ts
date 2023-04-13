@@ -1,3 +1,4 @@
 export * from './CommonDomain'
 export * from './DomainTemplate'
-export * as extractors from './extractors'
+export * from './StubDomain'
+export * from './extractors'

@@ -6,8 +6,7 @@ import {
   GetCurrencyBalanceType,
   GetSecurityBalanceType,
   GetSecurityType,
-  GetOrderType,
-  GetDomain
+  GetOrderType
 } from '../domain/extractors'
 import { IDomainMapper } from './IDomainMapper'
 
