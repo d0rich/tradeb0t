@@ -3,11 +3,14 @@ import { AbstractTradeModule } from './AbstractTradeModule'
 import { AbstractDomainMapper } from './AbstractDomainMapper'
 import { DomainTemplate } from '../domain'
 import { GetCurrencyBalanceType, GetSecurityBalanceType } from '../domain/extractors'
+import { IExchangeClient } from './IExchangeClient'
+import { ITradeModule } from './ITradeModule'
+import { IInfoModule } from './IInfoModule'
+import { IDomainMapper } from './IDomainMapper'
 
-export abstract class AbstractExchangeClient<
-  Domain extends DomainTemplate = DomainTemplate,
-  ExchangeApiType = unknown
-> {
+export abstract class AbstractExchangeClient<Domain extends DomainTemplate = DomainTemplate, ExchangeApiType = unknown>
+  implements IExchangeClient<Domain, ExchangeApiType>
+{
   private _isAccountInitialized = false
   public get isAccountInitialized(): boolean {
     return this._isAccountInitialized
@@ -17,15 +20,15 @@ export abstract class AbstractExchangeClient<
   }
 
   readonly api: ExchangeApiType
-  readonly tradeModule: AbstractTradeModule<AbstractExchangeClient<Domain, ExchangeApiType>>
-  readonly infoModule: AbstractInfoModule<AbstractExchangeClient<Domain, ExchangeApiType>>
-  readonly translator: AbstractDomainMapper<AbstractExchangeClient<Domain, ExchangeApiType>>
+  readonly tradeModule: ITradeModule<Domain>
+  readonly infoModule: IInfoModule<Domain>
+  readonly translator: IDomainMapper<Domain>
 
   protected constructor(
     modules: {
-      tradeModule: AbstractTradeModule<AbstractExchangeClient<Domain, ExchangeApiType>>
-      infoModule: AbstractInfoModule<AbstractExchangeClient<Domain, ExchangeApiType>>
-      translator: AbstractDomainMapper<AbstractExchangeClient<Domain, ExchangeApiType>>
+      tradeModule: ITradeModule<Domain>
+      infoModule: IInfoModule<Domain>
+      translator: IDomainMapper<Domain>
     },
     api: ExchangeApiType
   ) {
