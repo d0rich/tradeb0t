@@ -1,9 +1,10 @@
 import { AbstractExchangeClient } from './AbstractExchangeClient'
-import { GetCurrencyType, GetSecurityType } from '../domain/extractors'
+import { GetCurrencyType, GetSecurityType, GetDomain } from '../domain/extractors'
+import { IInfoModule } from './IInfoModule'
 
 export abstract class AbstractInfoModule<
   ExchangeClient extends AbstractExchangeClient
-> {
+> implements IInfoModule<GetDomain<ExchangeClient>> {
   protected exchangeClient: ExchangeClient
 
   setExchangeClient(exchangeClient: ExchangeClient) {
