@@ -1,11 +1,12 @@
 import { AlgorithmRun, Algorithm } from '../db'
 import { InputTypes } from '../db/Algorithm'
-import { AbstractExchangeClient } from './AbstractExchangeClient'
 import { LoggerService, ExchangeAnalyzer, ExchangeTrader, ExchangeWatcher } from '../modules'
 import { HandleError } from '../decorators'
+import { IExchangeClient } from './IExchangeClient'
 
+// TODO: fix types when interfaces for tradebot will be implemented
 export abstract class AbstractTradeAlgorithm<
-  ExchangeClient extends AbstractExchangeClient = AbstractExchangeClient,
+  ExchangeClient extends IExchangeClient = IExchangeClient,
   InputsType = unknown,
   StateType = unknown,
   StopDataType = unknown
