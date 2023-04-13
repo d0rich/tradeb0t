@@ -2,15 +2,15 @@
   "name": "tradeb0t-core",
   "version": "0.1.0",
   "description": "🤖 Core library for trading software with high integration possibilities",
-  "main": "index.js",
-  "types": "./",
+  "main": "dist/index.js",
+  "types": "dist",
   "scripts": {
     "lint:js": "eslint --ext \".ts\" --ignore-path .gitignore ./src",
     "lint:prettier": "prettier --check ./src",
     "lint": "npm run lint:js && npm run lint:prettier",
     "lintfix": "prettier --write --list-different ./src && eslint --fix --ext \".ts\" --ignore-path .gitignore ./src",
     "build": "tsc",
-    "clean": "tsc --build --clean && delete-empty ./"
+    "clean": "tsc --build --clean && delete-empty ./dist"
   },
   "repository": {
     "type": "git",
