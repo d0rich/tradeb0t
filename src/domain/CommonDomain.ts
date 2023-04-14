@@ -1,5 +1,4 @@
 import { DomainTemplate } from './DomainTemplate'
-import { Order } from '../db'
-import { Currency, CurrencyBalance, SecurityBalance, Security } from '../store'
+import { Currency, CurrencyBalance, SecurityBalance, Security, Order } from 'src/domain'
 
 export type CommonDomain = DomainTemplate<Currency, CurrencyBalance, Security, SecurityBalance, Order>
