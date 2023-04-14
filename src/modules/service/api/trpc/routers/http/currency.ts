@@ -1,7 +1,7 @@
 import { publicProcedure, router } from './trpc'
-import { TradeBot } from '../../../../../../TradeBot'
+import { ITradeBot } from '../../../../../../ITradeBot'
 
-export default (tradeBot: TradeBot) => {
+export default (tradeBot: ITradeBot) => {
   return router({
     list: publicProcedure.query(async () => {
       return await tradeBot.analyzer.getCurrencies()

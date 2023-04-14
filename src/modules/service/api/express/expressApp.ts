@@ -1,10 +1,10 @@
 import express from 'express'
 import cors from 'cors'
 import { apiRouter } from './routers'
-import { TradeBot } from '../../../../TradeBot'
+import { ITradeBot } from '../../../../ITradeBot'
 import { getTradeBotFromExpress } from '../../../../utils/express'
 
-export function initExpress(tradeBot: TradeBot) {
+export function initExpress(tradeBot: ITradeBot) {
   const app = express()
   app.use(express.json())
   app.use(cors())

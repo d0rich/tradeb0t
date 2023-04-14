@@ -1,6 +1,6 @@
 import { createExpressMiddleware } from '@trpc/server/adapters/express'
 import { Express } from 'express'
-import { TradeBot } from '../../../../../../TradeBot'
+import { ITradeBot } from '../../../../../../ITradeBot'
 import { createContext, router } from './trpc'
 import initAlgorithmRouter from './algorithm'
 import initSecurityRouter from './security'
@@ -8,7 +8,7 @@ import initCurrencyRouter from './currency'
 import initPortfolioRouter from './portfolio'
 import initOrderRouter from './order'
 
-const initHTTPRouter = (tradeBot: TradeBot) => {
+const initHTTPRouter = (tradeBot: ITradeBot) => {
   return router({
     algorithms: initAlgorithmRouter(tradeBot),
     securities: initSecurityRouter(tradeBot),
@@ -18,13 +18,7 @@ const initHTTPRouter = (tradeBot: TradeBot) => {
   })
 }
 
-export const registerExpressRoutes = ({
-  tradeBot,
-  express
-}: {
-  tradeBot: TradeBot
-  express: Express
-}) => {
+export const registerExpressRoutes = ({ tradeBot, express }: { tradeBot: ITradeBot; express: Express }) => {
   express.use(
     '/api/trpc',
     createExpressMiddleware({

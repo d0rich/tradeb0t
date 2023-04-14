@@ -32,15 +32,11 @@ export class CurrenciesStore {
   }
 
   getBalanceOf(currencyTicker: string) {
-    const currency = this.items.find(
-      (c) => c.ticker === currencyTicker || c.exchangeTicker === currencyTicker
-    )
+    const currency = this.items.find((c) => c.ticker === currencyTicker || c.exchangeTicker === currencyTicker)
     if (!currency) return
     return (
       this.portfolioStore.currencies.find(
-        (cur) =>
-          cur.currencyTicker === currency.ticker ||
-          cur.currencyTicker === currency.exchangeTicker
+        (cur) => cur.currencyTicker === currency.ticker || cur.currencyTicker === currency.exchangeTicker
       ) ?? { currencyTicker, type: 'currency', amount: 0 }
     )
   }

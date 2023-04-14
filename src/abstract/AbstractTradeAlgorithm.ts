@@ -1,31 +1,28 @@
 import { AlgorithmRun, Algorithm } from '../db'
 import { InputTypes } from '../db/Algorithm'
-import { AbstractExchangeClient } from './AbstractExchangeClient'
-import {
-  LoggerService,
-  ExchangeAnalyzer,
-  ExchangeTrader,
-  ExchangeWatcher
-} from '../modules'
+import { LoggerService, IExchangeTrader } from '../modules'
 import { HandleError } from '../decorators'
+import { DomainTemplate } from 'src/domain'
+import { ITradeAlgorithm } from './ITradeAlgorithm'
+import { IExchangeWatcher, IExchangeAnalyzer } from 'src/modules'
 
+// TODO: fix types when interfaces for tradebot will be implemented
 export abstract class AbstractTradeAlgorithm<
-  ExchangeClient extends AbstractExchangeClient = AbstractExchangeClient,
+  Domain extends DomainTemplate,
+  TExchangeApi = unknown,
   InputsType = unknown,
   StateType = unknown,
   StopDataType = unknown
-> {
-  protected readonly analyzer: ExchangeAnalyzer<ExchangeClient>
-  protected get watcher(): ExchangeWatcher<ExchangeClient> {
+> implements ITradeAlgorithm<InputsType, StateType>
+{
+  protected readonly analyzer: IExchangeAnalyzer<Domain, TExchangeApi>
+  protected get watcher(): IExchangeWatcher<Domain> {
     return this.analyzer.watcher
   }
-  protected get trader(): ExchangeTrader<ExchangeClient> {
+  protected get trader(): IExchangeTrader {
     return this.analyzer.trader
   }
-  protected stopData: Map<number, StopDataType> = new Map<
-    number,
-    StopDataType
-  >()
+  protected stopData: Map<number, StopDataType> = new Map<number, StopDataType>()
   private get logger(): LoggerService {
     return this.analyzer.tradebot.logger
   }
@@ -37,21 +34,14 @@ export abstract class AbstractTradeAlgorithm<
     }
   }
 
-  protected constructor(analyzer: ExchangeAnalyzer<ExchangeClient>) {
+  protected constructor(analyzer: IExchangeAnalyzer<Domain, TExchangeApi>) {
     this.analyzer = analyzer
   }
 
   @HandleError()
-  protected async fixStart(
-    inputs: InputsType,
-    state: StateType
-  ): Promise<AlgorithmRun> {
+  protected async fixStart(inputs: InputsType, state: StateType): Promise<AlgorithmRun> {
     const { name, analyzer, logger } = this
-    const algoRun: AlgorithmRun = await analyzer.runAlgorithm(
-      name,
-      inputs,
-      state
-    )
+    const algoRun: AlgorithmRun = await analyzer.runAlgorithm(name, inputs, state)
     logger.log({
       type: 'info',
       message: `Starting algorithm "${name}"`,
@@ -126,10 +116,7 @@ export abstract class AbstractTradeAlgorithm<
   }
 
   @HandleError()
-  protected async saveProgress(
-    id: number,
-    progress: StateType
-  ): Promise<AlgorithmRun> {
+  protected async saveProgress(id: number, progress: StateType): Promise<AlgorithmRun> {
     const { name, analyzer, logger } = this
     logger.log({
       type: 'info',
@@ -146,10 +133,8 @@ export abstract class AbstractTradeAlgorithm<
   @HandleError()
   protected async loadProgress(id: number): Promise<AlgorithmRun> {
     const { name, analyzer, logger } = this
-    const algoRun: AlgorithmRun | null =
-      await analyzer.loadAlgorithmRunProgress(id)
-    if (!algoRun)
-      throw new Error(`[algo:${id}] Algorithm "${name}" was not found`)
+    const algoRun: AlgorithmRun | null = await analyzer.loadAlgorithmRunProgress(id)
+    if (!algoRun) throw new Error(`[algo:${id}] Algorithm "${name}" was not found`)
     logger.log({
       type: 'info',
       message: `Loading progress of algorithm "${name}"`,
@@ -165,7 +150,7 @@ export abstract class AbstractTradeAlgorithm<
   abstract get name(): string
   abstract get description(): string
   abstract get inputs(): InputTypes
-  abstract main(inputs: InputsType): Promise<AlgorithmRun>
-  abstract continue(id: number): Promise<AlgorithmRun>
-  abstract stop(id: number): Promise<AlgorithmRun>
+  abstract main(inputs: InputsType): Promise<AlgorithmRun<InputsType, StateType>>
+  abstract continue(id: number): Promise<AlgorithmRun<InputsType, StateType>>
+  abstract stop(id: number): Promise<AlgorithmRun<InputsType, StateType>>
 }

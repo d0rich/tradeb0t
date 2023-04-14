@@ -1,36 +1,29 @@
-import { TradeBot } from '../../../../TradeBot'
-import {
-  AbstractExchangeClient,
-  AbstractTradeAlgorithm
-} from '../../../../abstract'
-import {
-  ExchangeAnalyzer,
-  ExchangeTrader,
-  ExchangeWatcher
-} from '../../../index'
+import { ITradeAlgorithm } from '../../../../abstract'
 import { Algorithm, AlgorithmRun } from '../../../../db'
+import { ITradeAlgorithmsEngine } from './ITradeAlgorithmsEngine'
+import { IExchangeTrader } from '../../trader'
+import { IExchangeWatcher } from '../../watcher'
+import { IExchangeAnalyzer } from '../IExchangeAnalyzer'
+import { DomainTemplate } from 'src/domain'
+import { ITradeBot } from 'src/ITradeBot'
 
-export class TradeAlgorithmsEngine<
-  ExchangeClient extends AbstractExchangeClient
-> {
-  protected readonly analyzer: ExchangeAnalyzer<ExchangeClient>
-  protected get trader(): ExchangeTrader<ExchangeClient> {
+export class TradeAlgorithmsEngine<Domain extends DomainTemplate, TExchangeApi> implements ITradeAlgorithmsEngine {
+  protected readonly analyzer: IExchangeAnalyzer<Domain, TExchangeApi>
+  protected get trader(): IExchangeTrader {
     return this.analyzer.trader
   }
-  protected get watcher(): ExchangeWatcher<ExchangeClient> {
+  protected get watcher(): IExchangeWatcher<Domain> {
     return this.analyzer.watcher
   }
-  protected get tradebot(): TradeBot<ExchangeClient> {
+  protected get tradebot(): ITradeBot<Domain, TExchangeApi> {
     return this.analyzer.tradebot
   }
 
-  protected readonly algorithms: AbstractTradeAlgorithm<ExchangeClient>[]
+  protected readonly algorithms: ITradeAlgorithm[]
 
   constructor(
-    analyzer: ExchangeAnalyzer<ExchangeClient>,
-    initAlgorithmsCallback: (
-      analyzer: ExchangeAnalyzer<ExchangeClient>
-    ) => AbstractTradeAlgorithm<ExchangeClient>[]
+    analyzer: IExchangeAnalyzer<Domain, TExchangeApi>,
+    initAlgorithmsCallback: (analyzer: IExchangeAnalyzer<Domain, TExchangeApi>) => ITradeAlgorithm[]
   ) {
     this.analyzer = analyzer
     this.algorithms = initAlgorithmsCallback(analyzer)
@@ -52,9 +45,7 @@ export class TradeAlgorithmsEngine<
     const { tradebot, analyzer, algorithms } = this
     const unfinishedRuns = await analyzer.getUnfinishedAlgorithmRuns()
     for (const run of unfinishedRuns) {
-      const resumedRun = await algorithms
-        .find((algo) => algo.name === run.algorithmName)
-        ?.continue(run.id)
+      const resumedRun = await algorithms.find((algo) => algo.name === run.algorithmName)?.continue(run.id)
       if (resumedRun)
         tradebot.logger.log({
           type: 'info',

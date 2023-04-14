@@ -2,20 +2,19 @@ import fs from 'fs'
 import { createRollingFileLogger, Logger } from 'simple-node-logger'
 import { EventEmitter } from 'events'
 import colors from 'colors/safe'
-import { TradeBot } from '../../../TradeBot'
+import { ITradeBot } from '../../../ITradeBot'
 import { useConfig } from '../../../config'
 import { SocketLogs } from './SocketLogs'
 
 export class LoggerService {
-  private readonly tradebot: TradeBot
+  private readonly tradebot: ITradeBot
   private readonly logger: Logger
   private readonly lastLogs: SocketLogs[]
   private readonly eventEmitter = new EventEmitter()
 
   private createLogsDirIfNotExist() {
     const config = useConfig()
-    if (!fs.existsSync(config.logs.directory))
-      fs.mkdirSync(config.logs.directory)
+    if (!fs.existsSync(config.logs.directory)) fs.mkdirSync(config.logs.directory)
   }
 
   private logToString(
@@ -37,37 +36,17 @@ export class LoggerService {
     let timestamp = showTimestamp ? log.timestamp : ''
     const algorithmName = showAlgorithmName ? log.algorithm?.name ?? '' : ''
     const algorithmRunId = showAlgorithmRunId ? log.algorithm?.run_id ?? '' : ''
-    let algorithmState = showAlgorithmState
-      ? log.algorithm?.state
-        ? JSON.stringify(log.algorithm.state)
-        : ''
-      : ''
-    let algorithmInputs = showAlgorithmState
-      ? log.algorithm?.inputs
-        ? JSON.stringify(log.algorithm.inputs)
-        : ''
-      : ''
-    let attachment = showAttachment
-      ? log.attachment
-        ? JSON.stringify(log.attachment)
-        : ''
-      : ''
+    let algorithmState = showAlgorithmState ? (log.algorithm?.state ? JSON.stringify(log.algorithm.state) : '') : ''
+    let algorithmInputs = showAlgorithmState ? (log.algorithm?.inputs ? JSON.stringify(log.algorithm.inputs) : '') : ''
+    let attachment = showAttachment ? (log.attachment ? JSON.stringify(log.attachment) : '') : ''
 
     // Apply layout
     robotId = robotId ? `<${robotId}>` : ''
     type = type ? `[${type.toUpperCase()}]` : ''
     let algorithmRun =
-      algorithmName || algorithmRunId
-        ? `<${algorithmName ?? 'algo'}${
-            algorithmRunId ? ':' : ''
-          }${algorithmRunId}>`
-        : ''
-    algorithmState = algorithmState
-      ? `${algorithmRun ? 'Algorithm state' : 'State'}: ${algorithmState}`
-      : ''
-    algorithmInputs = algorithmInputs
-      ? `${algorithmRun ? 'Algorithm inputs' : 'Inputs'}: ${algorithmInputs}`
-      : ''
+      algorithmName || algorithmRunId ? `<${algorithmName ?? 'algo'}${algorithmRunId ? ':' : ''}${algorithmRunId}>` : ''
+    algorithmState = algorithmState ? `${algorithmRun ? 'Algorithm state' : 'State'}: ${algorithmState}` : ''
+    algorithmInputs = algorithmInputs ? `${algorithmRun ? 'Algorithm inputs' : 'Inputs'}: ${algorithmInputs}` : ''
     attachment = attachment ? `Attachment: ${attachment}` : ''
 
     // Apply colors
@@ -94,9 +73,7 @@ export class LoggerService {
 
     const result =
       `${timestamp} ${robotId} ${type} ${log.message}` +
-      `${
-        algorithmRun || algorithmState ? ' | ' : ''
-      } ${algorithmRun} ${algorithmState} ${algorithmInputs}` +
+      `${algorithmRun || algorithmState ? ' | ' : ''} ${algorithmRun} ${algorithmState} ${algorithmInputs}` +
       `${attachment ? ' | ' : ''} ${attachment}`
     return result.trim()
   }
@@ -124,7 +101,7 @@ export class LoggerService {
     this.eventEmitter.emit('log', log)
   }
 
-  constructor(tradeBot: TradeBot) {
+  constructor(tradeBot: ITradeBot) {
     this.createLogsDirIfNotExist()
     this.tradebot = tradeBot
     this.logger = createRollingFileLogger({
@@ -145,10 +122,7 @@ export class LoggerService {
     return this.lastLogs
   }
 
-  log(
-    body: Omit<Omit<SocketLogs, 'robot_id'>, 'timestamp'>,
-    { internal = false } = {}
-  ) {
+  log(body: Omit<Omit<SocketLogs, 'robot_id'>, 'timestamp'>, { internal = false } = {}) {
     const newLog: SocketLogs = {
       robot_id: 'test',
       timestamp: new Date().toISOString(),

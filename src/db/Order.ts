@@ -1,10 +1,4 @@
-import {
-  Entity,
-  Column,
-  ManyToOne,
-  UpdateDateColumn,
-  PrimaryColumn
-} from 'typeorm'
+import { Entity, Column, ManyToOne, UpdateDateColumn, PrimaryColumn } from 'typeorm'
 import { AlgorithmRun } from './AlgorithmRun'
 import { dateTransformer } from './transformers'
 import { z } from 'zod'

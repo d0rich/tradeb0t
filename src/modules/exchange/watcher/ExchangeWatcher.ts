@@ -1,8 +1,7 @@
-import { TradeBot } from '../../../TradeBot'
-import { ExchangeAnalyzer, ExchangeTrader } from '../../index'
-import { AbstractTranslator, AbstractExchangeClient } from '../../../abstract'
+import { IExchangeTrader } from '../../index'
+import { IDomainMapper, IExchangeClient } from '../../../abstract'
 import { OperationType, OrderStatus } from '../../../db'
-import { CommonDomain } from '../../../domain'
+import { CommonDomain, DomainTemplate } from '../../../domain'
 import {
   GetSecurityBalanceType,
   GetCurrencyType,
@@ -12,60 +11,57 @@ import {
 import { GetOrderType } from '../../../domain/extractors'
 import { HandleError } from '../../../decorators'
 
-export class ExchangeWatcher<ExchangeClient extends AbstractExchangeClient> {
-  private readonly tradebot: TradeBot<ExchangeClient>
-  private get translator(): AbstractTranslator {
-    return this.exchangeClient.translator
+import { IExchangeWatcher } from './IExchangeWatcher'
+import { IExchangeAnalyzer } from '../analyzer'
+import { ITradeBot } from 'src/ITradeBot'
+
+export class ExchangeWatcher<Domain extends DomainTemplate, TExchangeApi> implements IExchangeWatcher<Domain> {
+  private readonly tradebot: ITradeBot<Domain, TExchangeApi>
+  private get domainMapper(): IDomainMapper {
+    return this.exchangeClient.domainMapper
   }
-  private get analyzer(): ExchangeAnalyzer<ExchangeClient> {
+  private get analyzer(): IExchangeAnalyzer<Domain, TExchangeApi> {
     return this.tradebot.analyzer
   }
-  private get trader(): ExchangeTrader<ExchangeClient> {
+  private get trader(): IExchangeTrader {
     return this.tradebot.trader
   }
-  private get exchangeClient(): ExchangeClient {
+  private get exchangeClient(): IExchangeClient<Domain, TExchangeApi> {
     return this.tradebot.exchangeClient
   }
 
-  constructor(tradebot: TradeBot<ExchangeClient>) {
+  constructor(tradebot: ITradeBot<Domain, TExchangeApi>) {
     this.tradebot = tradebot
   }
 
   @HandleError()
   async getPortfolio(): Promise<GetSecurityBalanceType<CommonDomain>[]> {
-    const { exchangeClient, translator } = this
+    const { exchangeClient, domainMapper } = this
     const portfolio = await exchangeClient.getPortfolio()
-    const promises = portfolio.map((position) =>
-      translator.securityBalance(position)
-    )
+    const promises = portfolio.map((position) => domainMapper.securityBalance(position))
     return Promise.all(promises)
   }
 
   @HandleError()
-  async getCurrenciesBalance(): Promise<
-    GetCurrencyBalanceType<CommonDomain>[]
-  > {
-    const { exchangeClient, translator } = this
+  async getCurrenciesBalance(): Promise<GetCurrencyBalanceType<CommonDomain>[]> {
+    const { exchangeClient, domainMapper } = this
     const currencies = await exchangeClient.getCurrenciesBalance()
-    return await Promise.all(
-      currencies.map((c) => translator.currencyBalance(c))
-    )
+    return await Promise.all(currencies.map((c) => domainMapper.currencyBalance(c)))
   }
 
   @HandleError()
   async getCurrencies(): Promise<GetCurrencyType<CommonDomain>[]> {
-    const { exchangeClient, translator } = this
+    const { exchangeClient, domainMapper } = this
     const currencies = await exchangeClient.infoModule.getCurrencies()
-    return await Promise.all(currencies.map((c) => translator.currency(c)))
+    return await Promise.all(currencies.map((c) => domainMapper.currency(c)))
   }
 
   @HandleError()
   async getSecurity(ticker: string): Promise<GetSecurityType<CommonDomain>> {
-    const { exchangeClient, translator } = this
+    const { exchangeClient, domainMapper } = this
     const security = await exchangeClient.infoModule.getSecurity(ticker, false)
-    if (!security)
-      throw new Error(`Security with ticker "${ticker}" was not found`)
-    return translator.security(security)
+    if (!security) throw new Error(`Security with ticker "${ticker}" was not found`)
+    return domainMapper.security(security)
   }
 
   @HandleError()
@@ -81,26 +77,20 @@ export class ExchangeWatcher<ExchangeClient extends AbstractExchangeClient> {
   }
 
   @HandleError()
-  async getSecurityCurrency(
-    ticker: string
-  ): Promise<GetCurrencyType<CommonDomain>> {
-    const { exchangeClient, translator } = this
+  async getSecurityCurrency(ticker: string): Promise<GetCurrencyType<CommonDomain>> {
+    const { exchangeClient, domainMapper } = this
     const currency = await exchangeClient.infoModule.getSecurityCurrency(ticker)
-    return translator.currency(currency)
+    return domainMapper.currency(currency)
   }
 
   onOrderSent(
-    order: GetOrderType<ExchangeClient>,
+    order: GetOrderType<Domain>,
     operation_type: OperationType,
     runId: number | undefined = undefined
   ): OrderStatus {
-    const { translator, analyzer } = this
-    const status = translator.orderStatus(order)
-    translator
-      .order(order)
-      .then((order) =>
-        analyzer.saveOrder({ ...order, status: status }, operation_type, runId)
-      )
+    const { domainMapper, analyzer } = this
+    const status = domainMapper.orderStatus(order)
+    domainMapper.order(order).then((order) => analyzer.saveOrder({ ...order, status: status }, operation_type, runId))
     return status
   }
 }

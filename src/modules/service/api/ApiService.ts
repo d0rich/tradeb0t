@@ -3,19 +3,20 @@ import { networkInterfaces } from 'os'
 import http from 'http'
 import ws, { WebSocketServer } from 'ws'
 import colors from 'colors/safe'
-import { TradeBot } from '../../../TradeBot'
+import { ITradeBot } from '../../../ITradeBot'
 import { initExpress } from './express'
 import { useConfig } from '../../../config'
 import { HandleError } from '../../../decorators'
 import { registerExpressRoutes, registerWSSHandler } from './trpc'
+import { StubDomain } from 'src/domain'
 
 export class ApiService {
-  private readonly tradeBot: TradeBot
+  private readonly tradeBot: ITradeBot<StubDomain, unknown>
   private express: Express
   private wss: WebSocketServer
   private http: http.Server
 
-  constructor(tradeBot: TradeBot) {
+  constructor(tradeBot: ITradeBot) {
     this.tradeBot = tradeBot
     this.configureServers()
   }
@@ -48,27 +49,15 @@ export class ApiService {
         }
         console.info(`    ${colors.blue('[i]')} REST API:`)
         for (const addr of ipAddresses) {
-          console.info(
-            `        ${colors.grey('-')} http://${addr}:${config.api.port}/`
-          )
+          console.info(`        ${colors.grey('-')} http://${addr}:${config.api.port}/`)
         }
         console.info(`    ${colors.blue('[i]')} WebSocket:`)
         for (const addr of ipAddresses) {
-          console.info(
-            `        ${colors.grey('-')} ws://${addr}:${config.api.port}/`
-          )
+          console.info(`        ${colors.grey('-')} ws://${addr}:${config.api.port}/`)
         }
       } else {
-        console.info(
-          `    ${colors.blue('[i]')} REST API - http://${config.api.host}:${
-            config.api.port
-          }/`
-        )
-        console.info(
-          `    ${colors.blue('[i]')} WebSocket - ws://${config.api.host}:${
-            config.api.port
-          }/`
-        )
+        console.info(`    ${colors.blue('[i]')} REST API - http://${config.api.host}:${config.api.port}/`)
+        console.info(`    ${colors.blue('[i]')} WebSocket - ws://${config.api.host}:${config.api.port}/`)
       }
     })
   }
