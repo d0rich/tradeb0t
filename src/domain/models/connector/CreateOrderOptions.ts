@@ -1,4 +1,4 @@
-import { OperationType } from '../db'
+import { OperationType } from '../../../db'
 
 export type CreateOrderOptions = {
   operation: OperationType

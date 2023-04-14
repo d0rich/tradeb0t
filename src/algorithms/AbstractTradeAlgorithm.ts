@@ -1,10 +1,9 @@
 import { AlgorithmRun, Algorithm } from '../db'
 import { InputTypes } from '../db/Algorithm'
-import { LoggerService, IExchangeTrader } from '../modules'
 import { HandleError } from '../decorators'
 import { DomainTemplate } from 'src/domain'
 import { ITradeAlgorithm } from './ITradeAlgorithm'
-import { IExchangeWatcher, IExchangeAnalyzer } from 'src/modules'
+import { IExchangeWatcher, IExchangeAnalyzer, LoggerService, IExchangeTrader } from 'src/modules'
 
 // TODO: fix types when interfaces for tradebot will be implemented
 export abstract class AbstractTradeAlgorithm<

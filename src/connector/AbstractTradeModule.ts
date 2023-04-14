@@ -1,15 +1,13 @@
-import { IExchangeClient } from './IExchangeClient'
-import { GetOrderType } from '../domain/extractors'
-import { CreateOrderOptions } from './CreateOrderOptions'
+import { IExchangeConnector } from './IExchangeConnector'
+import { GetOrderType, CreateOrderOptions, DomainTemplate } from 'src/domain'
 import { ITradeModule } from './ITradeModule'
-import { DomainTemplate } from 'src/domain'
 
 export abstract class AbstractTradeModule<Domain extends DomainTemplate, TExchangeApi = unknown>
   implements ITradeModule<Domain>
 {
-  protected exchangeClient: IExchangeClient<Domain, TExchangeApi>
+  protected exchangeClient: IExchangeConnector<Domain, TExchangeApi>
 
-  setExchangeClient(exchangeClient: IExchangeClient<Domain, TExchangeApi>) {
+  setExchangeClient(exchangeClient: IExchangeConnector<Domain, TExchangeApi>) {
     this.exchangeClient = exchangeClient
   }
 

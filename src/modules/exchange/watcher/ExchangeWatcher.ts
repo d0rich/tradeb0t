@@ -1,14 +1,16 @@
-import { IExchangeTrader } from '../../index'
-import { IDomainMapper, IExchangeClient } from '../../../abstract'
+import { IExchangeTrader } from '../trader'
+import { IExchangeConnector } from 'src/connector'
 import { OperationType, OrderStatus } from '../../../db'
-import { CommonDomain, DomainTemplate } from '../../../domain'
 import {
+  CommonDomain,
+  DomainTemplate,
+  IDomainMapper,
   GetSecurityBalanceType,
   GetCurrencyType,
   GetSecurityType,
-  GetCurrencyBalanceType
-} from '../../../domain/extractors'
-import { GetOrderType } from '../../../domain/extractors'
+  GetCurrencyBalanceType,
+  GetOrderType
+} from 'src/domain'
 import { HandleError } from '../../../decorators'
 
 import { IExchangeWatcher } from './IExchangeWatcher'
@@ -26,7 +28,7 @@ export class ExchangeWatcher<Domain extends DomainTemplate, TExchangeApi> implem
   private get trader(): IExchangeTrader {
     return this.tradebot.trader
   }
-  private get exchangeClient(): IExchangeClient<Domain, TExchangeApi> {
+  private get exchangeClient(): IExchangeConnector<Domain, TExchangeApi> {
     return this.tradebot.exchangeClient
   }
 

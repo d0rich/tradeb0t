@@ -1,5 +1,5 @@
 import { DomainTemplate, CommonDomain, StubDomain } from 'src/domain'
-import { OrderStatus, OperationType } from '../db'
+import { OrderStatus, OperationType } from '../../db'
 import {
   GetCurrencyType,
   GetOrderType,

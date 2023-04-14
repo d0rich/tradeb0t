@@ -1,4 +1,4 @@
-import { ITradeAlgorithm } from '../../../../abstract'
+import { ITradeAlgorithm } from 'src/algorithms'
 import { Algorithm, AlgorithmRun } from '../../../../db'
 import { ITradeAlgorithmsEngine } from './ITradeAlgorithmsEngine'
 import { IExchangeTrader } from '../../trader'

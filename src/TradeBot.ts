@@ -10,7 +10,8 @@ import {
   ExchangeTrader,
   ExchangeWatcher
 } from './modules'
-import { IExchangeClient, ITradeAlgorithm } from './abstract'
+import { IExchangeConnector } from 'src/connector'
+import { ITradeAlgorithm } from 'src/algorithms'
 import { globalStore } from './global/store'
 import { DomainTemplate, StubDomain } from './domain'
 import { ITradeBot } from './ITradeBot'
@@ -18,7 +19,7 @@ import { ITradeBot } from './ITradeBot'
 export type TradeBotInitOptions<Domain extends DomainTemplate = StubDomain, TExchangeApi = unknown> =
   | {
       mode: 'production'
-      exchangeClient: IExchangeClient<Domain, TExchangeApi>
+      exchangeClient: IExchangeConnector<Domain, TExchangeApi>
       botToken?: string
       initAlgorithmsCallback?: (analyzer: IExchangeAnalyzer<Domain, TExchangeApi>) => ITradeAlgorithm[]
     }
@@ -31,7 +32,7 @@ export type TradeBotInitOptions<Domain extends DomainTemplate = StubDomain, TExc
     }
 
 export class TradeBot<Domain extends DomainTemplate, TExchangeApi> implements ITradeBot<Domain, TExchangeApi> {
-  private _exchangeClient: IExchangeClient<Domain, TExchangeApi>
+  private _exchangeClient: IExchangeConnector<Domain, TExchangeApi>
   private _analyzer: IExchangeAnalyzer<Domain, TExchangeApi>
   private _trader: IExchangeTrader
   private _watcher: IExchangeWatcher<Domain>
@@ -73,7 +74,7 @@ export class TradeBot<Domain extends DomainTemplate, TExchangeApi> implements IT
     botToken,
     initAlgorithmsCallback
   }: {
-    exchangeClient: IExchangeClient<Domain, TExchangeApi>
+    exchangeClient: IExchangeConnector<Domain, TExchangeApi>
     botToken?: string
     initAlgorithmsCallback?: (analyzer: IExchangeAnalyzer<Domain, TExchangeApi>) => ITradeAlgorithm[]
   }) {

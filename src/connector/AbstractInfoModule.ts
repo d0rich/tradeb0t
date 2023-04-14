@@ -1,14 +1,13 @@
-import { GetCurrencyType, GetSecurityType } from '../domain/extractors'
+import { GetCurrencyType, GetSecurityType, DomainTemplate } from 'src/domain'
 import { IInfoModule } from './IInfoModule'
-import { IExchangeClient } from './IExchangeClient'
-import { DomainTemplate } from 'src/domain'
+import { IExchangeConnector } from './IExchangeConnector'
 
 export abstract class AbstractInfoModule<Domain extends DomainTemplate, TExchangeApi = unknown>
   implements IInfoModule<Domain>
 {
-  protected exchangeClient: IExchangeClient<Domain, TExchangeApi>
+  protected exchangeClient: IExchangeConnector<Domain, TExchangeApi>
 
-  setExchangeClient(exchangeClient: IExchangeClient<Domain, TExchangeApi>) {
+  setExchangeClient(exchangeClient: IExchangeConnector<Domain, TExchangeApi>) {
     this.exchangeClient = exchangeClient
   }
 

@@ -9,7 +9,7 @@ import {
   GetOrderType,
   GetPortfolioPositionType
 } from '../../../domain/extractors'
-import { ITradeAlgorithm } from '../../../abstract'
+import { ITradeAlgorithm } from 'src/algorithms'
 import { ITradeAlgorithmsEngine, TradeAlgorithmsEngine } from './trade-algorithms-engine'
 import { db, Algorithm, AlgorithmRun, Order } from '../../../db'
 import { store } from '../../../store'

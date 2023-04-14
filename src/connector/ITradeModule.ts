@@ -1,6 +1,4 @@
-import { DomainTemplate } from 'src/domain'
-import { CreateOrderOptions } from './CreateOrderOptions'
-import { GetOrderType } from 'src/domain/extractors'
+import { DomainTemplate, CreateOrderOptions, GetOrderType } from 'src/domain'
 
 export interface ITradeModule<Domain extends DomainTemplate> {
   sell(options: CreateOrderOptions): Promise<GetOrderType<Domain>>

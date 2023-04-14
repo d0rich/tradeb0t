@@ -1,21 +1,22 @@
-import { IExchangeClient } from './IExchangeClient'
-import { OrderStatus, OperationType } from '../db'
-import { CommonDomain, DomainTemplate } from '../domain'
+import { IExchangeConnector } from 'src/connector'
+import { OrderStatus, OperationType } from 'src/db'
+import { CommonDomain } from '../CommonDomain'
+import { DomainTemplate } from '../DomainTemplate'
 import {
   GetCurrencyType,
   GetCurrencyBalanceType,
   GetSecurityBalanceType,
   GetSecurityType,
   GetOrderType
-} from '../domain/extractors'
-import { IDomainMapper } from './IDomainMapper'
+} from '../extractors'
+import { IDomainMapper } from '../mapper/IDomainMapper'
 
 export abstract class AbstractDomainMapper<Domain extends DomainTemplate, TExchangeApi = unknown>
   implements IDomainMapper<Domain>
 {
-  protected exchangeClient: IExchangeClient<Domain, TExchangeApi>
+  protected exchangeClient: IExchangeConnector<Domain, TExchangeApi>
 
-  setExchangeClient(exchangeClient: IExchangeClient<Domain, TExchangeApi>) {
+  setExchangeClient(exchangeClient: IExchangeConnector<Domain, TExchangeApi>) {
     this.exchangeClient = exchangeClient
   }
 

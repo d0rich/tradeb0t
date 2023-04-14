@@ -1,12 +1,12 @@
 import { Job, JobCallback, scheduleJob } from 'node-schedule'
 import { LoggerService } from '../../index'
-import { CreateOrderOptions, OrderStatus } from '../../../types'
-import { GetOrderType, DomainTemplate } from '../../../domain'
+import { OrderStatus } from '../../../types'
 import { HandleError } from '../../../decorators'
 import { IExchangeTrader } from './IExchangeTrader'
-import { IExchangeWatcher } from '../watcher/IExchangeWatcher'
-import { IExchangeClient } from '../../../abstract'
+import { IExchangeWatcher } from '../watcher'
+import { IExchangeConnector } from 'src/connector'
 import { ITradeBot } from 'src/ITradeBot'
+import { CreateOrderOptions, GetOrderType, DomainTemplate } from 'src/domain'
 
 export class ExchangeTrader<Domain extends DomainTemplate, TExchangeApi> implements IExchangeTrader {
   private readonly tradebot: ITradeBot<Domain, TExchangeApi>
@@ -16,7 +16,7 @@ export class ExchangeTrader<Domain extends DomainTemplate, TExchangeApi> impleme
   private get logger(): LoggerService {
     return this.tradebot.logger
   }
-  private get exchangeClient(): IExchangeClient<Domain, TExchangeApi> {
+  private get exchangeClient(): IExchangeConnector<Domain, TExchangeApi> {
     return this.tradebot.exchangeClient
   }
 

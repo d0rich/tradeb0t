@@ -1,7 +1,7 @@
 import 'reflect-metadata'
 
 export * from './control'
-export * from './abstract'
+export * from './connector'
 export * from './modules'
 export * from './types'
 export * from './domain/extractors'
