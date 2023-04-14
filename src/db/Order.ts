@@ -2,7 +2,7 @@ import { Entity, Column, ManyToOne, UpdateDateColumn, PrimaryColumn } from 'type
 import { AlgorithmRun } from './AlgorithmRun'
 import { dateTransformer } from './transformers'
 import { z } from 'zod'
-import { operationType } from '../modules/service/api/trpc/schemas'
+import { operationType } from '../api/trpc/schemas'
 
 export type OrderStatus =
   | 'not_processed'

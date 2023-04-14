@@ -1,6 +1,6 @@
 import { db } from '../db'
 import { store } from '../store'
-import { LoggerService } from '../modules'
+import { LoggerService } from '../bot'
 
 export const globalStore = {
   db: db,
