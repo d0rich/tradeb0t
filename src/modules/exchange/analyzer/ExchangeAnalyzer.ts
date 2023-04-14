@@ -1,7 +1,7 @@
 import { scheduleJob } from 'node-schedule'
 import { In, Not } from 'typeorm'
 import { GetOrdersOptions, OperationType } from '../../../types'
-import { CommonDomain } from '../../../domain'
+import { CommonDomain, DomainTemplate } from '../../../domain'
 import {
   GetSecurityType,
   GetCurrencyType,
@@ -9,33 +9,32 @@ import {
   GetOrderType,
   GetPortfolioPositionType
 } from '../../../domain/extractors'
-import { AbstractTradeAlgorithm, AbstractExchangeClient } from '../../../abstract'
-import { ExchangeTrader, ExchangeWatcher } from '../../index'
-import { TradeAlgorithmsEngine } from './trade-algorithms-engine'
+import { ITradeAlgorithm } from '../../../abstract'
+import { ITradeAlgorithmsEngine, TradeAlgorithmsEngine } from './trade-algorithms-engine'
 import { TradeBot } from '../../../TradeBot'
 import { db, Algorithm, AlgorithmRun, Order } from '../../../db'
 import { store } from '../../../store'
 import { AlgorithmRunStatus } from '../../../db/AlgorithmRun'
 import { HandleError } from '../../../decorators'
-
-export class ExchangeAnalyzer<ExchangeClient extends AbstractExchangeClient> {
+import { IExchangeAnalyzer } from './IExchangeAnalyzer'
+import { IExchangeTrader } from '../trader'
+import { IExchangeWatcher } from '../watcher'
+export class ExchangeAnalyzer<Domain extends DomainTemplate> implements IExchangeAnalyzer<Domain> {
   readonly tradebot: TradeBot<ExchangeClient>
-  get trader(): ExchangeTrader<ExchangeClient> {
+  get trader(): IExchangeTrader {
     return this.tradebot.trader
   }
-  get watcher(): ExchangeWatcher<ExchangeClient> {
+  get watcher(): IExchangeWatcher<Domain> {
     return this.tradebot.watcher
   }
-  readonly tradeAlgos: TradeAlgorithmsEngine<ExchangeClient>
+  readonly tradeAlgos: ITradeAlgorithmsEngine
 
   constructor(
     tradebot: TradeBot<ExchangeClient>,
-    initAlgorithmsCallback: (
-      analyzer: ExchangeAnalyzer<ExchangeClient>
-    ) => AbstractTradeAlgorithm<ExchangeClient>[] = () => []
+    initAlgorithmsCallback: (analyzer: IExchangeAnalyzer<Domain>) => ITradeAlgorithm[] = () => []
   ) {
     this.tradebot = tradebot
-    this.tradeAlgos = new TradeAlgorithmsEngine<ExchangeClient>(this, initAlgorithmsCallback)
+    this.tradeAlgos = new TradeAlgorithmsEngine<Domain>(this, initAlgorithmsCallback)
   }
 
   @HandleError()
@@ -206,7 +205,7 @@ export class ExchangeAnalyzer<ExchangeClient extends AbstractExchangeClient> {
   async saveOrder(
     order: GetOrderType<CommonDomain>,
     operation: OperationType,
-    runId: number | undefined = undefined
+    runId?: number
   ): Promise<GetOrderType<CommonDomain>> {
     await this.loadSecurityIfNotExist(order.securityTicker)
     await db.manager.upsert(

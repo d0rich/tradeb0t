@@ -2,10 +2,7 @@ import { Algorithm } from '../db'
 import { InputTypes } from '../db/Algorithm'
 import { AlgorithmRun } from '../db/AlgorithmRun'
 
-export interface ITradeAlgorithm<
-  InputsType = unknown,
-  StateType = unknown
-> {
+export interface ITradeAlgorithm<InputsType = unknown, StateType = unknown> {
   get details(): Algorithm
   get name(): string
   get description(): string

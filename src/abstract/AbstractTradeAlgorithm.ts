@@ -12,7 +12,8 @@ export abstract class AbstractTradeAlgorithm<
   InputsType = unknown,
   StateType = unknown,
   StopDataType = unknown
-> implements ITradeAlgorithm<InputsType, StateType> {
+> implements ITradeAlgorithm<InputsType, StateType>
+{
   protected readonly analyzer: ExchangeAnalyzer<ExchangeClient>
   protected get watcher(): IExchangeWatcher<Domain> {
     return this.analyzer.watcher
