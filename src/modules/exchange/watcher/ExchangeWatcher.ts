@@ -13,17 +13,17 @@ import { GetOrderType } from '../../../domain/extractors'
 import { HandleError } from '../../../decorators'
 
 import { IExchangeWatcher } from './IExchangeWatcher'
-import { IExchangeTrader } from '../trader/IExchangeTrader'
+import { IExchangeAnalyzer } from '../analyzer/IExchangeAnalyzer'
 
 export class ExchangeWatcher<Domain extends DomainTemplate, TExchangeApi> implements IExchangeWatcher<Domain> {
   private readonly tradebot: TradeBot<ExchangeClient>
   private get domainMapper(): IDomainMapper {
     return this.exchangeClient.domainMapper
   }
-  private get analyzer(): ExchangeAnalyzer<Domain, TExchangeApi> {
+  private get analyzer(): IExchangeAnalyzer<Domain> {
     return this.tradebot.analyzer
   }
-  private get trader(): IExchangeTrader<Domain, TExchangeApi> {
+  private get trader(): IExchangeAnalyzer<Domain> {
     return this.tradebot.trader
   }
   private get exchangeClient(): IExchangeClient<Domain, TExchangeApi> {

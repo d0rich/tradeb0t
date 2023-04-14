@@ -39,7 +39,7 @@ export class ExchangeAnalyzer<Domain extends DomainTemplate> implements IExchang
 
   @HandleError()
   async start() {
-    return Promise.all([this.saveAlgorithms(), this.initUpdaters()])
+    await Promise.all([this.saveAlgorithms(), this.initUpdaters()])
   }
 
   @HandleError()
