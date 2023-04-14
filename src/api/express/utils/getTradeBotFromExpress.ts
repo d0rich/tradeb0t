@@ -1,4 +1,4 @@
-import { ITradeBot } from '../../../bot/ITradeBot'
+import { ITradeBot } from 'src/bot'
 import { IExpressAppCarrier } from './IExpressAppCarrier'
 
 export function getTradeBotFromExpress(expressAppCarrier: IExpressAppCarrier): ITradeBot {

@@ -4,10 +4,9 @@ import http from 'http'
 import ws, { WebSocketServer } from 'ws'
 import colors from 'colors/safe'
 import { ITradeBot } from '../ITradeBot'
-import { initExpress } from '../../api/express'
+import { initExpress, registerExpressRoutes, registerWSSHandler } from 'src/api'
 import { useConfig } from '../../config'
 import { HandleError } from '../../decorators'
-import { registerExpressRoutes, registerWSSHandler } from '../../api/trpc'
 import { StubDomain } from 'src/domain'
 
 export class ApiService {
