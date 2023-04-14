@@ -1,21 +1,23 @@
 import { AlgorithmRun, Algorithm } from '../db'
 import { InputTypes } from '../db/Algorithm'
-import { LoggerService, ExchangeAnalyzer, ExchangeTrader, ExchangeWatcher } from '../modules'
+import { LoggerService, ExchangeAnalyzer, IExchangeTrader } from '../modules'
 import { HandleError } from '../decorators'
-import { IExchangeClient } from './IExchangeClient'
+import { DomainTemplate } from 'src/domain'
+import { ITradeAlgorithm } from './ITradeAlgorithm'
+import { IExchangeWatcher } from 'src/modules/exchange/watcher/IExchangeWatcher'
 
 // TODO: fix types when interfaces for tradebot will be implemented
 export abstract class AbstractTradeAlgorithm<
-  ExchangeClient extends IExchangeClient = IExchangeClient,
+  Domain extends DomainTemplate,
   InputsType = unknown,
   StateType = unknown,
   StopDataType = unknown
-> {
+> implements ITradeAlgorithm<InputsType, StateType> {
   protected readonly analyzer: ExchangeAnalyzer<ExchangeClient>
-  protected get watcher(): ExchangeWatcher<ExchangeClient> {
+  protected get watcher(): IExchangeWatcher<Domain> {
     return this.analyzer.watcher
   }
-  protected get trader(): ExchangeTrader<ExchangeClient> {
+  protected get trader(): IExchangeTrader {
     return this.analyzer.trader
   }
   protected stopData: Map<number, StopDataType> = new Map<number, StopDataType>()
@@ -146,7 +148,7 @@ export abstract class AbstractTradeAlgorithm<
   abstract get name(): string
   abstract get description(): string
   abstract get inputs(): InputTypes
-  abstract main(inputs: InputsType): Promise<AlgorithmRun>
-  abstract continue(id: number): Promise<AlgorithmRun>
-  abstract stop(id: number): Promise<AlgorithmRun>
+  abstract main(inputs: InputsType): Promise<AlgorithmRun<InputsType, StateType>>
+  abstract continue(id: number): Promise<AlgorithmRun<InputsType, StateType>>
+  abstract stop(id: number): Promise<AlgorithmRun<InputsType, StateType>>
 }

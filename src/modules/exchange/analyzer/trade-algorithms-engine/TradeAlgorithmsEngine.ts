@@ -1,5 +1,5 @@
 import { TradeBot } from '../../../../TradeBot'
-import { AbstractExchangeClient, AbstractTradeAlgorithm } from '../../../../abstract'
+import { AbstractExchangeClient, ITradeAlgorithm } from '../../../../abstract'
 import { ExchangeAnalyzer, ExchangeTrader, ExchangeWatcher } from '../../../index'
 import { Algorithm, AlgorithmRun } from '../../../../db'
 import { ITradeAlgorithmsEngine } from './ITradeAlgorithmsEngine'
@@ -19,11 +19,11 @@ export class TradeAlgorithmsEngine<Domain extends DomainTemplate> implements ITr
     return this.analyzer.tradebot
   }
 
-  protected readonly algorithms: AbstractTradeAlgorithm<ExchangeClient>[]
+  protected readonly algorithms: ITradeAlgorithm[]
 
   constructor(
     analyzer: ExchangeAnalyzer<ExchangeClient>,
-    initAlgorithmsCallback: (analyzer: ExchangeAnalyzer<ExchangeClient>) => AbstractTradeAlgorithm<ExchangeClient>[]
+    initAlgorithmsCallback: (analyzer: ExchangeAnalyzer<ExchangeClient>) => ITradeAlgorithm[]
   ) {
     this.analyzer = analyzer
     this.algorithms = initAlgorithmsCallback(analyzer)
