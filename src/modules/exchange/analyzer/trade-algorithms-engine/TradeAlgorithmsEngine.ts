@@ -2,13 +2,17 @@ import { TradeBot } from '../../../../TradeBot'
 import { AbstractExchangeClient, AbstractTradeAlgorithm } from '../../../../abstract'
 import { ExchangeAnalyzer, ExchangeTrader, ExchangeWatcher } from '../../../index'
 import { Algorithm, AlgorithmRun } from '../../../../db'
+import { ITradeAlgorithmsEngine } from './ITradeAlgorithmsEngine'
+import { IExchangeTrader } from '../../trader'
+import { IExchangeWatcher } from '../../watcher/IExchangeWatcher'
+import { DomainTemplate } from 'src/domain'
 
-export class TradeAlgorithmsEngine<ExchangeClient extends AbstractExchangeClient> {
+export class TradeAlgorithmsEngine<Domain extends DomainTemplate> implements ITradeAlgorithmsEngine {
   protected readonly analyzer: ExchangeAnalyzer<ExchangeClient>
-  protected get trader(): ExchangeTrader<ExchangeClient> {
+  protected get trader(): IExchangeTrader {
     return this.analyzer.trader
   }
-  protected get watcher(): ExchangeWatcher<ExchangeClient> {
+  protected get watcher(): IExchangeWatcher<Domain> {
     return this.analyzer.watcher
   }
   protected get tradebot(): TradeBot<ExchangeClient> {
