@@ -1,5 +1,4 @@
-import { TradeBot } from '../../../TradeBot'
-import { ExchangeAnalyzer, ExchangeTrader } from '../../index'
+import { IExchangeTrader } from '../../index'
 import { IDomainMapper, IExchangeClient } from '../../../abstract'
 import { OperationType, OrderStatus } from '../../../db'
 import { CommonDomain, DomainTemplate } from '../../../domain'
@@ -13,24 +12,25 @@ import { GetOrderType } from '../../../domain/extractors'
 import { HandleError } from '../../../decorators'
 
 import { IExchangeWatcher } from './IExchangeWatcher'
-import { IExchangeAnalyzer } from '../analyzer/IExchangeAnalyzer'
+import { IExchangeAnalyzer } from '../analyzer'
+import { ITradeBot } from 'src/ITradeBot'
 
 export class ExchangeWatcher<Domain extends DomainTemplate, TExchangeApi> implements IExchangeWatcher<Domain> {
-  private readonly tradebot: TradeBot<ExchangeClient>
+  private readonly tradebot: ITradeBot<Domain, TExchangeApi>
   private get domainMapper(): IDomainMapper {
     return this.exchangeClient.domainMapper
   }
-  private get analyzer(): IExchangeAnalyzer<Domain> {
+  private get analyzer(): IExchangeAnalyzer<Domain, TExchangeApi> {
     return this.tradebot.analyzer
   }
-  private get trader(): IExchangeAnalyzer<Domain> {
+  private get trader(): IExchangeTrader {
     return this.tradebot.trader
   }
   private get exchangeClient(): IExchangeClient<Domain, TExchangeApi> {
     return this.tradebot.exchangeClient
   }
 
-  constructor(tradebot: TradeBot<ExchangeClient>) {
+  constructor(tradebot: ITradeBot<Domain, TExchangeApi>) {
     this.tradebot = tradebot
   }
 

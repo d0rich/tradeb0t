@@ -1,15 +1,15 @@
 import { Job, JobCallback, scheduleJob } from 'node-schedule'
-import { TradeBot } from '../../../TradeBot'
-import {  LoggerService } from '../../index'
+import { LoggerService } from '../../index'
 import { CreateOrderOptions, OrderStatus } from '../../../types'
 import { GetOrderType, DomainTemplate } from '../../../domain'
 import { HandleError } from '../../../decorators'
 import { IExchangeTrader } from './IExchangeTrader'
 import { IExchangeWatcher } from '../watcher/IExchangeWatcher'
 import { IExchangeClient } from '../../../abstract'
+import { ITradeBot } from 'src/ITradeBot'
 
 export class ExchangeTrader<Domain extends DomainTemplate, TExchangeApi> implements IExchangeTrader {
-  private readonly tradebot: TradeBot<ExchangeClient>
+  private readonly tradebot: ITradeBot<Domain, TExchangeApi>
   private get watcher(): IExchangeWatcher<Domain> {
     return this.tradebot.watcher
   }
@@ -20,7 +20,7 @@ export class ExchangeTrader<Domain extends DomainTemplate, TExchangeApi> impleme
     return this.tradebot.exchangeClient
   }
 
-  constructor(tradebot: TradeBot<ExchangeClient>) {
+  constructor(tradebot: ITradeBot<Domain, TExchangeApi>) {
     this.tradebot = tradebot
   }
 

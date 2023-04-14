@@ -1,4 +1,3 @@
-import { TradeBot } from '../../../../TradeBot'
 import { ITradeAlgorithm } from '../../../../abstract'
 import { Algorithm, AlgorithmRun } from '../../../../db'
 import { ITradeAlgorithmsEngine } from './ITradeAlgorithmsEngine'
@@ -6,24 +5,25 @@ import { IExchangeTrader } from '../../trader'
 import { IExchangeWatcher } from '../../watcher'
 import { IExchangeAnalyzer } from '../IExchangeAnalyzer'
 import { DomainTemplate } from 'src/domain'
+import { ITradeBot } from 'src/ITradeBot'
 
-export class TradeAlgorithmsEngine<Domain extends DomainTemplate> implements ITradeAlgorithmsEngine {
-  protected readonly analyzer: IExchangeAnalyzer<Domain>
+export class TradeAlgorithmsEngine<Domain extends DomainTemplate, TExchangeApi> implements ITradeAlgorithmsEngine {
+  protected readonly analyzer: IExchangeAnalyzer<Domain, TExchangeApi>
   protected get trader(): IExchangeTrader {
     return this.analyzer.trader
   }
   protected get watcher(): IExchangeWatcher<Domain> {
     return this.analyzer.watcher
   }
-  protected get tradebot(): TradeBot<ExchangeClient> {
+  protected get tradebot(): ITradeBot<Domain, TExchangeApi> {
     return this.analyzer.tradebot
   }
 
   protected readonly algorithms: ITradeAlgorithm[]
 
   constructor(
-    analyzer: IExchangeAnalyzer<Domain>,
-    initAlgorithmsCallback: (analyzer: IExchangeAnalyzer<Domain>) => ITradeAlgorithm[]
+    analyzer: IExchangeAnalyzer<Domain, TExchangeApi>,
+    initAlgorithmsCallback: (analyzer: IExchangeAnalyzer<Domain, TExchangeApi>) => ITradeAlgorithm[]
   ) {
     this.analyzer = analyzer
     this.algorithms = initAlgorithmsCallback(analyzer)

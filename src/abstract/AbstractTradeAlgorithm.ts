@@ -4,17 +4,18 @@ import { LoggerService, ExchangeAnalyzer, IExchangeTrader } from '../modules'
 import { HandleError } from '../decorators'
 import { DomainTemplate } from 'src/domain'
 import { ITradeAlgorithm } from './ITradeAlgorithm'
-import { IExchangeWatcher } from 'src/modules/exchange/watcher/IExchangeWatcher'
+import { IExchangeWatcher, IExchangeAnalyzer } from 'src/modules'
 
 // TODO: fix types when interfaces for tradebot will be implemented
 export abstract class AbstractTradeAlgorithm<
   Domain extends DomainTemplate,
+  TExchangeApi = unknown,
   InputsType = unknown,
   StateType = unknown,
   StopDataType = unknown
 > implements ITradeAlgorithm<InputsType, StateType>
 {
-  protected readonly analyzer: ExchangeAnalyzer<ExchangeClient>
+  protected readonly analyzer: IExchangeAnalyzer<Domain, TExchangeApi>
   protected get watcher(): IExchangeWatcher<Domain> {
     return this.analyzer.watcher
   }
@@ -33,7 +34,7 @@ export abstract class AbstractTradeAlgorithm<
     }
   }
 
-  protected constructor(analyzer: ExchangeAnalyzer<ExchangeClient>) {
+  protected constructor(analyzer: IExchangeAnalyzer<Domain, TExchangeApi>) {
     this.analyzer = analyzer
   }
 

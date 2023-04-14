@@ -1,14 +1,26 @@
 import { db } from './db'
-import { ApiService, AuthService, LoggerService, ExchangeAnalyzer, ExchangeTrader, ExchangeWatcher } from './modules'
-import { AbstractExchangeClient, AbstractTradeAlgorithm } from './abstract'
+import {
+  ApiService,
+  AuthService,
+  LoggerService,
+  IExchangeTrader,
+  IExchangeWatcher,
+  IExchangeAnalyzer,
+  ExchangeAnalyzer,
+  ExchangeTrader,
+  ExchangeWatcher
+} from './modules'
+import { IExchangeClient, ITradeAlgorithm } from './abstract'
 import { globalStore } from './global/store'
+import { DomainTemplate, StubDomain } from './domain'
+import { ITradeBot } from './ITradeBot'
 
-export type TradeBotInitOptions<ExchangeClient extends AbstractExchangeClient = AbstractExchangeClient> =
+export type TradeBotInitOptions<Domain extends DomainTemplate = StubDomain, TExchangeApi = unknown> =
   | {
       mode: 'production'
-      exchangeClient: ExchangeClient
+      exchangeClient: IExchangeClient<Domain, TExchangeApi>
       botToken?: string
-      initAlgorithmsCallback?: (analyzer: ExchangeAnalyzer<ExchangeClient>) => AbstractTradeAlgorithm<ExchangeClient>[]
+      initAlgorithmsCallback?: (analyzer: IExchangeAnalyzer<Domain, TExchangeApi>) => ITradeAlgorithm[]
     }
   | {
       /**
@@ -18,11 +30,11 @@ export type TradeBotInitOptions<ExchangeClient extends AbstractExchangeClient = 
       mode: 'no_setup'
     }
 
-export class TradeBot<ExchangeClient extends AbstractExchangeClient = AbstractExchangeClient> {
-  private _exchangeClient: ExchangeClient
-  private _analyzer: ExchangeAnalyzer<ExchangeClient>
-  private _trader: ExchangeTrader<ExchangeClient>
-  private _watcher: ExchangeWatcher<ExchangeClient>
+export class TradeBot<Domain extends DomainTemplate, TExchangeApi> implements ITradeBot<Domain, TExchangeApi> {
+  private _exchangeClient: IExchangeClient<Domain, TExchangeApi>
+  private _analyzer: IExchangeAnalyzer<Domain, TExchangeApi>
+  private _trader: IExchangeTrader
+  private _watcher: IExchangeWatcher<Domain>
   private _api: ApiService
   private _logger: LoggerService
   private _auth: AuthService
@@ -49,7 +61,7 @@ export class TradeBot<ExchangeClient extends AbstractExchangeClient = AbstractEx
     return this._auth
   }
 
-  constructor(options: TradeBotInitOptions<ExchangeClient>) {
+  constructor(options: TradeBotInitOptions<Domain, TExchangeApi>) {
     if (options.mode === 'production') {
       const { exchangeClient, botToken, initAlgorithmsCallback } = options
       this.setup({ exchangeClient, botToken, initAlgorithmsCallback })
@@ -61,9 +73,9 @@ export class TradeBot<ExchangeClient extends AbstractExchangeClient = AbstractEx
     botToken,
     initAlgorithmsCallback
   }: {
-    exchangeClient: ExchangeClient
+    exchangeClient: IExchangeClient<Domain, TExchangeApi>
     botToken?: string
-    initAlgorithmsCallback?: (analyzer: ExchangeAnalyzer<ExchangeClient>) => AbstractTradeAlgorithm<ExchangeClient>[]
+    initAlgorithmsCallback?: (analyzer: IExchangeAnalyzer<Domain, TExchangeApi>) => ITradeAlgorithm[]
   }) {
     this._logger = new LoggerService(this)
     globalStore.logger = this.logger

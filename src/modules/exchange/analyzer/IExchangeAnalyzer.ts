@@ -11,9 +11,10 @@ import {
 } from 'src/domain'
 import { OperationType, Algorithm, AlgorithmRun } from 'src/db'
 import { GetOrdersOptions } from 'src/types'
+import { ITradeBot } from 'src/ITradeBot'
 
-export interface IExchangeAnalyzer<Domain extends DomainTemplate> {
-  readonly tradebot: TradeBot<ExchangeClient>
+export interface IExchangeAnalyzer<Domain extends DomainTemplate, TExchangeApi> {
+  readonly tradebot: ITradeBot<Domain, TExchangeApi>
   get trader(): IExchangeTrader
   get watcher(): IExchangeWatcher<Domain>
   start(): Promise<void>

@@ -1,6 +1,3 @@
-import { TradeBot } from '../../../../TradeBot'
-import { AbstractExchangeClient, AbstractTradeAlgorithm } from '../../../../abstract'
-import { ExchangeAnalyzer, ExchangeTrader, ExchangeWatcher } from '../../../index'
 import { Algorithm, AlgorithmRun } from '../../../../db'
 
 export interface ITradeAlgorithmsEngine {
