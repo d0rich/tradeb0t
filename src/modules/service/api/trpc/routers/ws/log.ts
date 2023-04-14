@@ -1,11 +1,11 @@
 import { observable } from '@trpc/server/observable'
 import { z } from 'zod'
-import { TradeBot } from '../../../../../../TradeBot'
+import { ITradeBot } from '../../../../../../ITradeBot'
 import { publicProcedure, router } from './trpc'
 import { SocketLogs } from '../../../../../../types'
 import { TRPCError } from '@trpc/server'
 
-export const initLogRouter = (tradeBot: TradeBot) => {
+export const initLogRouter = (tradeBot: ITradeBot) => {
   return router({
     onEvent: publicProcedure
       .input(

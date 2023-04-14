@@ -2,12 +2,12 @@ import fs from 'fs'
 import { createRollingFileLogger, Logger } from 'simple-node-logger'
 import { EventEmitter } from 'events'
 import colors from 'colors/safe'
-import { TradeBot } from '../../../TradeBot'
+import { ITradeBot } from '../../../ITradeBot'
 import { useConfig } from '../../../config'
 import { SocketLogs } from './SocketLogs'
 
 export class LoggerService {
-  private readonly tradebot: TradeBot
+  private readonly tradebot: ITradeBot
   private readonly logger: Logger
   private readonly lastLogs: SocketLogs[]
   private readonly eventEmitter = new EventEmitter()
@@ -101,7 +101,7 @@ export class LoggerService {
     this.eventEmitter.emit('log', log)
   }
 
-  constructor(tradeBot: TradeBot) {
+  constructor(tradeBot: ITradeBot) {
     this.createLogsDirIfNotExist()
     this.tradebot = tradeBot
     this.logger = createRollingFileLogger({

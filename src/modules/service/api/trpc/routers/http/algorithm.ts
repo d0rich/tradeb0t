@@ -1,8 +1,8 @@
 import { publicProcedure, router } from './trpc'
 import { z } from 'zod'
-import { TradeBot } from '../../../../../../TradeBot'
+import { ITradeBot } from '../../../../../../ITradeBot'
 
-export default (tradeBot: TradeBot) => {
+export default (tradeBot: ITradeBot) => {
   return router({
     list: publicProcedure.query(() => {
       return tradeBot.analyzer.tradeAlgos.description

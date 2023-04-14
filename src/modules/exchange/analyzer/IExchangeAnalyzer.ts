@@ -12,11 +12,13 @@ import {
 import { OperationType, Algorithm, AlgorithmRun } from 'src/db'
 import { GetOrdersOptions } from 'src/types'
 import { ITradeBot } from 'src/ITradeBot'
+import { ITradeAlgorithmsEngine } from './trade-algorithms-engine'
 
 export interface IExchangeAnalyzer<Domain extends DomainTemplate, TExchangeApi> {
   readonly tradebot: ITradeBot<Domain, TExchangeApi>
   get trader(): IExchangeTrader
   get watcher(): IExchangeWatcher<Domain>
+  readonly tradeAlgos: ITradeAlgorithmsEngine
   start(): Promise<void>
   updateCurrencies(): Promise<GetCurrencyType<CommonDomain>[]>
   getCurrencies(): Promise<GetCurrencyType<CommonDomain>[]>

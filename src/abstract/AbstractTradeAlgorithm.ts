@@ -1,6 +1,6 @@
 import { AlgorithmRun, Algorithm } from '../db'
 import { InputTypes } from '../db/Algorithm'
-import { LoggerService, ExchangeAnalyzer, IExchangeTrader } from '../modules'
+import { LoggerService, IExchangeTrader } from '../modules'
 import { HandleError } from '../decorators'
 import { DomainTemplate } from 'src/domain'
 import { ITradeAlgorithm } from './ITradeAlgorithm'
