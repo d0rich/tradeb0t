@@ -7,7 +7,7 @@ import {
   GetSecurityType,
   GetOrderType
 } from 'src/domain'
-import { OperationType, OrderStatus } from '../../db'
+import { OperationType, OrderStatus } from 'src/domain/models'
 
 export interface IExchangeWatcher<Domain extends DomainTemplate> {
   getPortfolio(): Promise<GetSecurityBalanceType<CommonDomain>[]>

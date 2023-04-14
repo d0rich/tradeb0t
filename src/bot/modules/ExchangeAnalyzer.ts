@@ -1,6 +1,6 @@
 import { scheduleJob } from 'node-schedule'
 import { In, Not } from 'typeorm'
-import { OperationType } from 'src/db'
+import { OperationType, Algorithm, AlgorithmRun, Order, AlgorithmRunStatus } from 'src/domain/models'
 import { GetOrdersOptions } from '../../api/trpc/schemas'
 import {
   GetSecurityType,
@@ -12,14 +12,13 @@ import {
   DomainTemplate
 } from 'src/domain'
 import { ITradeAlgorithm, ITradeAlgorithmsEngine, TradeAlgorithmsEngine } from 'src/algorithms'
-import { db, Algorithm, AlgorithmRun, Order } from 'src/db'
-import { store } from '../../store'
-import { AlgorithmRunStatus } from '../../db/AlgorithmRun'
+import { db } from 'src/storage/persistent'
+import { store } from 'src/storage'
 import { HandleError } from '../../decorators'
 import { IExchangeAnalyzer } from './IExchangeAnalyzer'
 import { IExchangeTrader } from './IExchangeTrader'
 import { IExchangeWatcher } from './IExchangeWatcher'
-import { ITradeBot } from 'src/bot/ITradeBot'
+import { ITradeBot } from 'src/bot'
 export class ExchangeAnalyzer<Domain extends DomainTemplate, TExchangeApi>
   implements IExchangeAnalyzer<Domain, TExchangeApi>
 {

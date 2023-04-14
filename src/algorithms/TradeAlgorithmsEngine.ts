@@ -1,8 +1,7 @@
 import { ITradeAlgorithm } from 'src/algorithms'
-import { Algorithm, AlgorithmRun } from '../db'
 import { ITradeAlgorithmsEngine } from './ITradeAlgorithmsEngine'
 import { IExchangeTrader, IExchangeWatcher, IExchangeAnalyzer } from '../bot'
-import { DomainTemplate } from 'src/domain'
+import { DomainTemplate, Algorithm, AlgorithmRun } from 'src/domain'
 import { ITradeBot } from 'src/bot/ITradeBot'
 
 export class TradeAlgorithmsEngine<Domain extends DomainTemplate, TExchangeApi> implements ITradeAlgorithmsEngine {

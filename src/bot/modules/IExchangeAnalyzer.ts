@@ -9,7 +9,7 @@ import {
   GetPortfolioPositionType,
   GetOrderType
 } from 'src/domain'
-import { OperationType, Algorithm, AlgorithmRun } from 'src/db'
+import { OperationType, Algorithm, AlgorithmRun } from 'src/domain/models'
 import { GetOrdersOptions } from 'src/api/trpc/schemas'
 import { ITradeBot } from 'src/bot/ITradeBot'
 import { ITradeAlgorithmsEngine } from 'src/algorithms'

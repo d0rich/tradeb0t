@@ -1,6 +1,6 @@
 import { IExchangeTrader } from './IExchangeTrader'
 import { IExchangeConnector } from 'src/connector'
-import { OperationType, OrderStatus } from '../../db'
+import { OperationType, OrderStatus } from 'src/domain/models'
 import {
   CommonDomain,
   DomainTemplate,

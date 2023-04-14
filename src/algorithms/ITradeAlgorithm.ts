@@ -1,6 +1,4 @@
-import { Algorithm } from '../db'
-import { InputTypes } from '../db/Algorithm'
-import { AlgorithmRun } from '../db/AlgorithmRun'
+import { Algorithm, InputTypes, AlgorithmRun } from 'src/domain'
 
 export interface ITradeAlgorithm<InputsType = unknown, StateType = unknown> {
   get details(): Algorithm

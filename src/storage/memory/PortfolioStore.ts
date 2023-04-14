@@ -1,19 +1,6 @@
 import { deepCopy } from '../utils'
 import { SecuritiesStore } from './SecuritiesStore'
-
-export type CurrencyBalance = {
-  type: 'currency'
-  currencyTicker: string
-  amount: number
-}
-
-export type SecurityBalance = {
-  type: 'security'
-  securityTicker: string
-  amount: number
-}
-
-export type PortfolioPosition = CurrencyBalance | SecurityBalance
+import { CurrencyBalance, SecurityBalance, PortfolioPosition } from 'src/domain'
 
 export class PortfolioStore {
   // TODO: Create Proxy on updates

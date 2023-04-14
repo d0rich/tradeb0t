@@ -1,5 +1,4 @@
-import { db } from '../db'
-import { store } from '../store'
+import { db, store } from '../storage'
 import { LoggerService } from '../bot'
 
 export const globalStore = {

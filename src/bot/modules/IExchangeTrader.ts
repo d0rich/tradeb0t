@@ -1,6 +1,5 @@
 import { Job, JobCallback } from 'node-schedule'
-import { OrderStatus } from 'src/db'
-import { CreateOrderOptions } from 'src/domain'
+import { CreateOrderOptions, OrderStatus } from 'src/domain'
 
 export interface IExchangeTrader {
   scheduleAction(action: JobCallback, date: Date): Job

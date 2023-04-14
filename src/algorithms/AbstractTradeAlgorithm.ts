@@ -1,7 +1,5 @@
-import { AlgorithmRun, Algorithm } from '../db'
-import { InputTypes } from '../db/Algorithm'
 import { HandleError } from '../decorators'
-import { DomainTemplate } from 'src/domain'
+import { DomainTemplate, AlgorithmRun, Algorithm, InputTypes } from 'src/domain'
 import { ITradeAlgorithm } from './ITradeAlgorithm'
 import { IExchangeWatcher, IExchangeAnalyzer, LoggerService, IExchangeTrader } from 'src/bot'
 

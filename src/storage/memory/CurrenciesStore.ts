@@ -1,14 +1,6 @@
 import { deepCopy } from '../utils'
 import { PortfolioStore } from './PortfolioStore'
-
-export type Currency = {
-  name: string
-  ticker: string
-  /**
-   * Ticker used to buy and sell currency on exchange
-   */
-  exchangeTicker: string
-}
+import { Currency } from 'src/domain'
 
 export class CurrenciesStore {
   private items: Currency[] = []

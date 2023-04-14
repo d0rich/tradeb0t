@@ -1,5 +1,5 @@
 import { IExchangeConnector } from 'src/connector'
-import { OrderStatus, OperationType } from 'src/db'
+import { OrderStatus, OperationType } from '../models'
 import { CommonDomain } from '../CommonDomain'
 import { DomainTemplate } from '../DomainTemplate'
 import {
@@ -9,7 +9,7 @@ import {
   GetSecurityType,
   GetOrderType
 } from '../extractors'
-import { IDomainMapper } from '../mapper/IDomainMapper'
+import { IDomainMapper } from '../mapper'
 
 export abstract class AbstractDomainMapper<Domain extends DomainTemplate, TExchangeApi = unknown>
   implements IDomainMapper<Domain>

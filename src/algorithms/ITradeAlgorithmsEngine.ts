@@ -1,4 +1,4 @@
-import { Algorithm, AlgorithmRun } from '../db'
+import { Algorithm, AlgorithmRun } from 'src/domain'
 
 export interface ITradeAlgorithmsEngine {
   get description(): Algorithm[]

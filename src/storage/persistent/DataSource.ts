@@ -1,7 +1,5 @@
 import { DataSource } from 'typeorm'
-import { AlgorithmRun } from './AlgorithmRun'
-import { Algorithm } from './Algorithm'
-import { Order } from './Order'
+import { AlgorithmRun, Algorithm, Order } from 'src/domain'
 
 export const dataSource = new DataSource({
   type: 'better-sqlite3',
