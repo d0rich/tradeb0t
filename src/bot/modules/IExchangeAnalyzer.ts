@@ -13,12 +13,14 @@ import { OperationType, Algorithm, AlgorithmRun } from 'src/domain/models'
 import { GetOrdersOptions } from 'src/api/trpc/schemas'
 import { ITradeBot } from 'src/bot/ITradeBot'
 import { ITradeAlgorithmsEngine } from 'src/algorithms'
+import { PersistentStorage } from 'src/storage'
 
 export interface IExchangeAnalyzer<Domain extends DomainTemplate, TExchangeApi> {
+  readonly tradeAlgos: ITradeAlgorithmsEngine
+  readonly persistentStorage: PersistentStorage
   readonly tradebot: ITradeBot<Domain, TExchangeApi>
   get trader(): IExchangeTrader
   get watcher(): IExchangeWatcher<Domain>
-  readonly tradeAlgos: ITradeAlgorithmsEngine
   start(): Promise<void>
   updateCurrencies(): Promise<GetCurrencyType<CommonDomain>[]>
   getCurrencies(): Promise<GetCurrencyType<CommonDomain>[]>
@@ -41,8 +43,9 @@ export interface IExchangeAnalyzer<Domain extends DomainTemplate, TExchangeApi> 
     runId?: number
   ): Promise<GetOrderType<CommonDomain>>
   getOrders(options: GetOrdersOptions): Promise<GetOrderType<CommonDomain>[]>
-  saveAlgorithms(): Promise<Algorithm[]>
+
   runAlgorithm(algorithmName: string, inputs: unknown, state?: unknown): Promise<AlgorithmRun>
+
   saveAlgorithmRunProgress(id: number, state: unknown): Promise<AlgorithmRun>
   loadAlgorithmRunProgress(id: number): Promise<AlgorithmRun | null>
   stopAlgorithmRun(id: number): Promise<AlgorithmRun>

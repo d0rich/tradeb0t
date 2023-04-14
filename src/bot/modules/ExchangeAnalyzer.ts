@@ -12,7 +12,7 @@ import {
   DomainTemplate
 } from 'src/domain'
 import { ITradeAlgorithm, ITradeAlgorithmsEngine, TradeAlgorithmsEngine } from 'src/algorithms'
-import { db } from 'src/storage/persistent'
+import { PersistentStorage, db } from 'src/storage/persistent'
 import { store } from 'src/storage'
 import { HandleError } from '../../decorators'
 import { IExchangeAnalyzer } from './IExchangeAnalyzer'
@@ -22,6 +22,9 @@ import { ITradeBot } from 'src/bot'
 export class ExchangeAnalyzer<Domain extends DomainTemplate, TExchangeApi>
   implements IExchangeAnalyzer<Domain, TExchangeApi>
 {
+  readonly tradeAlgos: ITradeAlgorithmsEngine
+  // FIXME: generate unique id
+  readonly persistentStorage = new PersistentStorage('id')
   readonly tradebot: ITradeBot<Domain, TExchangeApi>
   get trader(): IExchangeTrader {
     return this.tradebot.trader
@@ -29,7 +32,6 @@ export class ExchangeAnalyzer<Domain extends DomainTemplate, TExchangeApi>
   get watcher(): IExchangeWatcher<Domain> {
     return this.tradebot.watcher
   }
-  readonly tradeAlgos: ITradeAlgorithmsEngine
 
   constructor(
     tradebot: ITradeBot<Domain, TExchangeApi>,
@@ -41,7 +43,12 @@ export class ExchangeAnalyzer<Domain extends DomainTemplate, TExchangeApi>
 
   @HandleError()
   async start() {
-    await Promise.all([this.saveAlgorithms(), this.initUpdaters()])
+    await Promise.all([
+      this.persistentStorage
+        .algorithmsRepository
+        .save(this.tradeAlgos.description),
+      this.initUpdaters()
+    ])
   }
 
   @HandleError()
@@ -256,14 +263,6 @@ export class ExchangeAnalyzer<Domain extends DomainTemplate, TExchangeApi>
   }
 
   // Algorithms
-
-  @HandleError()
-  async saveAlgorithms(): Promise<Algorithm[]> {
-    const { tradeAlgos } = this
-    const allAlgorithms = tradeAlgos.description
-    await db.manager.upsert(Algorithm, allAlgorithms, ['name'])
-    return await db.manager.find(Algorithm)
-  }
 
   @HandleError()
   async runAlgorithm(algorithmName: string, inputs: unknown, state: unknown = inputs): Promise<AlgorithmRun> {
