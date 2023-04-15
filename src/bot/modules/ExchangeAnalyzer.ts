@@ -1,6 +1,5 @@
 import { scheduleJob } from 'node-schedule'
-import { In, Not } from 'typeorm'
-import { OperationType, Algorithm, AlgorithmRun, Order, AlgorithmRunStatus } from 'src/domain/models'
+import { OperationType, Order } from 'src/domain/models'
 import { GetOrdersOptions } from '../../api/trpc/schemas'
 import {
   GetSecurityType,
@@ -44,9 +43,7 @@ export class ExchangeAnalyzer<Domain extends DomainTemplate, TExchangeApi>
   @HandleError()
   async start() {
     await Promise.all([
-      this.persistentStorage
-        .algorithmsRepository
-        .save(this.tradeAlgos.description),
+      this.persistentStorage.algorithmsRepository.save(this.tradeAlgos.description),
       this.initUpdaters()
     ])
   }
@@ -260,89 +257,5 @@ export class ExchangeAnalyzer<Domain extends DomainTemplate, TExchangeApi>
         runId
       })
     return await queryBuilder.getMany()
-  }
-
-  // Algorithms
-
-  @HandleError()
-  async runAlgorithm(algorithmName: string, inputs: unknown, state: unknown = inputs): Promise<AlgorithmRun> {
-    return db.manager.create(AlgorithmRun, {
-      algorithmName,
-      inputs,
-      state,
-      status: 'running'
-    })
-  }
-
-  @HandleError()
-  async saveAlgorithmRunProgress(id: number, state: unknown): Promise<AlgorithmRun> {
-    if (!state) throw new Error('State is required')
-    await db.manager.update(AlgorithmRun, { id }, { state })
-    const updatedRun = await db.manager.findOneBy(AlgorithmRun, { id })
-    if (!updatedRun) throw new Error(`AlgorithmRun wasn't updated successfully: ${{ id, state }}`)
-    return updatedRun
-  }
-
-  @HandleError()
-  async loadAlgorithmRunProgress(id: number): Promise<AlgorithmRun | null> {
-    return db.manager.findOneBy(AlgorithmRun, { id })
-  }
-
-  @HandleError()
-  async stopAlgorithmRun(id: number): Promise<AlgorithmRun> {
-    await db.manager.update(AlgorithmRun, { id }, { status: 'stopped' })
-    const stoppedRun = await db.manager.findOneBy(AlgorithmRun, { id })
-    if (!stoppedRun) throw new Error(`AlgorithmRun wasn't stopped successfully: ${{ id }}`)
-    return stoppedRun
-  }
-
-  @HandleError()
-  async resumeAlgorithmRun(id: number): Promise<AlgorithmRun> {
-    await db.manager.update(AlgorithmRun, { id }, { status: 'resumed' })
-    const resumedRun = await db.manager.findOneBy(AlgorithmRun, { id })
-    if (!resumedRun) throw new Error(`AlgorithmRun wasn't resumed successfully: ${{ id }}`)
-    return resumedRun
-  }
-
-  @HandleError()
-  async finishAlgorithmRun(id: number): Promise<AlgorithmRun> {
-    await db.manager.update(AlgorithmRun, { id }, { status: 'finished' })
-    const finishedRun = await db.manager.findOneBy(AlgorithmRun, { id })
-    if (!finishedRun) throw new Error(`AlgorithmRun wasn't finished successfully: ${{ id }}`)
-    return finishedRun
-  }
-
-  @HandleError()
-  async errorAlgorithmRun(id: number, error: Error): Promise<AlgorithmRun> {
-    const run = await db.manager.findOneBy(AlgorithmRun, { id })
-    const state = { stateBeforeError: run?.state, error }
-    await db.manager.update(
-      AlgorithmRun,
-      { id },
-      {
-        status: 'error',
-        state
-      }
-    )
-    const runWithError = await db.manager.findOneBy(AlgorithmRun, { id })
-    if (!runWithError) throw new Error(`Error in AlgorithmRun wasn't saved successfully: ${{ id }}`)
-    return runWithError
-  }
-
-  @HandleError()
-  async getAlgorithmRunsByAlgorithm(algorithmName: string): Promise<AlgorithmRun[]> {
-    return db.manager.find(AlgorithmRun, {
-      where: { algorithmName },
-      order: { id: 'DESC' }
-    })
-  }
-
-  @HandleError()
-  async getUnfinishedAlgorithmRuns(): Promise<AlgorithmRun[]> {
-    return db.manager.find(AlgorithmRun, {
-      where: {
-        status: Not(In<AlgorithmRunStatus>(['finished', 'stopped', 'error']))
-      }
-    })
   }
 }

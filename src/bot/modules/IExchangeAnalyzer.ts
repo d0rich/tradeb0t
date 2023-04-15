@@ -9,7 +9,7 @@ import {
   GetPortfolioPositionType,
   GetOrderType
 } from 'src/domain'
-import { OperationType, Algorithm, AlgorithmRun } from 'src/domain/models'
+import { OperationType } from 'src/domain/models'
 import { GetOrdersOptions } from 'src/api/trpc/schemas'
 import { ITradeBot } from 'src/bot/ITradeBot'
 import { ITradeAlgorithmsEngine } from 'src/algorithms'
@@ -43,15 +43,4 @@ export interface IExchangeAnalyzer<Domain extends DomainTemplate, TExchangeApi> 
     runId?: number
   ): Promise<GetOrderType<CommonDomain>>
   getOrders(options: GetOrdersOptions): Promise<GetOrderType<CommonDomain>[]>
-
-  runAlgorithm(algorithmName: string, inputs: unknown, state?: unknown): Promise<AlgorithmRun>
-
-  saveAlgorithmRunProgress(id: number, state: unknown): Promise<AlgorithmRun>
-  loadAlgorithmRunProgress(id: number): Promise<AlgorithmRun | null>
-  stopAlgorithmRun(id: number): Promise<AlgorithmRun>
-  resumeAlgorithmRun(id: number): Promise<AlgorithmRun>
-  finishAlgorithmRun(id: number): Promise<AlgorithmRun>
-  errorAlgorithmRun(id: number, error: Error): Promise<AlgorithmRun>
-  getAlgorithmRunsByAlgorithm(algorithmName: string): Promise<AlgorithmRun[]>
-  getUnfinishedAlgorithmRuns(): Promise<AlgorithmRun[]>
 }

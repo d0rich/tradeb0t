@@ -1,18 +1,19 @@
 import { DataSource } from 'typeorm'
 import { AlgorithmRun, Algorithm, Order } from 'src/domain'
 import { initAlgorithmsRepository } from './AlgorithmsRepository'
+import { initAlgorithmRunsRepository } from './AlgorithmRunsRepository'
 
 export class PersistentStorage {
   ordersRepository: ReturnType<PersistentStorage['initOrdersRepository']>
   algorithmsRepository: ReturnType<typeof initAlgorithmsRepository>
-  algorithmRunsRepository: ReturnType<PersistentStorage['initAlgorithmRunsRepository']>
+  algorithmRunsRepository: ReturnType<typeof initAlgorithmRunsRepository>
   private datasource: DataSource
 
   constructor(id: string) {
     this.datasource = this.initDatasource(id)
     this.ordersRepository = this.initOrdersRepository()
     this.algorithmsRepository = initAlgorithmsRepository(this.datasource)
-    this.algorithmRunsRepository = this.initAlgorithmRunsRepository()
+    this.algorithmRunsRepository = initAlgorithmRunsRepository(this.datasource)
   }
 
   private initDatasource(id: string) {
@@ -27,9 +28,5 @@ export class PersistentStorage {
 
   private initOrdersRepository() {
     return this.datasource.getRepository(Order)
-  }
-
-  private initAlgorithmRunsRepository() {
-    return this.datasource.getRepository(AlgorithmRun)
   }
 }
