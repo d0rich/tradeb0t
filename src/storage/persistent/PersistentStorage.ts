@@ -19,12 +19,19 @@ export class PersistentStorage implements IPersistentStorage {
   }
 
   private initDatasource(id: string) {
-    return new DataSource({
+    const datasource = new DataSource({
       type: 'better-sqlite3',
       database: `./storage-${id}.db`,
       logging: false,
       synchronize: true,
       entities: [Algorithm, AlgorithmRun, Order]
     })
+    datasource.initialize()
+    // TODO: remove this hack
+    // Wait for datasource to be initialized
+    while (!datasource.isInitialized) {
+      continue
+    }
+    return datasource
   }
 }
