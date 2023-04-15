@@ -13,20 +13,30 @@ import { globalStore } from '../global/store'
 import { DomainTemplate, StubDomain } from '../domain'
 import { ITradeBot } from './ITradeBot'
 
+interface TradeBotProductionInitOptions<Domain extends DomainTemplate, TExchangeApi> {
+  mode: 'production'
+  exchangeClient: IExchangeConnector<Domain, TExchangeApi>
+  botToken?: string
+  initAlgorithmsCallback?: (analyzer: IExchangeAnalyzer<Domain, TExchangeApi>) => ITradeAlgorithm[]
+}
+
+interface TradeBotNoSetupInitOptions {
+  /**
+   * Option for creation of `TradeBot` instance without running processes under hood.
+   * Used to extract types for api client.
+   */
+  mode: 'no_setup'
+}
+
 export type TradeBotInitOptions<Domain extends DomainTemplate = StubDomain, TExchangeApi = unknown> =
-  | {
-      mode: 'production'
-      exchangeClient: IExchangeConnector<Domain, TExchangeApi>
-      botToken?: string
-      initAlgorithmsCallback?: (analyzer: IExchangeAnalyzer<Domain, TExchangeApi>) => ITradeAlgorithm[]
-    }
-  | {
-      /**
-       * Option for creation of `TradeBot` instance without running processes under hood.
-       * Used to extract types for api client.
-       */
-      mode: 'no_setup'
-    }
+  | TradeBotProductionInitOptions<Domain, TExchangeApi>
+  | TradeBotNoSetupInitOptions
+
+interface TradeBotSetupOptions<Domain extends DomainTemplate, TExchangeApi> {
+  exchangeClient: IExchangeConnector<Domain, TExchangeApi>
+  botToken?: string
+  initAlgorithmsCallback?: (analyzer: IExchangeAnalyzer<Domain, TExchangeApi>) => ITradeAlgorithm[]
+}
 
 export class TradeBot<Domain extends DomainTemplate, TExchangeApi> implements ITradeBot<Domain, TExchangeApi> {
   private _exchangeClient: IExchangeConnector<Domain, TExchangeApi>
@@ -70,11 +80,7 @@ export class TradeBot<Domain extends DomainTemplate, TExchangeApi> implements IT
     exchangeClient,
     botToken,
     initAlgorithmsCallback
-  }: {
-    exchangeClient: IExchangeConnector<Domain, TExchangeApi>
-    botToken?: string
-    initAlgorithmsCallback?: (analyzer: IExchangeAnalyzer<Domain, TExchangeApi>) => ITradeAlgorithm[]
-  }) {
+  }: TradeBotSetupOptions<Domain, TExchangeApi>) {
     this._logger = new LoggerService(this)
     globalStore.logger = this.logger
     this.logger.log({

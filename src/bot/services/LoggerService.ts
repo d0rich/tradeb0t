@@ -5,6 +5,17 @@ import colors from 'colors/safe'
 import { ITradeBot } from '../ITradeBot'
 import { useConfig } from '../../config'
 
+interface LogToStringOptions {
+  useColors?: boolean
+  showRobotId?: boolean
+  showType?: boolean
+  showTimestamp?: boolean
+  showAlgorithmName?: boolean
+  showAlgorithmRunId?: boolean
+  showAlgorithmState?: boolean
+  showAttachment?: boolean
+}
+
 export interface SocketLogs {
   robot_id: string
   type: 'info' | 'error' | 'warning'
@@ -41,7 +52,7 @@ export class LoggerService {
       showAlgorithmRunId = true,
       showAlgorithmState = true,
       showAttachment = true
-    } = {}
+    }: LogToStringOptions = {}
   ) {
     // Show or hide
     let robotId = showRobotId ? log.robot_id : ''
