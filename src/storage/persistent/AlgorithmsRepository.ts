@@ -1,6 +1,4 @@
-import { DataSource } from 'typeorm'
+import { Repository } from 'typeorm'
 import { Algorithm } from 'src/domain'
 
-export function initAlgorithmsRepository(datasource: DataSource) {
-  return datasource.getRepository(Algorithm)
-}
+export class AlgorithmsRepository extends Repository<Algorithm> {}

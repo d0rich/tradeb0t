@@ -1,6 +1,4 @@
-import { DataSource } from 'typeorm'
+import { Repository } from 'typeorm'
 import { Order } from 'src/domain'
 
-export function initOrdersRepository(datasource: DataSource) {
-  return datasource.getRepository(Order)
-}
+export class OrdersRepository extends Repository<Order> {}

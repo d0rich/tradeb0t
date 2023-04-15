@@ -1,21 +1,21 @@
 import { DataSource } from 'typeorm'
 import { AlgorithmRun, Algorithm, Order } from 'src/domain'
-import { initAlgorithmsRepository } from './AlgorithmsRepository'
-import { initAlgorithmRunsRepository } from './AlgorithmRunsRepository'
-import { initOrdersRepository } from './OrdersRepository'
+import { AlgorithmsRepository } from './AlgorithmsRepository'
+import { AlgorithmRunsRepository } from './AlgorithmRunsRepository'
+import { OrdersRepository } from './OrdersRepository'
 import { IPersistentStorage } from './IPersistentStorage'
 
 export class PersistentStorage implements IPersistentStorage {
-  orders: ReturnType<typeof initOrdersRepository>
-  algorithms: ReturnType<typeof initAlgorithmsRepository>
-  algorithmRuns: ReturnType<typeof initAlgorithmRunsRepository>
+  orders: OrdersRepository
+  algorithms: AlgorithmsRepository
+  algorithmRuns: AlgorithmRunsRepository
   private readonly datasource: DataSource
 
   constructor(id: string) {
     this.datasource = this.initDatasource(id)
-    this.orders = initOrdersRepository(this.datasource)
-    this.algorithms = initAlgorithmsRepository(this.datasource)
-    this.algorithmRuns = initAlgorithmRunsRepository(this.datasource)
+    this.orders = new OrdersRepository(Order, this.datasource.manager)
+    this.algorithms = new AlgorithmsRepository(AlgorithmRun, this.datasource.manager)
+    this.algorithmRuns = new AlgorithmRunsRepository(AlgorithmRun, this.datasource.manager)
   }
 
   private initDatasource(id: string) {

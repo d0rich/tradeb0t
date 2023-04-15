@@ -1,9 +1,9 @@
-import type { initAlgorithmsRepository } from './AlgorithmsRepository'
-import type { initAlgorithmRunsRepository } from './AlgorithmRunsRepository'
-import type { initOrdersRepository } from './OrdersRepository'
+import type { AlgorithmsRepository } from './AlgorithmsRepository'
+import type { AlgorithmRunsRepository } from './AlgorithmRunsRepository'
+import type { OrdersRepository } from './OrdersRepository'
 
 export interface IPersistentStorage {
-  orders: ReturnType<typeof initOrdersRepository>
-  algorithms: ReturnType<typeof initAlgorithmsRepository>
-  algorithmRuns: ReturnType<typeof initAlgorithmRunsRepository>
+  orders: OrdersRepository
+  algorithms: AlgorithmsRepository
+  algorithmRuns: AlgorithmRunsRepository
 }

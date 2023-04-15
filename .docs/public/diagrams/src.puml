@@ -1,13 +1,80 @@
 @startuml
+interface ITypedTransformer<TEntity, TDatabase> {
+    +to: (entityValue: TEntity) => TDatabase
+    +from: (databaseValue: TDatabase) => TEntity
+}
+interface ITradeModule<Domain extends DomainTemplate<unknown, unknown, unknown, unknown, unknown>> {
+    +sell(options: CreateOrderOptions): Promise<GetOrderType<Domain>>
+    +buy(options: CreateOrderOptions): Promise<GetOrderType<Domain>>
+    +marketSell(options: CreateOrderOptions): Promise<GetOrderType<Domain>>
+    +marketBuy(options: CreateOrderOptions): Promise<GetOrderType<Domain>>
+    +sellOrCancel(): Promise<GetOrderType<Domain>>
+    +buyOrCancel(): Promise<GetOrderType<Domain>>
+}
+interface IInfoModule<Domain extends DomainTemplate<unknown, unknown, unknown, unknown, unknown>> {
+    +getCurrencies(): Promise<GetCurrencyType<Domain>[]>
+    +getSecurityLastPrice(ticker: string): Promise<number>
+    +getSecurityCurrency(ticker: string): Promise<GetCurrencyType<Domain>>
+    +getSecurityName(ticker: string): Promise<string>
+    +getSecurity(ticker: string, ignoreCache?: boolean | undefined): Promise<GetSecurityBalanceType<Domain> | null>
+    +getSecurityByExchangeId(id: string, ignoreCache?: boolean | undefined): Promise<GetSecurityBalanceType<Domain> | null>
+}
+interface IExchangeConnector<Domain extends DomainTemplate<unknown, unknown, unknown, unknown, unknown>, TExchangeApi> {
+    +api: TExchangeApi
+    +tradeModule: ITradeModule<Domain>
+    +infoModule: IInfoModule<Domain>
+    +domainMapper: IDomainMapper<Domain>
+    +getPortfolio(): Promise<GetSecurityBalanceType<Domain>[]>
+    +getCurrenciesBalance(): Promise<GetCurrencyBalanceType<Domain>[]>
+}
+abstract class AbstractTradeModule<Domain extends DomainTemplate<unknown, unknown, unknown, unknown, unknown>, TExchangeApi> implements ITradeModule {
+    #exchangeClient: IExchangeConnector<Domain, TExchangeApi>
+    +setExchangeClient(exchangeClient: IExchangeConnector<Domain, TExchangeApi>): void
+    +{abstract} sell(__0: CreateOrderOptions): Promise<GetOrderType<Domain>>
+    +{abstract} buy(__0: CreateOrderOptions): Promise<GetOrderType<Domain>>
+    +{abstract} marketSell(__0: CreateOrderOptions): Promise<GetOrderType<Domain>>
+    +{abstract} marketBuy(__0: CreateOrderOptions): Promise<GetOrderType<Domain>>
+    +{abstract} sellOrCancel(): Promise<GetOrderType<Domain>>
+    +{abstract} buyOrCancel(): Promise<GetOrderType<Domain>>
+}
+abstract class AbstractInfoModule<Domain extends DomainTemplate<unknown, unknown, unknown, unknown, unknown>, TExchangeApi> implements IInfoModule {
+    #exchangeClient: IExchangeConnector<Domain, TExchangeApi>
+    +setExchangeClient(exchangeClient: IExchangeConnector<Domain, TExchangeApi>): void
+    +{abstract} getCurrencies(): Promise<GetCurrencyType<Domain>[]>
+    +{abstract} getSecurityLastPrice(ticker: string): Promise<number>
+    +{abstract} getSecurityCurrency(ticker: string): Promise<GetCurrencyType<Domain>>
+    +{abstract} getSecurityName(ticker: string): Promise<string>
+    +{abstract} getSecurity(ticker: string, ignoreCache?: boolean | undefined): Promise<GetSecurityType<Domain> | null>
+    +{abstract} getSecurityByExchangeId(id: string, ignoreCache?: boolean | undefined): Promise<GetSecurityType<Domain> | null>
+}
+abstract class AbstractExchangeConnector<Domain extends DomainTemplate<unknown, unknown, unknown, unknown, unknown>, TExchangeApi> implements IExchangeConnector {
+    -_isAccountInitialized: boolean
+    +isAccountInitialized: boolean
+    #isAccountInitialized: boolean
+    +api: TExchangeApi
+    +tradeModule: ITradeModule<Domain>
+    +infoModule: IInfoModule<Domain>
+    +domainMapper: IDomainMapper<Domain>
+    #{abstract} initAccount(): Promise<unknown>
+    +{abstract} getPortfolio(): Promise<GetSecurityBalanceType<Domain>[]>
+    +{abstract} getCurrenciesBalance(): Promise<GetCurrencyBalanceType<Domain>[]>
+}
 class Algorithm {
     +name: string
     +description: string
     +inputTypes: InputTypes
     +algorithmRuns?: AlgorithmRun<any, any>[] | undefined
 }
-interface ITypedTransformer<TEntity, TDatabase> {
-    +to: (entityValue: TEntity) => TDatabase
-    +from: (databaseValue: TDatabase) => TEntity
+class Order {
+    +exchangeId: string
+    +securityTicker: string
+    +status: OrderStatus
+    +operation: "undefined" | "limit_buy" | "limit_sell" | "market_buy" | "market_sell" | "buy_or_cancel" | "sell_or_cancel"
+    +lots: number
+    +price: number
+    +updatedAt?: Date | undefined
+    +algorithmRunId?: number | undefined
+    +algorithmRun?: AlgorithmRun<any, any> | undefined
 }
 class AlgorithmRun<InputType, StateType> {
     +id: number
@@ -20,16 +87,69 @@ class AlgorithmRun<InputType, StateType> {
     +algorithm: Algorithm
     +orders: Order[]
 }
-class Order {
-    +exchangeId: string
+interface Currency {
+    +name: string
+    +ticker: string
+    +exchangeTicker: string
+}
+interface CurrencyBalance {
+    +type: "currency"
+    +currencyTicker: string
+    +amount: number
+}
+interface SecurityBalance {
+    +type: "security"
     +securityTicker: string
-    +status: OrderStatus
-    +operation: "undefined" | "limit_buy" | "limit_sell" | "market_buy" | "market_sell" | "buy_or_cancel" | "sell_or_cancel"
-    +lots: number
+    +amount: number
+}
+interface Security {
+    +name: string
+    +ticker: string
     +price: number
-    +updatedAt?: Date | undefined
-    +algorithmRunId?: number | undefined
-    +algorithmRun?: AlgorithmRun<any, any> | undefined
+    +currencyTicker: string
+}
+abstract class AbstractDomainMapper<Domain extends DomainTemplate<unknown, unknown, unknown, unknown, unknown>, TExchangeApi> implements IDomainMapper {
+    #exchangeClient: IExchangeConnector<Domain, TExchangeApi>
+    +setExchangeClient(exchangeClient: IExchangeConnector<Domain, TExchangeApi>): void
+    +{abstract} currency(currency: GetCurrencyType<Domain>): Promise<Currency>
+    +{abstract} currencyBalance(currency: GetCurrencyBalanceType<Domain>): Promise<CurrencyBalance>
+    +{abstract} security(security: GetSecurityType<Domain>): Promise<Security>
+    +{abstract} securityBalance(portfolio: GetSecurityBalanceType<Domain>): Promise<SecurityBalance>
+    +{abstract} order(order: GetOrderType<Domain>): Promise<Order>
+    +{abstract} orderStatus(order: GetOrderType<Domain>): OrderStatus
+    +{abstract} orderOperation(order: GetOrderType<Domain>): "undefined" | "limit_buy" | "limit_sell" | "market_buy" | "market_sell" | "buy_or_cancel" | "sell_or_cancel"
+}
+interface IDomainMapper<Domain extends DomainTemplate<unknown, unknown, unknown, unknown, unknown>> {
+    +currency(currency: GetCurrencyType<Domain>): Promise<Currency>
+    +currencyBalance(currency: GetCurrencyBalanceType<Domain>): Promise<CurrencyBalance>
+    +security(security: GetSecurityType<Domain>): Promise<Security>
+    +securityBalance(security: GetSecurityBalanceType<Domain>): Promise<SecurityBalance>
+    +order(order: GetOrderType<Domain>): Promise<Order>
+    +orderStatus(order: GetOrderType<Domain>): OrderStatus
+    +orderOperation(order: GetOrderType<Domain>): "undefined" | "limit_buy" | "limit_sell" | "market_buy" | "market_sell" | "buy_or_cancel" | "sell_or_cancel"
+}
+class AlgorithmRunsRepository extends Repository {
+    +runOne(algorithmName: string, inputs: unknown, state?: unknown): Promise<AlgorithmRun<any, any>>
+    +saveProgress(id: number, state: unknown): Promise<AlgorithmRun<any, any>>
+    +loadProgress(id: number): Promise<AlgorithmRun<any, any> | null>
+    +stopOne(id: number): Promise<AlgorithmRun<any, any>>
+    +resumeOne(id: number): Promise<AlgorithmRun<any, any>>
+    +finishOne(id: number): Promise<AlgorithmRun<any, any>>
+    +storeError(id: number, error: Error): Promise<AlgorithmRun<any, any>>
+    +findManyByAlgorithm(algorithmName: string): Promise<AlgorithmRun<any, any>[]>
+    +findAllUnfinished(): Promise<AlgorithmRun<any, any>[]>
+}
+interface IPersistentStorage {
+    +orders: Repository<Order>
+    +algorithms: Repository<Algorithm>
+    +algorithmRuns: AlgorithmRunsRepository
+}
+class PersistentStorage implements IPersistentStorage {
+    +orders: Repository<Order>
+    +algorithms: Repository<Algorithm>
+    +algorithmRuns: AlgorithmRunsRepository
+    -datasource: DataSource
+    -initDatasource(id: string): DataSource
 }
 class PortfolioStore {
     -items: PortfolioPosition[]
@@ -69,62 +189,14 @@ class TradeBotStore {
     +portfolioStore: PortfolioStore
     +currenciesStore: CurrenciesStore
 }
-interface ITradeModule<Domain extends DomainTemplate<unknown, unknown, unknown, unknown, unknown>> {
-    +sell(options: CreateOrderOptions): Promise<GetOrderType<Domain>>
-    +buy(options: CreateOrderOptions): Promise<GetOrderType<Domain>>
-    +marketSell(options: CreateOrderOptions): Promise<GetOrderType<Domain>>
-    +marketBuy(options: CreateOrderOptions): Promise<GetOrderType<Domain>>
-    +sellOrCancel(): Promise<GetOrderType<Domain>>
-    +buyOrCancel(): Promise<GetOrderType<Domain>>
-}
-abstract class AbstractTradeModule<Domain extends DomainTemplate<unknown, unknown, unknown, unknown, unknown>, TExchangeApi> implements ITradeModule {
-    #exchangeClient: IExchangeClient<Domain, TExchangeApi>
-    +setExchangeClient(exchangeClient: IExchangeClient<Domain, TExchangeApi>): void
-    +{abstract} sell(__0: CreateOrderOptions): Promise<GetOrderType<Domain>>
-    +{abstract} buy(__0: CreateOrderOptions): Promise<GetOrderType<Domain>>
-    +{abstract} marketSell(__0: CreateOrderOptions): Promise<GetOrderType<Domain>>
-    +{abstract} marketBuy(__0: CreateOrderOptions): Promise<GetOrderType<Domain>>
-    +{abstract} sellOrCancel(): Promise<GetOrderType<Domain>>
-    +{abstract} buyOrCancel(): Promise<GetOrderType<Domain>>
-}
-interface IInfoModule<Domain extends DomainTemplate<unknown, unknown, unknown, unknown, unknown>> {
-    +getCurrencies(): Promise<GetCurrencyType<Domain>[]>
-    +getSecurityLastPrice(ticker: string): Promise<number>
-    +getSecurityCurrency(ticker: string): Promise<GetCurrencyType<Domain>>
-    +getSecurityName(ticker: string): Promise<string>
-    +getSecurity(ticker: string, ignoreCache?: boolean | undefined): Promise<GetSecurityBalanceType<Domain> | null>
-    +getSecurityByExchangeId(id: string, ignoreCache?: boolean | undefined): Promise<GetSecurityBalanceType<Domain> | null>
-}
-abstract class AbstractInfoModule<Domain extends DomainTemplate<unknown, unknown, unknown, unknown, unknown>, TExchangeApi> implements IInfoModule {
-    #exchangeClient: IExchangeClient<Domain, TExchangeApi>
-    +setExchangeClient(exchangeClient: IExchangeClient<Domain, TExchangeApi>): void
-    +{abstract} getCurrencies(): Promise<GetCurrencyType<Domain>[]>
-    +{abstract} getSecurityLastPrice(ticker: string): Promise<number>
-    +{abstract} getSecurityCurrency(ticker: string): Promise<GetCurrencyType<Domain>>
-    +{abstract} getSecurityName(ticker: string): Promise<string>
-    +{abstract} getSecurity(ticker: string, ignoreCache?: boolean | undefined): Promise<GetSecurityType<Domain> | null>
-    +{abstract} getSecurityByExchangeId(id: string, ignoreCache?: boolean | undefined): Promise<GetSecurityType<Domain> | null>
-}
-interface IDomainMapper<Domain extends DomainTemplate<unknown, unknown, unknown, unknown, unknown>> {
-    +currency(currency: GetCurrencyType<Domain>): Promise<Currency>
-    +currencyBalance(currency: GetCurrencyBalanceType<Domain>): Promise<CurrencyBalance>
-    +security(security: GetSecurityType<Domain>): Promise<Security>
-    +securityBalance(security: GetSecurityBalanceType<Domain>): Promise<SecurityBalance>
-    +order(order: GetOrderType<Domain>): Promise<Order>
-    +orderStatus(order: GetOrderType<Domain>): OrderStatus
-    +orderOperation(order: GetOrderType<Domain>): "undefined" | "limit_buy" | "limit_sell" | "market_buy" | "market_sell" | "buy_or_cancel" | "sell_or_cancel"
-}
-abstract class AbstractExchangeClient<Domain extends DomainTemplate<unknown, unknown, unknown, unknown, unknown>, TExchangeApi> implements IExchangeClient {
-    -_isAccountInitialized: boolean
-    +isAccountInitialized: boolean
-    #isAccountInitialized: boolean
-    +api: TExchangeApi
-    +tradeModule: ITradeModule<Domain>
-    +infoModule: IInfoModule<Domain>
-    +domainMapper: IDomainMapper<Domain>
-    #{abstract} initAccount(): Promise<unknown>
-    +{abstract} getPortfolio(): Promise<GetSecurityBalanceType<Domain>[]>
-    +{abstract} getCurrenciesBalance(): Promise<GetCurrencyBalanceType<Domain>[]>
+interface ITradeAlgorithm<InputsType, StateType> {
+    +details: Algorithm
+    +name: string
+    +description: string
+    +inputs: InputTypes
+    +main(inputs: InputsType): Promise<AlgorithmRun<InputsType, StateType>>
+    +continue(id: number): Promise<AlgorithmRun<InputsType, StateType>>
+    +stop(id: number): Promise<AlgorithmRun<InputsType, StateType>>
 }
 interface ITradeAlgorithmsEngine {
     +description: Algorithm[]
@@ -132,6 +204,69 @@ interface ITradeAlgorithmsEngine {
     +resumeAlgorithms(): Promise<void>
     +continueAlgorithm(name: string, run_id: number): Promise<AlgorithmRun<any, any>>
     +stopAlgorithm(name: string, run_id: number): Promise<AlgorithmRun<any, any>>
+}
+interface IExpressAppCarrier {
+    +app: Application
+}
+class ApiService {
+    -tradeBot: ITradeBot<StubDomain, unknown>
+    -express: Express
+    -wss: ws.WebSocketServer
+    -http: http.Server
+    -configureServers(): Promise<void>
+}
+interface IHttpHeadersCarrier {
+    +headers: IncomingHttpHeaders
+}
+class AuthService {
+    -botToken: string
+    +authByToken(token?: string): boolean
+    +authByRequest(request: IHttpHeadersCarrier): boolean
+}
+interface SocketLogs {
+    +robot_id: string
+    +type: "error" | "info" | "warning"
+    +message: string
+    +attachment?: unknown
+    +algorithm?: { name: string; run_id?: number | undefined; inputs?: unknown; state?: unknown; } | undefined
+    +timestamp: string
+}
+class LoggerService {
+    -tradebot: ITradeBot<any, any>
+    -logger: Logger
+    -lastLogs: SocketLogs[]
+    -eventEmitter: EventEmitter
+    -createLogsDirIfNotExist(): void
+    -logToString(log: SocketLogs, __1?: { useColors?: boolean | undefined; showRobotId?: boolean | undefined; showType?: boolean | undefined; showTimestamp?: boolean | undefined; showAlgorithmName?: boolean | undefined; showAlgorithmRunId?: boolean | undefined; showAlgorithmState?: boolean | undefined; showAttachment?: boolean | undefined; }): string
+    -logToFile(log: SocketLogs): void
+    -logToConsole(log: SocketLogs): void
+    -logToSocket(log: SocketLogs): void
+    -updateLastLogs(log: SocketLogs): void
+    +getLastLogs(): SocketLogs[]
+    +log(body: Omit<Omit<SocketLogs, "robot_id">, "timestamp">, __1?: { internal?: boolean | undefined; }): void
+    +subscribe(callback: (logs: SocketLogs) => void): void
+    +unsubscribe(callback: (logs: SocketLogs) => void): void
+}
+interface ITradeBot<Domain extends DomainTemplate<unknown, unknown, unknown, unknown, unknown>, TExchangeApi> {
+    +exchangeClient: IExchangeConnector<Domain, TExchangeApi>
+    +analyzer: IExchangeAnalyzer<Domain, TExchangeApi>
+    +trader: IExchangeTrader
+    +watcher: IExchangeWatcher<Domain>
+    +api: ApiService
+    +logger: LoggerService
+    +auth: AuthService
+}
+class TradeAlgorithmsEngine<Domain extends DomainTemplate<unknown, unknown, unknown, unknown, unknown>, TExchangeApi> implements ITradeAlgorithmsEngine {
+    #analyzer: IExchangeAnalyzer<Domain, TExchangeApi>
+    #trader: IExchangeTrader
+    #watcher: IExchangeWatcher<Domain>
+    #tradebot: ITradeBot<Domain, TExchangeApi>
+    #algorithms: ITradeAlgorithm<unknown, unknown>[]
+    +description: Algorithm[]
+    +runAlgorithm(name: string, inputs: unknown): Promise<AlgorithmRun<any, any>>
+    +resumeAlgorithms(): Promise<void>
+    +continueAlgorithm(name: string, id: number): Promise<AlgorithmRun<any, any>>
+    +stopAlgorithm(name: string, id: number): Promise<AlgorithmRun<any, any>>
 }
 interface IExchangeTrader {
     +scheduleAction(action: JobCallback, date: Date): Job
@@ -148,44 +283,12 @@ interface IExchangeWatcher<Domain extends DomainTemplate<unknown, unknown, unkno
     +getSecurityCurrency(ticker: string): Promise<Currency>
     +onOrderSent(order: GetOrderType<Domain>, operation_type: "undefined" | "limit_buy" | "limit_sell" | "market_buy" | "market_sell" | "buy_or_cancel" | "sell_or_cancel", runId?: number | undefined): OrderStatus
 }
-interface ITradeBot<Domain extends DomainTemplate<unknown, unknown, unknown, unknown, unknown>, TExchangeApi> {
-    +exchangeClient: IExchangeClient<Domain, TExchangeApi>
-    +analyzer: IExchangeAnalyzer<Domain, TExchangeApi>
-    +trader: IExchangeTrader
-    +watcher: IExchangeWatcher<Domain>
-    +api: ApiService
-    +logger: LoggerService
-    +auth: AuthService
-}
-class ExchangeTrader<Domain extends DomainTemplate<unknown, unknown, unknown, unknown, unknown>, TExchangeApi> implements IExchangeTrader {
-    -tradebot: ITradeBot<Domain, TExchangeApi>
-    -watcher: IExchangeWatcher<Domain>
-    -logger: LoggerService
-    -exchangeClient: IExchangeClient<Domain, TExchangeApi>
-    +scheduleAction(action: JobCallback, date: Date): Job
-    +scheduleOrder(date: Date, order: CreateOrderOptions, algorithm_name?: string | undefined, run_id?: number | undefined): Job
-    +sendOrder(orderDetails: CreateOrderOptions, algorithm_name?: string | undefined, run_id?: number | undefined): Promise<OrderStatus>
-}
-class ExchangeWatcher<Domain extends DomainTemplate<unknown, unknown, unknown, unknown, unknown>, TExchangeApi> implements IExchangeWatcher {
-    -tradebot: ITradeBot<Domain, TExchangeApi>
-    -domainMapper: IDomainMapper<StubDomain>
-    -analyzer: IExchangeAnalyzer<Domain, TExchangeApi>
-    -trader: IExchangeTrader
-    -exchangeClient: IExchangeClient<Domain, TExchangeApi>
-    +getPortfolio(): Promise<SecurityBalance[]>
-    +getCurrenciesBalance(): Promise<CurrencyBalance[]>
-    +getCurrencies(): Promise<Currency[]>
-    +getSecurity(ticker: string): Promise<Security>
-    +getSecurityName(ticker: string): Promise<string>
-    +getSecurityLastPrice(ticker: string): Promise<number>
-    +getSecurityCurrency(ticker: string): Promise<Currency>
-    +onOrderSent(order: GetOrderType<Domain>, operation_type: "undefined" | "limit_buy" | "limit_sell" | "market_buy" | "market_sell" | "buy_or_cancel" | "sell_or_cancel", runId?: number | undefined): OrderStatus
-}
 interface IExchangeAnalyzer<Domain extends DomainTemplate<unknown, unknown, unknown, unknown, unknown>, TExchangeApi> {
+    +tradeAlgos: ITradeAlgorithmsEngine
+    +storage: IPersistentStorage
     +tradebot: ITradeBot<Domain, TExchangeApi>
     +trader: IExchangeTrader
     +watcher: IExchangeWatcher<Domain>
-    +tradeAlgos: ITradeAlgorithmsEngine
     +start(): Promise<void>
     +updateCurrencies(): Promise<Currency[]>
     +getCurrencies(): Promise<Currency[]>
@@ -204,34 +307,13 @@ interface IExchangeAnalyzer<Domain extends DomainTemplate<unknown, unknown, unkn
     +clearPortfolio(): Promise<number>
     +saveOrder(order: Order, operation: "undefined" | "limit_buy" | "limit_sell" | "market_buy" | "market_sell" | "buy_or_cancel" | "sell_or_cancel", runId?: number | undefined): Promise<Order>
     +getOrders(options: { from?: Date | undefined; to?: Date | undefined; securityTicker?: string | undefined; operation?: "undefined" | "limit_buy" | "limit_sell" | "market_buy" | "market_sell" | "buy_or_cancel" | "sell_or_cancel" | undefined; runId?: number | undefined; }): Promise<Order[]>
-    +saveAlgorithms(): Promise<Algorithm[]>
-    +runAlgorithm(algorithmName: string, inputs: unknown, state?: unknown): Promise<AlgorithmRun<any, any>>
-    +saveAlgorithmRunProgress(id: number, state: unknown): Promise<AlgorithmRun<any, any>>
-    +loadAlgorithmRunProgress(id: number): Promise<AlgorithmRun<any, any> | null>
-    +stopAlgorithmRun(id: number): Promise<AlgorithmRun<any, any>>
-    +resumeAlgorithmRun(id: number): Promise<AlgorithmRun<any, any>>
-    +finishAlgorithmRun(id: number): Promise<AlgorithmRun<any, any>>
-    +errorAlgorithmRun(id: number, error: Error): Promise<AlgorithmRun<any, any>>
-    +getAlgorithmRunsByAlgorithm(algorithmName: string): Promise<AlgorithmRun<any, any>[]>
-    +getUnfinishedAlgorithmRuns(): Promise<AlgorithmRun<any, any>[]>
-}
-class TradeAlgorithmsEngine<Domain extends DomainTemplate<unknown, unknown, unknown, unknown, unknown>, TExchangeApi> implements ITradeAlgorithmsEngine {
-    #analyzer: IExchangeAnalyzer<Domain, TExchangeApi>
-    #trader: IExchangeTrader
-    #watcher: IExchangeWatcher<Domain>
-    #tradebot: ITradeBot<Domain, TExchangeApi>
-    #algorithms: ITradeAlgorithm<unknown, unknown>[]
-    +description: Algorithm[]
-    +runAlgorithm(name: string, inputs: unknown): Promise<AlgorithmRun<any, any>>
-    +resumeAlgorithms(): Promise<void>
-    +continueAlgorithm(name: string, id: number): Promise<AlgorithmRun<any, any>>
-    +stopAlgorithm(name: string, id: number): Promise<AlgorithmRun<any, any>>
 }
 class ExchangeAnalyzer<Domain extends DomainTemplate<unknown, unknown, unknown, unknown, unknown>, TExchangeApi> implements IExchangeAnalyzer {
+    +tradeAlgos: ITradeAlgorithmsEngine
+    +storage: PersistentStorage
     +tradebot: ITradeBot<Domain, TExchangeApi>
     +trader: IExchangeTrader
     +watcher: IExchangeWatcher<Domain>
-    +tradeAlgos: ITradeAlgorithmsEngine
     +start(): Promise<void>
     -initUpdaters(): Promise<void>
     -loadSecurityIfNotExist(ticker: string): Promise<Security | undefined>
@@ -253,59 +335,47 @@ class ExchangeAnalyzer<Domain extends DomainTemplate<unknown, unknown, unknown, 
     +clearPortfolio(): Promise<number>
     +saveOrder(order: Order, operation: "undefined" | "limit_buy" | "limit_sell" | "market_buy" | "market_sell" | "buy_or_cancel" | "sell_or_cancel", runId?: number | undefined): Promise<Order>
     +getOrders(__0: { from?: Date | undefined; to?: Date | undefined; securityTicker?: string | undefined; operation?: "undefined" | "limit_buy" | "limit_sell" | "market_buy" | "market_sell" | "buy_or_cancel" | "sell_or_cancel" | undefined; runId?: number | undefined; }): Promise<Order[]>
-    +saveAlgorithms(): Promise<Algorithm[]>
-    +runAlgorithm(algorithmName: string, inputs: unknown, state?: unknown): Promise<AlgorithmRun<any, any>>
-    +saveAlgorithmRunProgress(id: number, state: unknown): Promise<AlgorithmRun<any, any>>
-    +loadAlgorithmRunProgress(id: number): Promise<AlgorithmRun<any, any> | null>
-    +stopAlgorithmRun(id: number): Promise<AlgorithmRun<any, any>>
-    +resumeAlgorithmRun(id: number): Promise<AlgorithmRun<any, any>>
-    +finishAlgorithmRun(id: number): Promise<AlgorithmRun<any, any>>
-    +errorAlgorithmRun(id: number, error: Error): Promise<AlgorithmRun<any, any>>
-    +getAlgorithmRunsByAlgorithm(algorithmName: string): Promise<AlgorithmRun<any, any>[]>
-    +getUnfinishedAlgorithmRuns(): Promise<AlgorithmRun<any, any>[]>
 }
-interface IExpressAppCarrier {
-    +app: Application
+class ExchangeTrader<Domain extends DomainTemplate<unknown, unknown, unknown, unknown, unknown>, TExchangeApi> implements IExchangeTrader {
+    -tradebot: ITradeBot<Domain, TExchangeApi>
+    -watcher: IExchangeWatcher<Domain>
+    -logger: LoggerService
+    -exchangeClient: IExchangeConnector<Domain, TExchangeApi>
+    +scheduleAction(action: JobCallback, date: Date): Job
+    +scheduleOrder(date: Date, order: CreateOrderOptions, algorithm_name?: string | undefined, run_id?: number | undefined): Job
+    +sendOrder(orderDetails: CreateOrderOptions, algorithm_name?: string | undefined, run_id?: number | undefined): Promise<OrderStatus>
 }
-class ApiService {
-    -tradeBot: ITradeBot<StubDomain, unknown>
-    -express: Express
-    -wss: ws.WebSocketServer
-    -http: http.Server
-    -configureServers(): Promise<void>
+class ExchangeWatcher<Domain extends DomainTemplate<unknown, unknown, unknown, unknown, unknown>, TExchangeApi> implements IExchangeWatcher {
+    -tradebot: ITradeBot<Domain, TExchangeApi>
+    -domainMapper: IDomainMapper<StubDomain>
+    -analyzer: IExchangeAnalyzer<Domain, TExchangeApi>
+    -trader: IExchangeTrader
+    -exchangeClient: IExchangeConnector<Domain, TExchangeApi>
+    +getPortfolio(): Promise<SecurityBalance[]>
+    +getCurrenciesBalance(): Promise<CurrencyBalance[]>
+    +getCurrencies(): Promise<Currency[]>
+    +getSecurity(ticker: string): Promise<Security>
+    +getSecurityName(ticker: string): Promise<string>
+    +getSecurityLastPrice(ticker: string): Promise<number>
+    +getSecurityCurrency(ticker: string): Promise<Currency>
+    +onOrderSent(order: GetOrderType<Domain>, operation_type: "undefined" | "limit_buy" | "limit_sell" | "market_buy" | "market_sell" | "buy_or_cancel" | "sell_or_cancel", runId?: number | undefined): OrderStatus
 }
-interface IHttpHeadersCarrier {
-    +headers: IncomingHttpHeaders
-}
-class AuthService {
-    -botToken: string
-    +authByToken(token?: string): boolean
-    +authByRequest(request: IHttpHeadersCarrier): boolean
-}
-class LoggerService {
-    -tradebot: ITradeBot<any, any>
-    -logger: Logger
-    -lastLogs: SocketLogs[]
-    -eventEmitter: EventEmitter
-    -createLogsDirIfNotExist(): void
-    -logToString(log: SocketLogs, __1?: { useColors?: boolean | undefined; showRobotId?: boolean | undefined; showType?: boolean | undefined; showTimestamp?: boolean | undefined; showAlgorithmName?: boolean | undefined; showAlgorithmRunId?: boolean | undefined; showAlgorithmState?: boolean | undefined; showAttachment?: boolean | undefined; }): string
-    -logToFile(log: SocketLogs): void
-    -logToConsole(log: SocketLogs): void
-    -logToSocket(log: SocketLogs): void
-    -updateLastLogs(log: SocketLogs): void
-    +getLastLogs(): SocketLogs[]
-    +log(body: Omit<Omit<SocketLogs, "robot_id">, "timestamp">, __1?: { internal?: boolean | undefined; }): void
-    +subscribe(callback: (logs: SocketLogs) => void): void
-    +unsubscribe(callback: (logs: SocketLogs) => void): void
-}
-interface ITradeAlgorithm<InputsType, StateType> {
-    +details: Algorithm
-    +name: string
-    +description: string
-    +inputs: InputTypes
-    +main(inputs: InputsType): Promise<AlgorithmRun<InputsType, StateType>>
-    +continue(id: number): Promise<AlgorithmRun<InputsType, StateType>>
-    +stop(id: number): Promise<AlgorithmRun<InputsType, StateType>>
+class TradeBot<Domain extends DomainTemplate<unknown, unknown, unknown, unknown, unknown>, TExchangeApi> implements ITradeBot {
+    -_exchangeClient: IExchangeConnector<Domain, TExchangeApi>
+    -_analyzer: IExchangeAnalyzer<Domain, TExchangeApi>
+    -_trader: IExchangeTrader
+    -_watcher: IExchangeWatcher<Domain>
+    -_api: ApiService
+    -_logger: LoggerService
+    -_auth: AuthService
+    +exchangeClient: IExchangeConnector<Domain, TExchangeApi>
+    +analyzer: IExchangeAnalyzer<Domain, TExchangeApi>
+    +trader: IExchangeTrader
+    +watcher: IExchangeWatcher<Domain>
+    +api: ApiService
+    +logger: LoggerService
+    +auth: AuthService
+    -setup(__0: { exchangeClient: IExchangeConnector<Domain, TExchangeApi>; botToken?: string | undefined; initAlgorithmsCallback?: ((analyzer: IExchangeAnalyzer<Domain, TExchangeApi>) => ITradeAlgorithm[]) | undefined; }): Promise<void>
 }
 abstract class AbstractTradeAlgorithm<Domain extends DomainTemplate<unknown, unknown, unknown, unknown, unknown>, TExchangeApi, InputsType, StateType, StopDataType> implements ITradeAlgorithm {
     #analyzer: IExchangeAnalyzer<Domain, TExchangeApi>
@@ -328,84 +398,66 @@ abstract class AbstractTradeAlgorithm<Domain extends DomainTemplate<unknown, unk
     +{abstract} continue(id: number): Promise<AlgorithmRun<InputsType, StateType>>
     +{abstract} stop(id: number): Promise<AlgorithmRun<InputsType, StateType>>
 }
-interface IExchangeClient<Domain extends DomainTemplate<unknown, unknown, unknown, unknown, unknown>, TExchangeApi> {
-    +api: TExchangeApi
-    +tradeModule: ITradeModule<Domain>
-    +infoModule: IInfoModule<Domain>
-    +domainMapper: IDomainMapper<Domain>
-    +getPortfolio(): Promise<GetSecurityBalanceType<Domain>[]>
-    +getCurrenciesBalance(): Promise<GetCurrencyBalanceType<Domain>[]>
-}
-abstract class AbstractDomainMapper<Domain extends DomainTemplate<unknown, unknown, unknown, unknown, unknown>, TExchangeApi> implements IDomainMapper {
-    #exchangeClient: IExchangeClient<Domain, TExchangeApi>
-    +setExchangeClient(exchangeClient: IExchangeClient<Domain, TExchangeApi>): void
-    +{abstract} currency(currency: GetCurrencyType<Domain>): Promise<Currency>
-    +{abstract} currencyBalance(currency: GetCurrencyBalanceType<Domain>): Promise<CurrencyBalance>
-    +{abstract} security(security: GetSecurityType<Domain>): Promise<Security>
-    +{abstract} securityBalance(portfolio: GetSecurityBalanceType<Domain>): Promise<SecurityBalance>
-    +{abstract} order(order: GetOrderType<Domain>): Promise<Order>
-    +{abstract} orderStatus(order: GetOrderType<Domain>): OrderStatus
-    +{abstract} orderOperation(order: GetOrderType<Domain>): "undefined" | "limit_buy" | "limit_sell" | "market_buy" | "market_sell" | "buy_or_cancel" | "sell_or_cancel"
-}
-class TradeBot<Domain extends DomainTemplate<unknown, unknown, unknown, unknown, unknown>, TExchangeApi> implements ITradeBot {
-    -_exchangeClient: IExchangeClient<Domain, TExchangeApi>
-    -_analyzer: IExchangeAnalyzer<Domain, TExchangeApi>
-    -_trader: IExchangeTrader
-    -_watcher: IExchangeWatcher<Domain>
-    -_api: ApiService
-    -_logger: LoggerService
-    -_auth: AuthService
-    +exchangeClient: IExchangeClient<Domain, TExchangeApi>
-    +analyzer: IExchangeAnalyzer<Domain, TExchangeApi>
-    +trader: IExchangeTrader
-    +watcher: IExchangeWatcher<Domain>
-    +api: ApiService
-    +logger: LoggerService
-    +auth: AuthService
-    -setup(__0: { exchangeClient: IExchangeClient<Domain, TExchangeApi>; botToken?: string | undefined; initAlgorithmsCallback?: ((analyzer: IExchangeAnalyzer<Domain, TExchangeApi>) => ITradeAlgorithm[]) | undefined; }): Promise<void>
-}
+IExchangeConnector --> "1" ITradeModule
+IExchangeConnector --> "1" IInfoModule
+IExchangeConnector --> "1" IDomainMapper
+AbstractTradeModule --> "1" IExchangeConnector
+AbstractInfoModule --> "1" IExchangeConnector
+AbstractExchangeConnector --> "1" ITradeModule
+AbstractExchangeConnector --> "1" IInfoModule
+AbstractExchangeConnector --> "1" IDomainMapper
 Algorithm --> "1" AlgorithmRun
+Order --> "1" AlgorithmRun
 AlgorithmRun --> "1" Algorithm
 AlgorithmRun --> "*" Order
-Order --> "1" AlgorithmRun
+AbstractDomainMapper --> "1" IExchangeConnector
+AbstractDomainMapper --> "1" Currency
+AbstractDomainMapper --> "1" CurrencyBalance
+AbstractDomainMapper --> "1" Security
+AbstractDomainMapper --> "1" SecurityBalance
+AbstractDomainMapper --> "1" Order
+IDomainMapper --> "1" Currency
+IDomainMapper --> "1" CurrencyBalance
+IDomainMapper --> "1" Security
+IDomainMapper --> "1" SecurityBalance
+IDomainMapper --> "1" Order
+AlgorithmRunsRepository --> "1" AlgorithmRun
+IPersistentStorage --> "1" Order
+IPersistentStorage --> "1" Algorithm
+IPersistentStorage --> "1" AlgorithmRunsRepository
+PersistentStorage --> "1" Order
+PersistentStorage --> "1" Algorithm
+PersistentStorage --> "1" AlgorithmRunsRepository
 PortfolioStore --> "1" SecuritiesStore
+PortfolioStore --> "*" CurrencyBalance
+PortfolioStore --> "*" SecurityBalance
+SecuritiesStore --> "*" Security
 SecuritiesStore --> "1" PortfolioStore
+SecuritiesStore --> "1" Security
+SecuritiesStore --> "1" SecurityBalance
+CurrenciesStore --> "*" Currency
 CurrenciesStore --> "1" PortfolioStore
+CurrenciesStore --> "1" Currency
+CurrenciesStore --> "1" CurrencyBalance
 TradeBotStore --> "1" SecuritiesStore
 TradeBotStore --> "1" PortfolioStore
 TradeBotStore --> "1" CurrenciesStore
-AbstractTradeModule --> "1" IExchangeClient
-AbstractInfoModule --> "1" IExchangeClient
-IDomainMapper --> "1" Order
-AbstractExchangeClient --> "1" ITradeModule
-AbstractExchangeClient --> "1" IInfoModule
-AbstractExchangeClient --> "1" IDomainMapper
+ITradeAlgorithm --> "1" Algorithm
+ITradeAlgorithm --> "1" AlgorithmRun
 ITradeAlgorithmsEngine --> "*" Algorithm
 ITradeAlgorithmsEngine --> "1" AlgorithmRun
-ITradeBot --> "1" IExchangeClient
+ApiService --> "1" ITradeBot
+AuthService --> "1" IHttpHeadersCarrier
+LoggerService --> "1" ITradeBot
+LoggerService --> "*" SocketLogs
+LoggerService --> "1" SocketLogs
+ITradeBot --> "1" IExchangeConnector
 ITradeBot --> "1" IExchangeAnalyzer
 ITradeBot --> "1" IExchangeTrader
 ITradeBot --> "1" IExchangeWatcher
 ITradeBot --> "1" ApiService
 ITradeBot --> "1" LoggerService
 ITradeBot --> "1" AuthService
-ExchangeTrader --> "1" ITradeBot
-ExchangeTrader --> "1" IExchangeWatcher
-ExchangeTrader --> "1" LoggerService
-ExchangeTrader --> "1" IExchangeClient
-ExchangeWatcher --> "1" ITradeBot
-ExchangeWatcher --> "1" IDomainMapper
-ExchangeWatcher --> "1" IExchangeAnalyzer
-ExchangeWatcher --> "1" IExchangeTrader
-ExchangeWatcher --> "1" IExchangeClient
-IExchangeAnalyzer --> "1" ITradeBot
-IExchangeAnalyzer --> "1" IExchangeTrader
-IExchangeAnalyzer --> "1" IExchangeWatcher
-IExchangeAnalyzer --> "1" ITradeAlgorithmsEngine
-IExchangeAnalyzer --> "1" Order
-IExchangeAnalyzer --> "*" Order
-IExchangeAnalyzer --> "*" Algorithm
-IExchangeAnalyzer --> "1" AlgorithmRun
 TradeAlgorithmsEngine --> "1" IExchangeAnalyzer
 TradeAlgorithmsEngine --> "1" IExchangeTrader
 TradeAlgorithmsEngine --> "1" IExchangeWatcher
@@ -413,31 +465,52 @@ TradeAlgorithmsEngine --> "1" ITradeBot
 TradeAlgorithmsEngine --> "1" ITradeAlgorithm
 TradeAlgorithmsEngine --> "*" Algorithm
 TradeAlgorithmsEngine --> "1" AlgorithmRun
+IExchangeWatcher --> "*" SecurityBalance
+IExchangeWatcher --> "*" CurrencyBalance
+IExchangeWatcher --> "*" Currency
+IExchangeWatcher --> "1" Security
+IExchangeWatcher --> "1" Currency
+IExchangeAnalyzer --> "1" ITradeAlgorithmsEngine
+IExchangeAnalyzer --> "1" IPersistentStorage
+IExchangeAnalyzer --> "1" ITradeBot
+IExchangeAnalyzer --> "1" IExchangeTrader
+IExchangeAnalyzer --> "1" IExchangeWatcher
+IExchangeAnalyzer --> "*" Currency
+IExchangeAnalyzer --> "*" CurrencyBalance
+IExchangeAnalyzer --> "*" Security
+IExchangeAnalyzer --> "1" Security
+IExchangeAnalyzer --> "1" CurrencyBalance
+IExchangeAnalyzer --> "1" SecurityBalance
+IExchangeAnalyzer --> "1" Order
+IExchangeAnalyzer --> "*" Order
+ExchangeAnalyzer --> "1" ITradeAlgorithmsEngine
+ExchangeAnalyzer --> "1" PersistentStorage
 ExchangeAnalyzer --> "1" ITradeBot
 ExchangeAnalyzer --> "1" IExchangeTrader
 ExchangeAnalyzer --> "1" IExchangeWatcher
-ExchangeAnalyzer --> "1" ITradeAlgorithmsEngine
+ExchangeAnalyzer --> "1" Security
+ExchangeAnalyzer --> "*" Security
+ExchangeAnalyzer --> "*" Currency
+ExchangeAnalyzer --> "*" CurrencyBalance
+ExchangeAnalyzer --> "1" CurrencyBalance
+ExchangeAnalyzer --> "1" SecurityBalance
 ExchangeAnalyzer --> "1" Order
 ExchangeAnalyzer --> "*" Order
-ExchangeAnalyzer --> "*" Algorithm
-ExchangeAnalyzer --> "1" AlgorithmRun
-ApiService --> "1" ITradeBot
-AuthService --> "1" IHttpHeadersCarrier
-LoggerService --> "1" ITradeBot
-ITradeAlgorithm --> "1" Algorithm
-ITradeAlgorithm --> "1" AlgorithmRun
-AbstractTradeAlgorithm --> "1" IExchangeAnalyzer
-AbstractTradeAlgorithm --> "1" IExchangeWatcher
-AbstractTradeAlgorithm --> "1" IExchangeTrader
-AbstractTradeAlgorithm --> "1" LoggerService
-AbstractTradeAlgorithm --> "1" Algorithm
-AbstractTradeAlgorithm --> "1" AlgorithmRun
-IExchangeClient --> "1" ITradeModule
-IExchangeClient --> "1" IInfoModule
-IExchangeClient --> "1" IDomainMapper
-AbstractDomainMapper --> "1" IExchangeClient
-AbstractDomainMapper --> "1" Order
-TradeBot --> "1" IExchangeClient
+ExchangeTrader --> "1" ITradeBot
+ExchangeTrader --> "1" IExchangeWatcher
+ExchangeTrader --> "1" LoggerService
+ExchangeTrader --> "1" IExchangeConnector
+ExchangeWatcher --> "1" ITradeBot
+ExchangeWatcher --> "1" IDomainMapper
+ExchangeWatcher --> "1" IExchangeAnalyzer
+ExchangeWatcher --> "1" IExchangeTrader
+ExchangeWatcher --> "1" IExchangeConnector
+ExchangeWatcher --> "*" SecurityBalance
+ExchangeWatcher --> "*" CurrencyBalance
+ExchangeWatcher --> "*" Currency
+ExchangeWatcher --> "1" Security
+ExchangeWatcher --> "1" Currency
+TradeBot --> "1" IExchangeConnector
 TradeBot --> "1" IExchangeAnalyzer
 TradeBot --> "1" IExchangeTrader
 TradeBot --> "1" IExchangeWatcher
@@ -445,4 +518,10 @@ TradeBot --> "1" ApiService
 TradeBot --> "1" LoggerService
 TradeBot --> "1" AuthService
 TradeBot --> "1" ITradeAlgorithm
+AbstractTradeAlgorithm --> "1" IExchangeAnalyzer
+AbstractTradeAlgorithm --> "1" IExchangeWatcher
+AbstractTradeAlgorithm --> "1" IExchangeTrader
+AbstractTradeAlgorithm --> "1" LoggerService
+AbstractTradeAlgorithm --> "1" Algorithm
+AbstractTradeAlgorithm --> "1" AlgorithmRun
 @enduml
