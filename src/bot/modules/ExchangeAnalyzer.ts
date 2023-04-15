@@ -1,17 +1,14 @@
 import { scheduleJob } from 'node-schedule'
-import { OperationType, Order } from 'src/domain/models'
-import { GetOrdersOptions } from '../../api/trpc/schemas'
 import {
   GetSecurityType,
   GetCurrencyType,
   GetCurrencyBalanceType,
-  GetOrderType,
   GetPortfolioPositionType,
   CommonDomain,
   DomainTemplate
 } from 'src/domain'
 import { ITradeAlgorithm, ITradeAlgorithmsEngine, TradeAlgorithmsEngine } from 'src/algorithms'
-import { PersistentStorage, db } from 'src/storage/persistent'
+import { PersistentStorage } from 'src/storage/persistent'
 import { store } from 'src/storage'
 import { HandleError } from '../../decorators'
 import { IExchangeAnalyzer } from './IExchangeAnalyzer'
@@ -200,59 +197,5 @@ export class ExchangeAnalyzer<Domain extends DomainTemplate, TExchangeApi>
     const deleted = store.portfolioStore.portfolio.length
     store.portfolioStore.updatePositionsAll([])
     return deleted
-  }
-
-  // Orders
-
-  @HandleError()
-  async saveOrder(
-    order: GetOrderType<CommonDomain>,
-    operation: OperationType,
-    runId?: number
-  ): Promise<GetOrderType<CommonDomain>> {
-    await this.loadSecurityIfNotExist(order.securityTicker)
-    await db.manager.upsert(
-      Order,
-      {
-        ...order,
-        operation,
-        algorithmRunId: runId
-      },
-      {
-        conflictPaths: ['exchangeId']
-      }
-    )
-    const result = await db.manager.findOneBy(Order, {
-      exchangeId: order.exchangeId
-    })
-    if (!result) throw new Error(`Order was not saved successfully: ${order}`)
-    return result
-  }
-
-  @HandleError()
-  async getOrders({
-    from,
-    to,
-    operation,
-    securityTicker,
-    runId
-  }: GetOrdersOptions): Promise<GetOrderType<CommonDomain>[]> {
-    // TODO: Rewrite to typed selector
-    let queryBuilder = db.manager
-      .getRepository(Order)
-      .createQueryBuilder('order')
-      .where('order.updatedAt > :from', { from: Number(from ?? 0) })
-      .andWhere('order.updatedAt < :to', { from: Number(to ?? new Date()) })
-    if (operation)
-      queryBuilder = queryBuilder.andWhere('order.operation = :operation', {
-        operation
-      })
-    if (securityTicker)
-      queryBuilder = queryBuilder.andWhere('order.securityTicker = :securityTicker', { securityTicker })
-    if (runId)
-      queryBuilder = queryBuilder.andWhere('order.algorithmRunId = :runId', {
-        runId
-      })
-    return await queryBuilder.getMany()
   }
 }

@@ -6,11 +6,8 @@ import {
   CommonDomain,
   GetCurrencyBalanceType,
   GetSecurityType,
-  GetPortfolioPositionType,
-  GetOrderType
+  GetPortfolioPositionType
 } from 'src/domain'
-import { OperationType } from 'src/domain/models'
-import { GetOrdersOptions } from 'src/api/trpc/schemas'
 import { ITradeBot } from 'src/bot/ITradeBot'
 import { ITradeAlgorithmsEngine } from 'src/algorithms'
 import { IPersistentStorage } from 'src/storage'
@@ -37,10 +34,4 @@ export interface IExchangeAnalyzer<Domain extends DomainTemplate, TExchangeApi> 
   updatePortfolio(): Promise<GetPortfolioPositionType<CommonDomain>[]>
   getPortfolio(): Promise<GetPortfolioPositionType<CommonDomain>[]>
   clearPortfolio(): Promise<number>
-  saveOrder(
-    order: GetOrderType<CommonDomain>,
-    operation: OperationType,
-    runId?: number
-  ): Promise<GetOrderType<CommonDomain>>
-  getOrders(options: GetOrdersOptions): Promise<GetOrderType<CommonDomain>[]>
 }

@@ -65,6 +65,7 @@ class Algorithm {
     +inputTypes: InputTypes
     +algorithmRuns?: AlgorithmRun<any, any>[] | undefined
 }
+interface GetOrdersOptions extends ZGetOrdersOptions
 class Order {
     +exchangeId: string
     +securityTicker: string
@@ -128,6 +129,7 @@ interface IDomainMapper<Domain extends DomainTemplate<unknown, unknown, unknown,
     +orderStatus(order: GetOrderType<Domain>): OrderStatus
     +orderOperation(order: GetOrderType<Domain>): "undefined" | "limit_buy" | "limit_sell" | "market_buy" | "market_sell" | "buy_or_cancel" | "sell_or_cancel"
 }
+class AlgorithmsRepository extends Repository
 class AlgorithmRunsRepository extends Repository {
     +runOne(algorithmName: string, inputs: unknown, state?: unknown): Promise<AlgorithmRun<any, any>>
     +saveProgress(id: number, state: unknown): Promise<AlgorithmRun<any, any>>
@@ -139,14 +141,18 @@ class AlgorithmRunsRepository extends Repository {
     +findManyByAlgorithm(algorithmName: string): Promise<AlgorithmRun<any, any>[]>
     +findAllUnfinished(): Promise<AlgorithmRun<any, any>[]>
 }
+class OrdersRepository extends Repository {
+    +saveOne(order: Order, operation: "undefined" | "limit_buy" | "limit_sell" | "market_buy" | "market_sell" | "buy_or_cancel" | "sell_or_cancel", runId?: number | undefined): Promise<Order>
+    +search(options: GetOrdersOptions): Promise<Order[]>
+}
 interface IPersistentStorage {
-    +orders: Repository<Order>
-    +algorithms: Repository<Algorithm>
+    +orders: OrdersRepository
+    +algorithms: AlgorithmsRepository
     +algorithmRuns: AlgorithmRunsRepository
 }
 class PersistentStorage implements IPersistentStorage {
-    +orders: Repository<Order>
-    +algorithms: Repository<Algorithm>
+    +orders: OrdersRepository
+    +algorithms: AlgorithmsRepository
     +algorithmRuns: AlgorithmRunsRepository
     -datasource: DataSource
     -initDatasource(id: string): DataSource
@@ -305,8 +311,6 @@ interface IExchangeAnalyzer<Domain extends DomainTemplate<unknown, unknown, unkn
     +updatePortfolio(): Promise<(CurrencyBalance | SecurityBalance)[]>
     +getPortfolio(): Promise<(CurrencyBalance | SecurityBalance)[]>
     +clearPortfolio(): Promise<number>
-    +saveOrder(order: Order, operation: "undefined" | "limit_buy" | "limit_sell" | "market_buy" | "market_sell" | "buy_or_cancel" | "sell_or_cancel", runId?: number | undefined): Promise<Order>
-    +getOrders(options: { from?: Date | undefined; to?: Date | undefined; securityTicker?: string | undefined; operation?: "undefined" | "limit_buy" | "limit_sell" | "market_buy" | "market_sell" | "buy_or_cancel" | "sell_or_cancel" | undefined; runId?: number | undefined; }): Promise<Order[]>
 }
 class ExchangeAnalyzer<Domain extends DomainTemplate<unknown, unknown, unknown, unknown, unknown>, TExchangeApi> implements IExchangeAnalyzer {
     +tradeAlgos: ITradeAlgorithmsEngine
@@ -333,8 +337,6 @@ class ExchangeAnalyzer<Domain extends DomainTemplate<unknown, unknown, unknown, 
     +updatePortfolio(): Promise<(CurrencyBalance | SecurityBalance)[]>
     +getPortfolio(): Promise<(CurrencyBalance | SecurityBalance)[]>
     +clearPortfolio(): Promise<number>
-    +saveOrder(order: Order, operation: "undefined" | "limit_buy" | "limit_sell" | "market_buy" | "market_sell" | "buy_or_cancel" | "sell_or_cancel", runId?: number | undefined): Promise<Order>
-    +getOrders(__0: { from?: Date | undefined; to?: Date | undefined; securityTicker?: string | undefined; operation?: "undefined" | "limit_buy" | "limit_sell" | "market_buy" | "market_sell" | "buy_or_cancel" | "sell_or_cancel" | undefined; runId?: number | undefined; }): Promise<Order[]>
 }
 class ExchangeTrader<Domain extends DomainTemplate<unknown, unknown, unknown, unknown, unknown>, TExchangeApi> implements IExchangeTrader {
     -tradebot: ITradeBot<Domain, TExchangeApi>
@@ -422,11 +424,14 @@ IDomainMapper --> "1" Security
 IDomainMapper --> "1" SecurityBalance
 IDomainMapper --> "1" Order
 AlgorithmRunsRepository --> "1" AlgorithmRun
-IPersistentStorage --> "1" Order
-IPersistentStorage --> "1" Algorithm
+OrdersRepository --> "1" Order
+OrdersRepository --> "1" GetOrdersOptions
+OrdersRepository --> "*" Order
+IPersistentStorage --> "1" OrdersRepository
+IPersistentStorage --> "1" AlgorithmsRepository
 IPersistentStorage --> "1" AlgorithmRunsRepository
-PersistentStorage --> "1" Order
-PersistentStorage --> "1" Algorithm
+PersistentStorage --> "1" OrdersRepository
+PersistentStorage --> "1" AlgorithmsRepository
 PersistentStorage --> "1" AlgorithmRunsRepository
 PortfolioStore --> "1" SecuritiesStore
 PortfolioStore --> "*" CurrencyBalance
@@ -481,8 +486,6 @@ IExchangeAnalyzer --> "*" Security
 IExchangeAnalyzer --> "1" Security
 IExchangeAnalyzer --> "1" CurrencyBalance
 IExchangeAnalyzer --> "1" SecurityBalance
-IExchangeAnalyzer --> "1" Order
-IExchangeAnalyzer --> "*" Order
 ExchangeAnalyzer --> "1" ITradeAlgorithmsEngine
 ExchangeAnalyzer --> "1" PersistentStorage
 ExchangeAnalyzer --> "1" ITradeBot
@@ -494,8 +497,6 @@ ExchangeAnalyzer --> "*" Currency
 ExchangeAnalyzer --> "*" CurrencyBalance
 ExchangeAnalyzer --> "1" CurrencyBalance
 ExchangeAnalyzer --> "1" SecurityBalance
-ExchangeAnalyzer --> "1" Order
-ExchangeAnalyzer --> "*" Order
 ExchangeTrader --> "1" ITradeBot
 ExchangeTrader --> "1" IExchangeWatcher
 ExchangeTrader --> "1" LoggerService

@@ -9,4 +9,6 @@ export const getOrdersOptions = z.object({
   runId: z.number().int().min(0).optional()
 })
 
-export type GetOrdersOptions = z.infer<typeof getOrdersOptions>
+type ZGetOrdersOptions = z.infer<typeof getOrdersOptions>
+
+export interface GetOrdersOptions extends ZGetOrdersOptions {}

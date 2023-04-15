@@ -92,7 +92,9 @@ export class ExchangeWatcher<Domain extends DomainTemplate, TExchangeApi> implem
   ): OrderStatus {
     const { domainMapper, analyzer } = this
     const status = domainMapper.orderStatus(order)
-    domainMapper.order(order).then((order) => analyzer.saveOrder({ ...order, status: status }, operation_type, runId))
+    domainMapper
+      .order(order)
+      .then((order) => analyzer.storage.orders.saveOne({ ...order, status: status }, operation_type, runId))
     return status
   }
 }
