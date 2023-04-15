@@ -10,11 +10,11 @@ import {
 } from 'src/domain'
 import { ITradeBot } from 'src/bot/ITradeBot'
 import { ITradeAlgorithmsEngine } from 'src/algorithms'
-import { IPersistentStorage } from 'src/storage'
+import { IInMemoryStorage, IPersistentStorage } from 'src/storage'
 
 export interface IExchangeAnalyzer<Domain extends DomainTemplate, TExchangeApi> {
   readonly tradeAlgos: ITradeAlgorithmsEngine
-  readonly storage: IPersistentStorage
+  readonly storage: IPersistentStorage & IInMemoryStorage
   readonly tradebot: ITradeBot<Domain, TExchangeApi>
   get trader(): IExchangeTrader
   get watcher(): IExchangeWatcher<Domain>

@@ -1,14 +1,14 @@
 import { deepCopy } from '../utils'
-import { PortfolioStore } from './PortfolioStore'
+import { PortfolioRepository } from './PortfolioRepository'
 import { Security } from 'src/domain'
 
-export class SecuritiesStore {
+export class SecuritiesRepository {
   private items: Security[] = []
   private followList: string[] = []
   private updateJournal: Map<string, Date> = new Map<string, Date>()
-  private portfolioStore: PortfolioStore
+  private portfolioStore: PortfolioRepository
 
-  setPortfolioStore(store: PortfolioStore) {
+  setPortfolioStore(store: PortfolioRepository) {
     if (!this.portfolioStore) this.portfolioStore = store
   }
 

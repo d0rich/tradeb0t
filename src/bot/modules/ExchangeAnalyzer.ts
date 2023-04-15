@@ -8,8 +8,7 @@ import {
   DomainTemplate
 } from 'src/domain'
 import { ITradeAlgorithm, ITradeAlgorithmsEngine, TradeAlgorithmsEngine } from 'src/algorithms'
-import { PersistentStorage } from 'src/storage/persistent'
-import { store } from 'src/storage'
+import { UnitedStorage } from 'src/storage'
 import { HandleError } from '../../decorators'
 import { IExchangeAnalyzer } from './IExchangeAnalyzer'
 import { IExchangeTrader } from './IExchangeTrader'
@@ -20,7 +19,7 @@ export class ExchangeAnalyzer<Domain extends DomainTemplate, TExchangeApi>
 {
   readonly tradeAlgos: ITradeAlgorithmsEngine
   // FIXME: generate unique id
-  readonly storage = new PersistentStorage('id')
+  readonly storage = new UnitedStorage('id')
   readonly tradebot: ITradeBot<Domain, TExchangeApi>
   get trader(): IExchangeTrader {
     return this.tradebot.trader
@@ -58,10 +57,10 @@ export class ExchangeAnalyzer<Domain extends DomainTemplate, TExchangeApi>
   @HandleError()
   private async loadSecurityIfNotExist(ticker: string): Promise<GetSecurityType<CommonDomain> | undefined> {
     const { watcher } = this
-    const securityInCache = store.securitiesStore.securities.find((s) => s.ticker === ticker)
+    const securityInCache = this.storage.securities.securities.find((s) => s.ticker === ticker)
     if (!securityInCache) {
       await this.addSecurities(await watcher.getSecurity(ticker))
-      return store.securitiesStore.securities.find((s) => s.ticker === ticker)
+      return this.storage.securities.securities.find((s) => s.ticker === ticker)
     }
     return securityInCache
   }
@@ -69,7 +68,7 @@ export class ExchangeAnalyzer<Domain extends DomainTemplate, TExchangeApi>
   @HandleError()
   private async loadSecuritiesIfNotExist(tickers: string[]): Promise<GetSecurityType<CommonDomain>[]> {
     const { watcher } = this
-    const securitiesInCache = store.securitiesStore.securities.filter((s) => tickers.includes(s.ticker))
+    const securitiesInCache = this.storage.securities.securities.filter((s) => tickers.includes(s.ticker))
     const securitiesToAdd = await Promise.all(
       tickers.filter((t) => !securitiesInCache.some((s) => s.ticker === t)).map((ticker) => watcher.getSecurity(ticker))
     )
@@ -81,13 +80,13 @@ export class ExchangeAnalyzer<Domain extends DomainTemplate, TExchangeApi>
   @HandleError()
   async updateCurrencies(): Promise<GetCurrencyType<CommonDomain>[]> {
     const relevantCurrencies = await this.watcher.getCurrencies()
-    store.currenciesStore.updateCurrenciesAll(relevantCurrencies)
-    return store.currenciesStore.currencies
+    this.storage.currencies.updateCurrenciesAll(relevantCurrencies)
+    return this.storage.currencies.currencies
   }
 
   @HandleError()
   async getCurrencies(): Promise<GetCurrencyType<CommonDomain>[]> {
-    return store.currenciesStore.currencies
+    return this.storage.currencies.currencies
   }
 
   // Currencies Balance
@@ -96,13 +95,13 @@ export class ExchangeAnalyzer<Domain extends DomainTemplate, TExchangeApi>
   async updateCurrenciesBalance(): Promise<GetCurrencyBalanceType<CommonDomain>[]> {
     const { watcher } = this
     const relevantCurrencies = await watcher.getCurrenciesBalance()
-    store.portfolioStore.updatePositions(...relevantCurrencies)
-    return store.portfolioStore.currencies
+    this.storage.portfolio.updatePositions(...relevantCurrencies)
+    return this.storage.portfolio.currencies
   }
 
   @HandleError()
   async getCurrenciesBalance(): Promise<GetCurrencyBalanceType<CommonDomain>[]> {
-    return store.portfolioStore.currencies
+    return this.storage.portfolio.currencies
   }
 
   // Securities
@@ -110,68 +109,68 @@ export class ExchangeAnalyzer<Domain extends DomainTemplate, TExchangeApi>
   @HandleError()
   async updateSecurities(): Promise<GetSecurityType<CommonDomain>[]> {
     const { watcher } = this
-    const securities: GetSecurityType<CommonDomain>[] = store.securitiesStore.securities
+    const securities: GetSecurityType<CommonDomain>[] = this.storage.securities.securities
     const securitiesPrices = await Promise.all(
       securities.map((security): Promise<number> => watcher.getSecurityLastPrice(security.ticker))
     )
-    store.securitiesStore.updateSecurities(
+    this.storage.securities.updateSecurities(
       ...securities.map((security, index) => ({
         ...security,
         price: securitiesPrices[index]
       }))
     )
-    return store.securitiesStore.securities
+    return this.storage.securities.securities
   }
 
   @HandleError()
   async getSecurities(): Promise<GetSecurityType<CommonDomain>[]> {
-    return store.securitiesStore.securities
+    return this.storage.securities.securities
   }
 
   @HandleError()
   async getSecurity(ticker: string): Promise<GetSecurityType<CommonDomain>> {
-    const security = store.securitiesStore.securities.find((s) => s.ticker === ticker)
+    const security = this.storage.securities.securities.find((s) => s.ticker === ticker)
     if (!security) throw new Error(`Security with ticker:${ticker} was not found`)
     return security
   }
 
   @HandleError()
   async addSecurities(...securities: GetSecurityType<CommonDomain>[]): Promise<GetSecurityType<CommonDomain>[]> {
-    store.securitiesStore.updateSecurities(...securities)
-    return store.securitiesStore.securities
+    this.storage.securities.updateSecurities(...securities)
+    return this.storage.securities.securities
   }
 
   // Followed Securities
 
   @HandleError()
   async getFollowedSecurities(): Promise<GetSecurityType<CommonDomain>[]> {
-    return store.securitiesStore.followedSecurities
+    return this.storage.securities.followedSecurities
   }
 
   @HandleError()
   async followSecurity(securityTicker: string): Promise<GetSecurityType<CommonDomain> | undefined> {
-    return store.securitiesStore.follow(securityTicker)
+    return this.storage.securities.follow(securityTicker)
   }
 
   @HandleError()
   async unfollowSecurity(securityTicker: string): Promise<GetSecurityType<CommonDomain> | undefined> {
-    return store.securitiesStore.unfollow(securityTicker)
+    return this.storage.securities.unfollow(securityTicker)
   }
 
   @HandleError()
   async updateFollowedSecurities(): Promise<GetSecurityType<CommonDomain>[]> {
     const { watcher } = this
-    const securitiesToUpdate = store.securitiesStore.followedSecurities
+    const securitiesToUpdate = this.storage.securities.followedSecurities
     const securitiesPrices = await Promise.all(
       securitiesToUpdate.map((security) => watcher.getSecurityLastPrice(security.ticker))
     )
-    store.securitiesStore.updateSecurities(
+    this.storage.securities.updateSecurities(
       ...securitiesToUpdate.map((s, index) => ({
         ...s,
         price: securitiesPrices[index]
       }))
     )
-    return store.securitiesStore.followedSecurities
+    return this.storage.securities.followedSecurities
   }
 
   // Portfolio
@@ -183,19 +182,19 @@ export class ExchangeAnalyzer<Domain extends DomainTemplate, TExchangeApi>
     const securities = await Promise.all(relevantPortfolio.map((p) => watcher.getSecurity(p.securityTicker)))
     const currencies = await watcher.getCurrenciesBalance()
     await this.addSecurities(...securities)
-    store.portfolioStore.updatePositionsAll([...relevantPortfolio, ...currencies])
-    return store.portfolioStore.portfolio
+    this.storage.portfolio.updatePositionsAll([...relevantPortfolio, ...currencies])
+    return this.storage.portfolio.portfolio
   }
 
   @HandleError()
   async getPortfolio(): Promise<GetPortfolioPositionType<CommonDomain>[]> {
-    return store.portfolioStore.portfolio
+    return this.storage.portfolio.portfolio
   }
 
   @HandleError()
   async clearPortfolio(): Promise<number> {
-    const deleted = store.portfolioStore.portfolio.length
-    store.portfolioStore.updatePositionsAll([])
+    const deleted = this.storage.portfolio.portfolio.length
+    this.storage.portfolio.updatePositionsAll([])
     return deleted
   }
 }

@@ -1,8 +1,4 @@
 @startuml
-interface ITypedTransformer<TEntity, TDatabase> {
-    +to: (entityValue: TEntity) => TDatabase
-    +from: (databaseValue: TDatabase) => TEntity
-}
 interface ITradeModule<Domain extends DomainTemplate<unknown, unknown, unknown, unknown, unknown>> {
     +sell(options: CreateOrderOptions): Promise<GetOrderType<Domain>>
     +buy(options: CreateOrderOptions): Promise<GetOrderType<Domain>>
@@ -65,7 +61,92 @@ class Algorithm {
     +inputTypes: InputTypes
     +algorithmRuns?: AlgorithmRun<any, any>[] | undefined
 }
+interface ITypedTransformer<TEntity, TDatabase> {
+    +to: (entityValue: TEntity) => TDatabase
+    +from: (databaseValue: TDatabase) => TEntity
+}
+class AlgorithmsRepository extends Repository
+class AlgorithmRunsRepository extends Repository {
+    +runOne(algorithmName: string, inputs: unknown, state?: unknown): Promise<AlgorithmRun<any, any>>
+    +saveProgress(id: number, state: unknown): Promise<AlgorithmRun<any, any>>
+    +loadProgress(id: number): Promise<AlgorithmRun<any, any> | null>
+    +stopOne(id: number): Promise<AlgorithmRun<any, any>>
+    +resumeOne(id: number): Promise<AlgorithmRun<any, any>>
+    +finishOne(id: number): Promise<AlgorithmRun<any, any>>
+    +storeError(id: number, error: Error): Promise<AlgorithmRun<any, any>>
+    +findManyByAlgorithm(algorithmName: string): Promise<AlgorithmRun<any, any>[]>
+    +findAllUnfinished(): Promise<AlgorithmRun<any, any>[]>
+}
 interface GetOrdersOptions extends ZGetOrdersOptions
+class OrdersRepository extends Repository {
+    +saveOne(order: Order, operation: "undefined" | "limit_buy" | "limit_sell" | "market_buy" | "market_sell" | "buy_or_cancel" | "sell_or_cancel", runId?: number | undefined): Promise<Order>
+    +search(options: GetOrdersOptions): Promise<Order[]>
+}
+interface IPersistentStorage {
+    +orders: OrdersRepository
+    +algorithms: AlgorithmsRepository
+    +algorithmRuns: AlgorithmRunsRepository
+}
+class PersistentStorage implements IPersistentStorage {
+    +orders: OrdersRepository
+    +algorithms: AlgorithmsRepository
+    +algorithmRuns: AlgorithmRunsRepository
+    -datasource: DataSource
+    -initDatasource(id: string): DataSource
+}
+class PortfolioRepository {
+    -items: PortfolioPosition[]
+    -securitiesStore: SecuritiesRepository
+    -findPosition(position: PortfolioPosition, searchIn?: PortfolioPosition[]): PortfolioPosition | undefined
+    +setSecuritiesStore(store: SecuritiesRepository): void
+    +portfolio: PortfolioPosition[]
+    +currencies: CurrencyBalance[]
+    +securities: SecurityBalance[]
+    +updatePositions(positions: PortfolioPosition[]): void
+    +updatePositionsAll(positions: PortfolioPosition[]): void
+}
+class SecuritiesRepository {
+    -items: Security[]
+    -followList: string[]
+    -updateJournal: Map<string, Date>
+    -portfolioStore: PortfolioRepository
+    +setPortfolioStore(store: PortfolioRepository): void
+    +securities: Security[]
+    +followedSecurities: Security[]
+    +securitiesWithUpdates: { updatedAt: Date | undefined; name: string; ticker: string; price: number; currencyTicker: string; }[]
+    +follow(securityTicker: string): Security | undefined
+    +unfollow(securityTicker: string): Security | undefined
+    +updateSecurities(securities: Security[]): void
+    +getBalanceOf(securityTicker: string): SecurityBalance | undefined
+}
+class CurrenciesRepository {
+    -items: Currency[]
+    -portfolioStore: PortfolioRepository
+    +setPortfolioStore(store: PortfolioRepository): void
+    +currencies: Currency[]
+    +updateCurrenciesAll(currencies: Currency[]): void
+    +getBalanceOf(currencyTicker: string): CurrencyBalance | undefined
+}
+interface IInMemoryStorage {
+    +securities: SecuritiesRepository
+    +portfolio: PortfolioRepository
+    +currencies: CurrenciesRepository
+}
+class InMemoryStorage implements IInMemoryStorage {
+    +securities: SecuritiesRepository
+    +portfolio: PortfolioRepository
+    +currencies: CurrenciesRepository
+}
+class UnitedStorage implements IPersistentStorage, IInMemoryStorage {
+    +currencies: CurrenciesRepository
+    +portfolio: PortfolioRepository
+    +securities: SecuritiesRepository
+    +orders: OrdersRepository
+    +algorithms: AlgorithmsRepository
+    +algorithmRuns: AlgorithmRunsRepository
+    -_persistent: IPersistentStorage
+    -_memory: IInMemoryStorage
+}
 class Order {
     +exchangeId: string
     +securityTicker: string
@@ -128,72 +209,6 @@ interface IDomainMapper<Domain extends DomainTemplate<unknown, unknown, unknown,
     +order(order: GetOrderType<Domain>): Promise<Order>
     +orderStatus(order: GetOrderType<Domain>): OrderStatus
     +orderOperation(order: GetOrderType<Domain>): "undefined" | "limit_buy" | "limit_sell" | "market_buy" | "market_sell" | "buy_or_cancel" | "sell_or_cancel"
-}
-class AlgorithmsRepository extends Repository
-class AlgorithmRunsRepository extends Repository {
-    +runOne(algorithmName: string, inputs: unknown, state?: unknown): Promise<AlgorithmRun<any, any>>
-    +saveProgress(id: number, state: unknown): Promise<AlgorithmRun<any, any>>
-    +loadProgress(id: number): Promise<AlgorithmRun<any, any> | null>
-    +stopOne(id: number): Promise<AlgorithmRun<any, any>>
-    +resumeOne(id: number): Promise<AlgorithmRun<any, any>>
-    +finishOne(id: number): Promise<AlgorithmRun<any, any>>
-    +storeError(id: number, error: Error): Promise<AlgorithmRun<any, any>>
-    +findManyByAlgorithm(algorithmName: string): Promise<AlgorithmRun<any, any>[]>
-    +findAllUnfinished(): Promise<AlgorithmRun<any, any>[]>
-}
-class OrdersRepository extends Repository {
-    +saveOne(order: Order, operation: "undefined" | "limit_buy" | "limit_sell" | "market_buy" | "market_sell" | "buy_or_cancel" | "sell_or_cancel", runId?: number | undefined): Promise<Order>
-    +search(options: GetOrdersOptions): Promise<Order[]>
-}
-interface IPersistentStorage {
-    +orders: OrdersRepository
-    +algorithms: AlgorithmsRepository
-    +algorithmRuns: AlgorithmRunsRepository
-}
-class PersistentStorage implements IPersistentStorage {
-    +orders: OrdersRepository
-    +algorithms: AlgorithmsRepository
-    +algorithmRuns: AlgorithmRunsRepository
-    -datasource: DataSource
-    -initDatasource(id: string): DataSource
-}
-class PortfolioStore {
-    -items: PortfolioPosition[]
-    -securitiesStore: SecuritiesStore
-    -findPosition(position: PortfolioPosition, searchIn?: PortfolioPosition[]): PortfolioPosition | undefined
-    +setSecuritiesStore(store: SecuritiesStore): void
-    +portfolio: PortfolioPosition[]
-    +currencies: CurrencyBalance[]
-    +securities: SecurityBalance[]
-    +updatePositions(positions: PortfolioPosition[]): void
-    +updatePositionsAll(positions: PortfolioPosition[]): void
-}
-class SecuritiesStore {
-    -items: Security[]
-    -followList: string[]
-    -updateJournal: Map<string, Date>
-    -portfolioStore: PortfolioStore
-    +setPortfolioStore(store: PortfolioStore): void
-    +securities: Security[]
-    +followedSecurities: Security[]
-    +securitiesWithUpdates: { updatedAt: Date | undefined; name: string; ticker: string; price: number; currencyTicker: string; }[]
-    +follow(securityTicker: string): Security | undefined
-    +unfollow(securityTicker: string): Security | undefined
-    +updateSecurities(securities: Security[]): void
-    +getBalanceOf(securityTicker: string): SecurityBalance | undefined
-}
-class CurrenciesStore {
-    -items: Currency[]
-    -portfolioStore: PortfolioStore
-    +setPortfolioStore(store: PortfolioStore): void
-    +currencies: Currency[]
-    +updateCurrenciesAll(currencies: Currency[]): void
-    +getBalanceOf(currencyTicker: string): CurrencyBalance | undefined
-}
-class TradeBotStore {
-    +securitiesStore: SecuritiesStore
-    +portfolioStore: PortfolioStore
-    +currenciesStore: CurrenciesStore
 }
 interface ITradeAlgorithm<InputsType, StateType> {
     +details: Algorithm
@@ -291,7 +306,7 @@ interface IExchangeWatcher<Domain extends DomainTemplate<unknown, unknown, unkno
 }
 interface IExchangeAnalyzer<Domain extends DomainTemplate<unknown, unknown, unknown, unknown, unknown>, TExchangeApi> {
     +tradeAlgos: ITradeAlgorithmsEngine
-    +storage: IPersistentStorage
+    +storage: IPersistentStorage & IInMemoryStorage
     +tradebot: ITradeBot<Domain, TExchangeApi>
     +trader: IExchangeTrader
     +watcher: IExchangeWatcher<Domain>
@@ -314,7 +329,7 @@ interface IExchangeAnalyzer<Domain extends DomainTemplate<unknown, unknown, unkn
 }
 class ExchangeAnalyzer<Domain extends DomainTemplate<unknown, unknown, unknown, unknown, unknown>, TExchangeApi> implements IExchangeAnalyzer {
     +tradeAlgos: ITradeAlgorithmsEngine
-    +storage: PersistentStorage
+    +storage: UnitedStorage
     +tradebot: ITradeBot<Domain, TExchangeApi>
     +trader: IExchangeTrader
     +watcher: IExchangeWatcher<Domain>
@@ -409,6 +424,41 @@ AbstractExchangeConnector --> "1" ITradeModule
 AbstractExchangeConnector --> "1" IInfoModule
 AbstractExchangeConnector --> "1" IDomainMapper
 Algorithm --> "1" AlgorithmRun
+AlgorithmRunsRepository --> "1" AlgorithmRun
+OrdersRepository --> "1" Order
+OrdersRepository --> "1" GetOrdersOptions
+OrdersRepository --> "*" Order
+IPersistentStorage --> "1" OrdersRepository
+IPersistentStorage --> "1" AlgorithmsRepository
+IPersistentStorage --> "1" AlgorithmRunsRepository
+PersistentStorage --> "1" OrdersRepository
+PersistentStorage --> "1" AlgorithmsRepository
+PersistentStorage --> "1" AlgorithmRunsRepository
+PortfolioRepository --> "1" SecuritiesRepository
+PortfolioRepository --> "*" CurrencyBalance
+PortfolioRepository --> "*" SecurityBalance
+SecuritiesRepository --> "*" Security
+SecuritiesRepository --> "1" PortfolioRepository
+SecuritiesRepository --> "1" Security
+SecuritiesRepository --> "1" SecurityBalance
+CurrenciesRepository --> "*" Currency
+CurrenciesRepository --> "1" PortfolioRepository
+CurrenciesRepository --> "1" Currency
+CurrenciesRepository --> "1" CurrencyBalance
+IInMemoryStorage --> "1" SecuritiesRepository
+IInMemoryStorage --> "1" PortfolioRepository
+IInMemoryStorage --> "1" CurrenciesRepository
+InMemoryStorage --> "1" SecuritiesRepository
+InMemoryStorage --> "1" PortfolioRepository
+InMemoryStorage --> "1" CurrenciesRepository
+UnitedStorage --> "1" CurrenciesRepository
+UnitedStorage --> "1" PortfolioRepository
+UnitedStorage --> "1" SecuritiesRepository
+UnitedStorage --> "1" OrdersRepository
+UnitedStorage --> "1" AlgorithmsRepository
+UnitedStorage --> "1" AlgorithmRunsRepository
+UnitedStorage --> "1" IPersistentStorage
+UnitedStorage --> "1" IInMemoryStorage
 Order --> "1" AlgorithmRun
 AlgorithmRun --> "1" Algorithm
 AlgorithmRun --> "*" Order
@@ -423,30 +473,6 @@ IDomainMapper --> "1" CurrencyBalance
 IDomainMapper --> "1" Security
 IDomainMapper --> "1" SecurityBalance
 IDomainMapper --> "1" Order
-AlgorithmRunsRepository --> "1" AlgorithmRun
-OrdersRepository --> "1" Order
-OrdersRepository --> "1" GetOrdersOptions
-OrdersRepository --> "*" Order
-IPersistentStorage --> "1" OrdersRepository
-IPersistentStorage --> "1" AlgorithmsRepository
-IPersistentStorage --> "1" AlgorithmRunsRepository
-PersistentStorage --> "1" OrdersRepository
-PersistentStorage --> "1" AlgorithmsRepository
-PersistentStorage --> "1" AlgorithmRunsRepository
-PortfolioStore --> "1" SecuritiesStore
-PortfolioStore --> "*" CurrencyBalance
-PortfolioStore --> "*" SecurityBalance
-SecuritiesStore --> "*" Security
-SecuritiesStore --> "1" PortfolioStore
-SecuritiesStore --> "1" Security
-SecuritiesStore --> "1" SecurityBalance
-CurrenciesStore --> "*" Currency
-CurrenciesStore --> "1" PortfolioStore
-CurrenciesStore --> "1" Currency
-CurrenciesStore --> "1" CurrencyBalance
-TradeBotStore --> "1" SecuritiesStore
-TradeBotStore --> "1" PortfolioStore
-TradeBotStore --> "1" CurrenciesStore
 ITradeAlgorithm --> "1" Algorithm
 ITradeAlgorithm --> "1" AlgorithmRun
 ITradeAlgorithmsEngine --> "*" Algorithm
@@ -477,6 +503,7 @@ IExchangeWatcher --> "1" Security
 IExchangeWatcher --> "1" Currency
 IExchangeAnalyzer --> "1" ITradeAlgorithmsEngine
 IExchangeAnalyzer --> "1" IPersistentStorage
+IExchangeAnalyzer --> "1" IInMemoryStorage
 IExchangeAnalyzer --> "1" ITradeBot
 IExchangeAnalyzer --> "1" IExchangeTrader
 IExchangeAnalyzer --> "1" IExchangeWatcher
@@ -487,7 +514,7 @@ IExchangeAnalyzer --> "1" Security
 IExchangeAnalyzer --> "1" CurrencyBalance
 IExchangeAnalyzer --> "1" SecurityBalance
 ExchangeAnalyzer --> "1" ITradeAlgorithmsEngine
-ExchangeAnalyzer --> "1" PersistentStorage
+ExchangeAnalyzer --> "1" UnitedStorage
 ExchangeAnalyzer --> "1" ITradeBot
 ExchangeAnalyzer --> "1" IExchangeTrader
 ExchangeAnalyzer --> "1" IExchangeWatcher

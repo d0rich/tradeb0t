@@ -1,12 +1,12 @@
 import { deepCopy } from '../utils'
-import { PortfolioStore } from './PortfolioStore'
+import { PortfolioRepository } from './PortfolioRepository'
 import { Currency } from 'src/domain'
 
-export class CurrenciesStore {
+export class CurrenciesRepository {
   private items: Currency[] = []
-  private portfolioStore: PortfolioStore
+  private portfolioStore: PortfolioRepository
 
-  setPortfolioStore(store: PortfolioStore) {
+  setPortfolioStore(store: PortfolioRepository) {
     if (!this.portfolioStore) this.portfolioStore = store
   }
 

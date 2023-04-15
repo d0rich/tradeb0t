@@ -1,11 +1,11 @@
 import { deepCopy } from '../utils'
-import { SecuritiesStore } from './SecuritiesStore'
+import { SecuritiesRepository } from './SecuritiesRepository'
 import { CurrencyBalance, SecurityBalance, PortfolioPosition } from 'src/domain'
 
-export class PortfolioStore {
+export class PortfolioRepository {
   // TODO: Create Proxy on updates
   private items: PortfolioPosition[] = []
-  private securitiesStore: SecuritiesStore
+  private securitiesStore: SecuritiesRepository
 
   private findPosition(position: PortfolioPosition, searchIn: PortfolioPosition[] = this.items) {
     return searchIn.find((item) => {
@@ -19,7 +19,7 @@ export class PortfolioStore {
     })
   }
 
-  setSecuritiesStore(store: SecuritiesStore) {
+  setSecuritiesStore(store: SecuritiesRepository) {
     if (!this.securitiesStore) this.securitiesStore = store
   }
 
