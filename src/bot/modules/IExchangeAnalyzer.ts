@@ -13,11 +13,11 @@ import { OperationType } from 'src/domain/models'
 import { GetOrdersOptions } from 'src/api/trpc/schemas'
 import { ITradeBot } from 'src/bot/ITradeBot'
 import { ITradeAlgorithmsEngine } from 'src/algorithms'
-import { PersistentStorage } from 'src/storage'
+import { IPersistentStorage } from 'src/storage'
 
 export interface IExchangeAnalyzer<Domain extends DomainTemplate, TExchangeApi> {
   readonly tradeAlgos: ITradeAlgorithmsEngine
-  readonly persistentStorage: PersistentStorage
+  readonly storage: IPersistentStorage
   readonly tradebot: ITradeBot<Domain, TExchangeApi>
   get trader(): IExchangeTrader
   get watcher(): IExchangeWatcher<Domain>

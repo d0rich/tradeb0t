@@ -14,7 +14,7 @@ export default (tradeBot: ITradeBot) => {
         })
       )
       .query(async ({ input }) => {
-        return await tradeBot.analyzer.persistentStorage.algorithmRunsRepository.findManyByAlgorithm(
+        return await tradeBot.analyzer.storage.algorithmRuns.findManyByAlgorithm(
           input.algorithmName
         )
       }),

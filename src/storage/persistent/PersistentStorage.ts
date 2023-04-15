@@ -2,18 +2,20 @@ import { DataSource } from 'typeorm'
 import { AlgorithmRun, Algorithm, Order } from 'src/domain'
 import { initAlgorithmsRepository } from './AlgorithmsRepository'
 import { initAlgorithmRunsRepository } from './AlgorithmRunsRepository'
+import { initOrdersRepository } from './OrdersRepository'
+import { IPersistentStorage } from './IPersistentStorage'
 
-export class PersistentStorage {
-  ordersRepository: ReturnType<PersistentStorage['initOrdersRepository']>
-  algorithmsRepository: ReturnType<typeof initAlgorithmsRepository>
-  algorithmRunsRepository: ReturnType<typeof initAlgorithmRunsRepository>
-  private datasource: DataSource
+export class PersistentStorage implements IPersistentStorage {
+  orders: ReturnType<typeof initOrdersRepository>
+  algorithms: ReturnType<typeof initAlgorithmsRepository>
+  algorithmRuns: ReturnType<typeof initAlgorithmRunsRepository>
+  private readonly datasource: DataSource
 
   constructor(id: string) {
     this.datasource = this.initDatasource(id)
-    this.ordersRepository = this.initOrdersRepository()
-    this.algorithmsRepository = initAlgorithmsRepository(this.datasource)
-    this.algorithmRunsRepository = initAlgorithmRunsRepository(this.datasource)
+    this.orders = initOrdersRepository(this.datasource)
+    this.algorithms = initAlgorithmsRepository(this.datasource)
+    this.algorithmRuns = initAlgorithmRunsRepository(this.datasource)
   }
 
   private initDatasource(id: string) {
@@ -24,9 +26,5 @@ export class PersistentStorage {
       synchronize: true,
       entities: [Algorithm, AlgorithmRun, Order]
     })
-  }
-
-  private initOrdersRepository() {
-    return this.datasource.getRepository(Order)
   }
 }

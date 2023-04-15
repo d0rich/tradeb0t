@@ -23,7 +23,7 @@ export class ExchangeAnalyzer<Domain extends DomainTemplate, TExchangeApi>
 {
   readonly tradeAlgos: ITradeAlgorithmsEngine
   // FIXME: generate unique id
-  readonly persistentStorage = new PersistentStorage('id')
+  readonly storage = new PersistentStorage('id')
   readonly tradebot: ITradeBot<Domain, TExchangeApi>
   get trader(): IExchangeTrader {
     return this.tradebot.trader
@@ -43,7 +43,7 @@ export class ExchangeAnalyzer<Domain extends DomainTemplate, TExchangeApi>
   @HandleError()
   async start() {
     await Promise.all([
-      this.persistentStorage.algorithmsRepository.save(this.tradeAlgos.description),
+      this.storage.algorithms.save(this.tradeAlgos.description),
       this.initUpdaters()
     ])
   }
