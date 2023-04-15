@@ -11,4 +11,6 @@ export const getOrdersOptions = z.object({
 
 type ZGetOrdersOptions = z.infer<typeof getOrdersOptions>
 
+// Interface looks better in UML diagrams
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface GetOrdersOptions extends ZGetOrdersOptions {}
