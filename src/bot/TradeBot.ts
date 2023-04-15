@@ -1,4 +1,3 @@
-import { db } from '../storage/persistent'
 import {
   IExchangeTrader,
   IExchangeWatcher,
@@ -82,7 +81,6 @@ export class TradeBot<Domain extends DomainTemplate, TExchangeApi> implements IT
       type: 'info',
       message: 'TradeBot Initialization...'
     })
-    await db.initialize()
     this._exchangeClient = exchangeClient
     this._analyzer = new ExchangeAnalyzer(this, initAlgorithmsCallback)
     this._trader = new ExchangeTrader(this)
