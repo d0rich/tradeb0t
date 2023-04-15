@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "description": "🤖 Core library for trading software with high integration possibilities",
   "main": "dist/index.js",
-  "types": "dist",
+  "types": "dist/index.d.ts",
   "scripts": {
     "lint:js": "eslint --ext \".ts\" --ignore-path .gitignore ./src",
     "lint:prettier": "prettier --check ./src",
