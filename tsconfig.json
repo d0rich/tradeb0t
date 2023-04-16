@@ -7,18 +7,20 @@
     "outDir": "dist",
     "removeComments": false,
     "target": "ES6",
-    "module": "CommonJS",
     "declaration": true,
-    "skipLibCheck": true,
     // Module resolution
     "baseUrl": "./",
-    "esModuleInterop": true,
     "moduleResolution": "node",
-    "paths": {},
 
-    // Source Map
-    "sourceMap": true,
-    "sourceRoot": "/",
+    /* Modules */
+    "module": "commonjs",
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+
+    /* Type Checking */
+    "strict": true,
+    "strictPropertyInitialization": false,
+    "skipLibCheck": true,
 
     // Strict Checks
     "alwaysStrict": true,

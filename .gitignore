@@ -1,9 +1,6 @@
 ### Node template
 # Typescript artifacts
 
-*.d.ts
-*.js
-*.js.map
 !.eslintrc.js
 
 # Logs

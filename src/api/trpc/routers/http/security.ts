@@ -5,13 +5,13 @@ import { ITradeBot } from 'src/bot'
 export default (tradeBot: ITradeBot) => {
   return router({
     list: publicProcedure.query(async () => {
-      return await tradeBot.analyzer.getSecurities()
+      return await tradeBot.analyzer.storage.securities.find()
     }),
     update: publicProcedure.mutation(async () => {
       return await tradeBot.analyzer.updateSecurities()
     }),
     listFollowed: publicProcedure.query(async () => {
-      return await tradeBot.analyzer.getFollowedSecurities()
+      return await tradeBot.analyzer.storage.securities.findAllFollowed()
     }),
     updateFollowed: publicProcedure.mutation(async () => {
       return await tradeBot.analyzer.updateFollowedSecurities()
@@ -23,7 +23,7 @@ export default (tradeBot: ITradeBot) => {
         })
       )
       .mutation(async ({ input }) => {
-        return await tradeBot.analyzer.followSecurity(input.securityTicker)
+        return await tradeBot.analyzer.storage.securities.follow(input.securityTicker)
       }),
     unfollow: publicProcedure
       .input(
@@ -32,7 +32,7 @@ export default (tradeBot: ITradeBot) => {
         })
       )
       .mutation(async ({ input }) => {
-        return await tradeBot.analyzer.unfollowSecurity(input.securityTicker)
+        return await tradeBot.analyzer.storage.securities.unfollow(input.securityTicker)
       })
   })
 }

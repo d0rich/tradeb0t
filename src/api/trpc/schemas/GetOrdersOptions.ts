@@ -9,4 +9,8 @@ export const getOrdersOptions = z.object({
   runId: z.number().int().min(0).optional()
 })
 
-export type GetOrdersOptions = z.infer<typeof getOrdersOptions>
+type ZGetOrdersOptions = z.infer<typeof getOrdersOptions>
+
+// Interface looks better in UML diagrams
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface GetOrdersOptions extends ZGetOrdersOptions {}

@@ -38,7 +38,7 @@ export abstract class AbstractTradeAlgorithm<
   @HandleError()
   protected async fixStart(inputs: InputsType, state: StateType): Promise<AlgorithmRun> {
     const { name, analyzer, logger } = this
-    const algoRun: AlgorithmRun = await analyzer.runAlgorithm(name, inputs, state)
+    const algoRun: AlgorithmRun = await analyzer.storage.algorithmRuns.runOne(name, inputs, state)
     logger.log({
       type: 'info',
       message: `Starting algorithm "${name}"`,
@@ -64,7 +64,7 @@ export abstract class AbstractTradeAlgorithm<
       }
     })
     this.stopData.delete(id)
-    return await analyzer.stopAlgorithmRun(id)
+    return await analyzer.storage.algorithmRuns.stopOne(id)
   }
 
   @HandleError()
@@ -78,7 +78,7 @@ export abstract class AbstractTradeAlgorithm<
         run_id: id
       }
     })
-    return await analyzer.resumeAlgorithmRun(id)
+    return await analyzer.storage.algorithmRuns.resumeOne(id)
   }
 
   @HandleError()
@@ -92,14 +92,14 @@ export abstract class AbstractTradeAlgorithm<
         run_id: id
       }
     })
-    return await analyzer.finishAlgorithmRun(id)
+    return await analyzer.storage.algorithmRuns.finishOne(id)
   }
 
   @HandleError()
   protected async fixError(id: number, error: Error): Promise<AlgorithmRun> {
     const { name, analyzer, logger } = this
     await this.stop(id)
-    const run = await analyzer.errorAlgorithmRun(id, error)
+    const run = await analyzer.storage.algorithmRuns.storeError(id, error)
     logger.log({
       type: 'error',
       message: `Error in algorithm "${name}"`,
@@ -124,13 +124,13 @@ export abstract class AbstractTradeAlgorithm<
         run_id: id
       }
     })
-    return await analyzer.saveAlgorithmRunProgress(id, progress)
+    return await analyzer.storage.algorithmRuns.saveProgress(id, progress)
   }
 
   @HandleError()
   protected async loadProgress(id: number): Promise<AlgorithmRun> {
     const { name, analyzer, logger } = this
-    const algoRun: AlgorithmRun | null = await analyzer.loadAlgorithmRunProgress(id)
+    const algoRun: AlgorithmRun | null = await analyzer.storage.algorithmRuns.loadProgress(id)
     if (!algoRun) throw new Error(`[algo:${id}] Algorithm "${name}" was not found`)
     logger.log({
       type: 'info',
