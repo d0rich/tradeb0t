@@ -1,0 +1,64 @@
+@startuml
+interface IInfoModule<Domain extends DomainTemplate> {
+    +getCurrencies(): Promise<GetCurrencyType<Domain>[]>
+    +getSecurityLastPrice(ticker: string): Promise<number>
+    +getSecurityCurrency(ticker: string): Promise<GetCurrencyType<Domain>>
+    +getSecurityName(ticker: string): Promise<string>
+    +getSecurity(ticker: string, ignoreCache?: boolean): Promise<any>
+    +getSecurityByExchangeId(id: string, ignoreCache?: boolean): Promise<any>
+}
+interface ITradeModule<Domain extends DomainTemplate> {
+    +sell(options: CreateOrderOptions): Promise<GetOrderType<Domain>>
+    +buy(options: CreateOrderOptions): Promise<GetOrderType<Domain>>
+    +marketSell(options: CreateOrderOptions): Promise<GetOrderType<Domain>>
+    +marketBuy(options: CreateOrderOptions): Promise<GetOrderType<Domain>>
+    +sellOrCancel(): Promise<GetOrderType<Domain>>
+    +buyOrCancel(): Promise<GetOrderType<Domain>>
+}
+interface IExchangeConnector<Domain extends DomainTemplate, TExchangeApi> {
+    +api: TExchangeApi
+    +tradeModule: ITradeModule<Domain>
+    +infoModule: IInfoModule<Domain>
+    +domainMapper: IDomainMapper<Domain>
+    +getPortfolio(): Promise<GetSecurityBalanceType<Domain>[]>
+    +getCurrenciesBalance(): Promise<GetCurrencyBalanceType<Domain>[]>
+}
+abstract class AbstractInfoModule<Domain extends DomainTemplate, TExchangeApi> implements IInfoModule {
+    #exchangeClient: IExchangeConnector<Domain, TExchangeApi>
+    +setExchangeClient(exchangeClient: IExchangeConnector<Domain, TExchangeApi>): void
+    +{abstract} getCurrencies(): Promise<GetCurrencyType<Domain>[]>
+    +{abstract} getSecurityLastPrice(ticker: string): Promise<number>
+    +{abstract} getSecurityCurrency(ticker: string): Promise<GetCurrencyType<Domain>>
+    +{abstract} getSecurityName(ticker: string): Promise<string>
+    +{abstract} getSecurity(ticker: string, ignoreCache?: boolean): Promise<any>
+    +{abstract} getSecurityByExchangeId(id: string, ignoreCache?: boolean): Promise<any>
+}
+abstract class AbstractTradeModule<Domain extends DomainTemplate, TExchangeApi> implements ITradeModule {
+    #exchangeClient: IExchangeConnector<Domain, TExchangeApi>
+    +setExchangeClient(exchangeClient: IExchangeConnector<Domain, TExchangeApi>): void
+    +{abstract} sell(__0: CreateOrderOptions): Promise<GetOrderType<Domain>>
+    +{abstract} buy(__0: CreateOrderOptions): Promise<GetOrderType<Domain>>
+    +{abstract} marketSell(__0: CreateOrderOptions): Promise<GetOrderType<Domain>>
+    +{abstract} marketBuy(__0: CreateOrderOptions): Promise<GetOrderType<Domain>>
+    +{abstract} sellOrCancel(): Promise<GetOrderType<Domain>>
+    +{abstract} buyOrCancel(): Promise<GetOrderType<Domain>>
+}
+abstract class AbstractExchangeConnector<Domain extends DomainTemplate, TExchangeApi> implements IExchangeConnector {
+    -_isAccountInitialized: boolean
+    +isAccountInitialized: boolean
+    #isAccountInitialized: boolean
+    +api: TExchangeApi
+    +tradeModule: ITradeModule<Domain>
+    +infoModule: IInfoModule<Domain>
+    +domainMapper: IDomainMapper<Domain>
+    #{abstract} initAccount(): Promise<unknown>
+    +{abstract} getPortfolio(): Promise<GetSecurityBalanceType<Domain>[]>
+    +{abstract} getCurrenciesBalance(): Promise<GetCurrencyBalanceType<Domain>[]>
+}
+IExchangeConnector --> "1" ITradeModule
+IExchangeConnector --> "1" IInfoModule
+AbstractInfoModule --> "1" IExchangeConnector
+AbstractTradeModule --> "1" IExchangeConnector
+AbstractExchangeConnector --> "1" ITradeModule
+AbstractExchangeConnector --> "1" IInfoModule
+@enduml

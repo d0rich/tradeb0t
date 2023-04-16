@@ -290,135 +290,9 @@ class TradeBot<Domain extends DomainTemplate<unknown, unknown, unknown, unknown,
     +auth: AuthService
     -setup(__0: TradeBotSetupOptions<Domain, TExchangeApi>): Promise<void>
 }
-interface ITradeAlgorithm<InputsType, StateType> {
-    +details: Algorithm
-    +name: string
-    +description: string
-    +inputs: InputTypes
-    +main(inputs: InputsType): Promise<AlgorithmRun<InputsType, StateType>>
-    +continue(id: number): Promise<AlgorithmRun<InputsType, StateType>>
-    +stop(id: number): Promise<AlgorithmRun<InputsType, StateType>>
-}
-abstract class AbstractTradeAlgorithm<Domain extends DomainTemplate, TExchangeApi, InputsType, StateType, StopDataType> implements ITradeAlgorithm {
-    #analyzer: IExchangeAnalyzer<Domain, TExchangeApi>
-    #watcher: IExchangeWatcher<Domain>
-    #trader: IExchangeTrader
-    #stopData: Map<number, StopDataType>
-    -logger: LoggerService
-    +details: Algorithm
-    #fixStart(inputs: InputsType, state: StateType): Promise<AlgorithmRun>
-    #fixStop(id: number): Promise<AlgorithmRun>
-    #fixContinue(id: number): Promise<AlgorithmRun>
-    #fixFinish(id: number): Promise<AlgorithmRun>
-    #fixError(id: number, error: Error): Promise<AlgorithmRun>
-    #saveProgress(id: number, progress: StateType): Promise<AlgorithmRun>
-    #loadProgress(id: number): Promise<AlgorithmRun>
-    +{abstract} name: string
-    +{abstract} description: string
-    +{abstract} inputs: InputTypes
-    +{abstract} main(inputs: InputsType): Promise<AlgorithmRun<InputsType, StateType>>
-    +{abstract} continue(id: number): Promise<AlgorithmRun<InputsType, StateType>>
-    +{abstract} stop(id: number): Promise<AlgorithmRun<InputsType, StateType>>
-}
-interface ITradeAlgorithmsEngine {
-    +description: Algorithm[]
-    +runAlgorithm(name: string, inputs: unknown): Promise<AlgorithmRun>
-    +resumeAlgorithms(): Promise<void>
-    +continueAlgorithm(name: string, run_id: number): Promise<AlgorithmRun>
-    +stopAlgorithm(name: string, run_id: number): Promise<AlgorithmRun>
-}
-class TradeAlgorithmsEngine<Domain extends DomainTemplate, TExchangeApi> implements ITradeAlgorithmsEngine {
-    #analyzer: IExchangeAnalyzer<Domain, TExchangeApi>
-    #trader: IExchangeTrader
-    #watcher: IExchangeWatcher<Domain>
-    #tradebot: ITradeBot<Domain, TExchangeApi>
-    #algorithms: ITradeAlgorithm[]
-    +description: Algorithm[]
-    +runAlgorithm(name: string, inputs: unknown): Promise<AlgorithmRun>
-    +resumeAlgorithms(): Promise<void>
-    +continueAlgorithm(name: string, id: number): Promise<AlgorithmRun>
-    +stopAlgorithm(name: string, id: number): Promise<AlgorithmRun>
-}
-interface IExpressAppCarrier {
-    +app: Application
-}
-interface GetOrdersOptions extends ZGetOrdersOptions
-interface ITypedTransformer<TEntity, TDatabase> {
-    +to: (entityValue: TEntity) => TDatabase
-    +from: (databaseValue: TDatabase) => TEntity
-}
-class AlgorithmsRepository extends Repository
-class AlgorithmRunsRepository extends Repository {
-    +runOne(algorithmName: string, inputs: unknown, state?: unknown): Promise<AlgorithmRun>
-    +saveProgress(id: number, state: unknown): Promise<AlgorithmRun>
-    +loadProgress(id: number): Promise<any>
-    +stopOne(id: number): Promise<AlgorithmRun>
-    +resumeOne(id: number): Promise<AlgorithmRun>
-    +finishOne(id: number): Promise<AlgorithmRun>
-    +storeError(id: number, error: Error): Promise<AlgorithmRun>
-    +findManyByAlgorithm(algorithmName: string): Promise<AlgorithmRun[]>
-    +findAllUnfinished(): Promise<AlgorithmRun[]>
-}
-class OrdersRepository extends Repository {
-    +saveOne(order: GetOrderType<CommonDomain>, operation: OperationType, runId?: number): Promise<GetOrderType<CommonDomain>>
-    +search(options: GetOrdersOptions): Promise<GetOrderType<CommonDomain>[]>
-}
-interface IPersistentStorage {
-    +orders: OrdersRepository
-    +algorithms: AlgorithmsRepository
-    +algorithmRuns: AlgorithmRunsRepository
-}
-class PersistentStorage implements IPersistentStorage {
-    +orders: OrdersRepository
-    +algorithms: AlgorithmsRepository
-    +algorithmRuns: AlgorithmRunsRepository
-    -datasource: DataSource
-    -initDatasource(id: string): DataSource
-}
-class SecuritiesRepository extends Repository {
-    +findByTicker(securityTicker: string): Promise<Security>
-    +findByTickers(securityTickers: string[]): Promise<Security[]>
-    +findAllFollowed(): Promise<Security[]>
-    +follow(securityTicker: string): Promise<any>
-    +unfollow(securityTicker: string): Promise<any>
-    +updateAll(securities: Security[]): Promise<void>
-}
-class PortfolioRepository extends Repository {
-    +securities: Repository<SecurityBalance>
-    +currencies: Repository<CurrencyBalance>
-    +findPositions(options?: FindManyOptions<AssetBalance>): Promise<any[]>
-}
-class CurrenciesRepository extends Repository {
-    +findByTicker(currencyTicker: string): Promise<Currency>
-    +updateAll(currencies: Currency[]): Promise<void>
-}
-interface IInMemoryStorage {
-    +securities: SecuritiesRepository
-    +portfolio: PortfolioRepository
-    +currencies: CurrenciesRepository
-}
-class InMemoryStorage implements IInMemoryStorage {
-    +securities: SecuritiesRepository
-    +portfolio: PortfolioRepository
-    +currencies: CurrenciesRepository
-    -datasource: DataSource
-    -initDatasource(): DataSource
-}
-class UnitedStorage implements IPersistentStorage, IInMemoryStorage {
-    +currencies: CurrenciesRepository
-    +portfolio: PortfolioRepository
-    +securities: SecuritiesRepository
-    +orders: OrdersRepository
-    +algorithms: AlgorithmsRepository
-    +algorithmRuns: AlgorithmRunsRepository
-    -_persistent: IPersistentStorage
-    -_memory: IInMemoryStorage
-}
-IExchangeAnalyzer --> "1" ITradeAlgorithmsEngine
 IExchangeAnalyzer --> "1" ITradeBot
 IExchangeAnalyzer --> "1" IExchangeTrader
 IExchangeAnalyzer --> "1" IExchangeWatcher
-ExchangeAnalyzer --> "1" ITradeAlgorithmsEngine
 ExchangeAnalyzer --> "1" ITradeBot
 ExchangeAnalyzer --> "1" IExchangeTrader
 ExchangeAnalyzer --> "1" IExchangeWatcher
@@ -472,10 +346,8 @@ ExchangeWatcher --> "1" IExchangeTrader
 ExchangeWatcher --> "1" IExchangeConnector
 TradeBotProductionInitOptions --> "1" IExchangeConnector
 TradeBotProductionInitOptions --> "1" IExchangeAnalyzer
-TradeBotProductionInitOptions --> "*" ITradeAlgorithm
 TradeBotSetupOptions --> "1" IExchangeConnector
 TradeBotSetupOptions --> "1" IExchangeAnalyzer
-TradeBotSetupOptions --> "*" ITradeAlgorithm
 TradeBot --> "1" IExchangeConnector
 TradeBot --> "1" IExchangeAnalyzer
 TradeBot --> "1" IExchangeTrader
@@ -484,50 +356,4 @@ TradeBot --> "1" ApiService
 TradeBot --> "1" LoggerService
 TradeBot --> "1" AuthService
 TradeBot --> "1" TradeBotSetupOptions
-ITradeAlgorithm --> "1" Algorithm
-ITradeAlgorithm --> "1" AlgorithmRun
-AbstractTradeAlgorithm --> "1" IExchangeAnalyzer
-AbstractTradeAlgorithm --> "1" IExchangeWatcher
-AbstractTradeAlgorithm --> "1" IExchangeTrader
-AbstractTradeAlgorithm --> "1" LoggerService
-AbstractTradeAlgorithm --> "1" Algorithm
-AbstractTradeAlgorithm --> "1" AlgorithmRun
-ITradeAlgorithmsEngine --> "*" Algorithm
-ITradeAlgorithmsEngine --> "1" AlgorithmRun
-TradeAlgorithmsEngine --> "1" IExchangeAnalyzer
-TradeAlgorithmsEngine --> "1" IExchangeTrader
-TradeAlgorithmsEngine --> "1" IExchangeWatcher
-TradeAlgorithmsEngine --> "1" ITradeBot
-TradeAlgorithmsEngine --> "*" ITradeAlgorithm
-TradeAlgorithmsEngine --> "*" Algorithm
-TradeAlgorithmsEngine --> "1" AlgorithmRun
-AlgorithmRunsRepository --> "1" AlgorithmRun
-AlgorithmRunsRepository --> "*" AlgorithmRun
-OrdersRepository --> "1" GetOrdersOptions
-IPersistentStorage --> "1" OrdersRepository
-IPersistentStorage --> "1" AlgorithmsRepository
-IPersistentStorage --> "1" AlgorithmRunsRepository
-PersistentStorage --> "1" OrdersRepository
-PersistentStorage --> "1" AlgorithmsRepository
-PersistentStorage --> "1" AlgorithmRunsRepository
-SecuritiesRepository --> "1" Security
-SecuritiesRepository --> "*" Security
-PortfolioRepository --> "1" SecurityBalance
-PortfolioRepository --> "1" CurrencyBalance
-PortfolioRepository --> "1" AssetBalance
-CurrenciesRepository --> "1" Currency
-IInMemoryStorage --> "1" SecuritiesRepository
-IInMemoryStorage --> "1" PortfolioRepository
-IInMemoryStorage --> "1" CurrenciesRepository
-InMemoryStorage --> "1" SecuritiesRepository
-InMemoryStorage --> "1" PortfolioRepository
-InMemoryStorage --> "1" CurrenciesRepository
-UnitedStorage --> "1" CurrenciesRepository
-UnitedStorage --> "1" PortfolioRepository
-UnitedStorage --> "1" SecuritiesRepository
-UnitedStorage --> "1" OrdersRepository
-UnitedStorage --> "1" AlgorithmsRepository
-UnitedStorage --> "1" AlgorithmRunsRepository
-UnitedStorage --> "1" IPersistentStorage
-UnitedStorage --> "1" IInMemoryStorage
 @enduml
