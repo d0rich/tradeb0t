@@ -36,7 +36,7 @@ export abstract class AbstractExchangeConnector<Domain extends DomainTemplate = 
   readonly infoModule: IInfoModule<Domain>
   readonly domainMapper: IDomainMapper<Domain>
 
-  protected constructor(options: AbstractExchangeConnectorConstructorParams<Domain, TExchangeApi>) {
+  constructor(options: AbstractExchangeConnectorConstructorParams<Domain, TExchangeApi>) {
     options.modules.tradeModule.setExchangeClient(this)
     options.modules.infoModule.setExchangeClient(this)
     options.modules.domainMapper.setExchangeClient(this)
