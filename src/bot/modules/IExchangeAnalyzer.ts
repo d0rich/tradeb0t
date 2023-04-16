@@ -20,18 +20,8 @@ export interface IExchangeAnalyzer<Domain extends DomainTemplate, TExchangeApi> 
   get watcher(): IExchangeWatcher<Domain>
   start(): Promise<void>
   updateCurrencies(): Promise<GetCurrencyType<CommonDomain>[]>
-  getCurrencies(): Promise<GetCurrencyType<CommonDomain>[]>
   updateCurrenciesBalance(): Promise<GetCurrencyBalanceType<CommonDomain>[]>
-  getCurrenciesBalance(): Promise<GetCurrencyBalanceType<CommonDomain>[]>
   updateSecurities(): Promise<GetSecurityType<CommonDomain>[]>
-  getSecurities(): Promise<GetSecurityType<CommonDomain>[]>
-  getSecurity(ticker: string): Promise<GetSecurityType<CommonDomain>>
-  addSecurities(...securities: GetSecurityType<CommonDomain>[]): Promise<GetSecurityType<CommonDomain>[]>
-  getFollowedSecurities(): Promise<GetSecurityType<CommonDomain>[]>
-  followSecurity(securityTicker: string): Promise<GetSecurityType<CommonDomain> | undefined>
-  unfollowSecurity(securityTicker: string): Promise<GetSecurityType<CommonDomain> | undefined>
   updateFollowedSecurities(): Promise<GetSecurityType<CommonDomain>[]>
   updatePortfolio(): Promise<GetPortfolioPositionType<CommonDomain>[]>
-  getPortfolio(): Promise<GetPortfolioPositionType<CommonDomain>[]>
-  clearPortfolio(): Promise<number>
 }

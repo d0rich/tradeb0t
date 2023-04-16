@@ -94,38 +94,34 @@ class PersistentStorage implements IPersistentStorage {
     -datasource: DataSource
     -initDatasource(id: string): DataSource
 }
-class PortfolioRepository {
-    -items: PortfolioPosition[]
-    -securitiesStore: SecuritiesRepository
-    -findPosition(position: PortfolioPosition, searchIn?: PortfolioPosition[]): PortfolioPosition | undefined
-    +setSecuritiesStore(store: SecuritiesRepository): void
-    +portfolio: PortfolioPosition[]
-    +currencies: CurrencyBalance[]
-    +securities: SecurityBalance[]
-    +updatePositions(positions: PortfolioPosition[]): void
-    +updatePositionsAll(positions: PortfolioPosition[]): void
+class SecuritiesRepository extends Repository {
+    +findByTicker(securityTicker: string): Promise<Security | null>
+    +findByTickers(securityTickers: string[]): Promise<Security[]>
+    +findAllFollowed(): Promise<Security[]>
+    +follow(securityTicker: string): Promise<Security>
+    +unfollow(securityTicker: string): Promise<Security>
+    +updateAll(securities: Security[]): Promise<void>
 }
-class SecuritiesRepository {
-    -items: Security[]
-    -followList: string[]
-    -updateJournal: Map<string, Date>
-    -portfolioStore: PortfolioRepository
-    +setPortfolioStore(store: PortfolioRepository): void
-    +securities: Security[]
-    +followedSecurities: Security[]
-    +securitiesWithUpdates: { updatedAt: Date | undefined; name: string; ticker: string; price: number; currencyTicker: string; }[]
-    +follow(securityTicker: string): Security | undefined
-    +unfollow(securityTicker: string): Security | undefined
-    +updateSecurities(securities: Security[]): void
-    +getBalanceOf(securityTicker: string): SecurityBalance | undefined
+class Asset {
+    +ticker: string
+    +name: string
+    +balance: AssetBalance
+    +updatedAt: Date
 }
-class CurrenciesRepository {
-    -items: Currency[]
-    -portfolioStore: PortfolioRepository
-    +setPortfolioStore(store: PortfolioRepository): void
-    +currencies: Currency[]
-    +updateCurrenciesAll(currencies: Currency[]): void
-    +getBalanceOf(currencyTicker: string): CurrencyBalance | undefined
+class AssetBalance {
+    +assetTicker: string
+    +asset: Asset
+    +amount: number
+    +updatedAt: Date
+}
+class PortfolioRepository extends Repository {
+    +securities: Repository<SecurityBalance>
+    +currencies: Repository<CurrencyBalance>
+    +findPositions(options?: FindManyOptions<AssetBalance> | undefined): Promise<(CurrencyBalance | SecurityBalance)[]>
+}
+class CurrenciesRepository extends Repository {
+    +findByTicker(currencyTicker: string): Promise<Currency | null>
+    +updateAll(currencies: Currency[]): Promise<void>
 }
 interface IInMemoryStorage {
     +securities: SecuritiesRepository
@@ -136,6 +132,8 @@ class InMemoryStorage implements IInMemoryStorage {
     +securities: SecuritiesRepository
     +portfolio: PortfolioRepository
     +currencies: CurrenciesRepository
+    -datasource: DataSource
+    -initDatasource(): DataSource
 }
 class UnitedStorage implements IPersistentStorage, IInMemoryStorage {
     +currencies: CurrenciesRepository
@@ -169,26 +167,23 @@ class AlgorithmRun<InputType, StateType> {
     +algorithm: Algorithm
     +orders: Order[]
 }
-interface Currency {
-    +name: string
-    +ticker: string
-    +exchangeTicker: string
+class SecurityBalance extends AssetBalance {
+    +asset: Security
 }
-interface CurrencyBalance {
-    +type: "currency"
-    +currencyTicker: string
-    +amount: number
-}
-interface SecurityBalance {
-    +type: "security"
-    +securityTicker: string
-    +amount: number
-}
-interface Security {
-    +name: string
-    +ticker: string
+class Security extends Asset {
     +price: number
+    +currency: Currency
     +currencyTicker: string
+    +balance: SecurityBalance
+    +isFollowed: boolean
+}
+class CurrencyBalance extends AssetBalance {
+    +asset: Currency
+}
+class Currency extends Asset {
+    +exchangeTicker?: string | undefined
+    +securities: Security[]
+    +balance: CurrencyBalance
 }
 abstract class AbstractDomainMapper<Domain extends DomainTemplate<unknown, unknown, unknown, unknown, unknown>, TExchangeApi> implements IDomainMapper {
     #exchangeClient: IExchangeConnector<Domain, TExchangeApi>
@@ -322,20 +317,10 @@ interface IExchangeAnalyzer<Domain extends DomainTemplate<unknown, unknown, unkn
     +watcher: IExchangeWatcher<Domain>
     +start(): Promise<void>
     +updateCurrencies(): Promise<Currency[]>
-    +getCurrencies(): Promise<Currency[]>
     +updateCurrenciesBalance(): Promise<CurrencyBalance[]>
-    +getCurrenciesBalance(): Promise<CurrencyBalance[]>
     +updateSecurities(): Promise<Security[]>
-    +getSecurities(): Promise<Security[]>
-    +getSecurity(ticker: string): Promise<Security>
-    +addSecurities(securities: Security[]): Promise<Security[]>
-    +getFollowedSecurities(): Promise<Security[]>
-    +followSecurity(securityTicker: string): Promise<Security | undefined>
-    +unfollowSecurity(securityTicker: string): Promise<Security | undefined>
     +updateFollowedSecurities(): Promise<Security[]>
     +updatePortfolio(): Promise<(CurrencyBalance | SecurityBalance)[]>
-    +getPortfolio(): Promise<(CurrencyBalance | SecurityBalance)[]>
-    +clearPortfolio(): Promise<number>
 }
 class ExchangeAnalyzer<Domain extends DomainTemplate<unknown, unknown, unknown, unknown, unknown>, TExchangeApi> implements IExchangeAnalyzer {
     +tradeAlgos: ITradeAlgorithmsEngine
@@ -344,24 +329,14 @@ class ExchangeAnalyzer<Domain extends DomainTemplate<unknown, unknown, unknown, 
     +trader: IExchangeTrader
     +watcher: IExchangeWatcher<Domain>
     +start(): Promise<void>
-    -initUpdaters(): Promise<void>
-    -loadSecurityIfNotExist(ticker: string): Promise<Security | undefined>
-    -loadSecuritiesIfNotExist(tickers: string[]): Promise<Security[]>
     +updateCurrencies(): Promise<Currency[]>
-    +getCurrencies(): Promise<Currency[]>
     +updateCurrenciesBalance(): Promise<CurrencyBalance[]>
-    +getCurrenciesBalance(): Promise<CurrencyBalance[]>
     +updateSecurities(): Promise<Security[]>
-    +getSecurities(): Promise<Security[]>
-    +getSecurity(ticker: string): Promise<Security>
-    +addSecurities(securities: Security[]): Promise<Security[]>
-    +getFollowedSecurities(): Promise<Security[]>
-    +followSecurity(securityTicker: string): Promise<Security | undefined>
-    +unfollowSecurity(securityTicker: string): Promise<Security | undefined>
     +updateFollowedSecurities(): Promise<Security[]>
     +updatePortfolio(): Promise<(CurrencyBalance | SecurityBalance)[]>
-    +getPortfolio(): Promise<(CurrencyBalance | SecurityBalance)[]>
-    +clearPortfolio(): Promise<number>
+    -loadSecurityIfNotExist(ticker: string): Promise<Security | null>
+    -loadSecuritiesIfNotExist(tickers: string[]): Promise<Security[]>
+    -updateSecuritiesList(securitiesToUpdate: Security[]): Promise<Security[]>
 }
 class ExchangeTrader<Domain extends DomainTemplate<unknown, unknown, unknown, unknown, unknown>, TExchangeApi> implements IExchangeTrader {
     -tradebot: ITradeBot<Domain, TExchangeApi>
@@ -458,17 +433,14 @@ IPersistentStorage --> "1" AlgorithmRunsRepository
 PersistentStorage --> "1" OrdersRepository
 PersistentStorage --> "1" AlgorithmsRepository
 PersistentStorage --> "1" AlgorithmRunsRepository
-PortfolioRepository --> "1" SecuritiesRepository
-PortfolioRepository --> "*" CurrencyBalance
-PortfolioRepository --> "*" SecurityBalance
-SecuritiesRepository --> "*" Security
-SecuritiesRepository --> "1" PortfolioRepository
 SecuritiesRepository --> "1" Security
-SecuritiesRepository --> "1" SecurityBalance
-CurrenciesRepository --> "*" Currency
-CurrenciesRepository --> "1" PortfolioRepository
+SecuritiesRepository --> "*" Security
+Asset --> "1" AssetBalance
+AssetBalance --> "1" Asset
+PortfolioRepository --> "1" SecurityBalance
+PortfolioRepository --> "1" CurrencyBalance
+PortfolioRepository --> "1" AssetBalance
 CurrenciesRepository --> "1" Currency
-CurrenciesRepository --> "1" CurrencyBalance
 IInMemoryStorage --> "1" SecuritiesRepository
 IInMemoryStorage --> "1" PortfolioRepository
 IInMemoryStorage --> "1" CurrenciesRepository
@@ -486,6 +458,12 @@ UnitedStorage --> "1" IInMemoryStorage
 Order --> "1" AlgorithmRun
 AlgorithmRun --> "1" Algorithm
 AlgorithmRun --> "*" Order
+SecurityBalance --> "1" Security
+Security --> "1" Currency
+Security --> "1" SecurityBalance
+CurrencyBalance --> "1" Currency
+Currency --> "*" Security
+Currency --> "1" CurrencyBalance
 AbstractDomainMapper --> "1" IExchangeConnector
 AbstractDomainMapper --> "1" Currency
 AbstractDomainMapper --> "1" CurrencyBalance
@@ -535,7 +513,6 @@ IExchangeAnalyzer --> "1" IExchangeWatcher
 IExchangeAnalyzer --> "*" Currency
 IExchangeAnalyzer --> "*" CurrencyBalance
 IExchangeAnalyzer --> "*" Security
-IExchangeAnalyzer --> "1" Security
 IExchangeAnalyzer --> "1" CurrencyBalance
 IExchangeAnalyzer --> "1" SecurityBalance
 ExchangeAnalyzer --> "1" ITradeAlgorithmsEngine
@@ -543,12 +520,12 @@ ExchangeAnalyzer --> "1" UnitedStorage
 ExchangeAnalyzer --> "1" ITradeBot
 ExchangeAnalyzer --> "1" IExchangeTrader
 ExchangeAnalyzer --> "1" IExchangeWatcher
-ExchangeAnalyzer --> "1" Security
-ExchangeAnalyzer --> "*" Security
 ExchangeAnalyzer --> "*" Currency
 ExchangeAnalyzer --> "*" CurrencyBalance
+ExchangeAnalyzer --> "*" Security
 ExchangeAnalyzer --> "1" CurrencyBalance
 ExchangeAnalyzer --> "1" SecurityBalance
+ExchangeAnalyzer --> "1" Security
 ExchangeTrader --> "1" ITradeBot
 ExchangeTrader --> "1" IExchangeWatcher
 ExchangeTrader --> "1" LoggerService

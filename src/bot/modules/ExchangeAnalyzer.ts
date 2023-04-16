@@ -38,11 +38,7 @@ export class ExchangeAnalyzer<Domain extends DomainTemplate, TExchangeApi>
 
   @HandleError()
   async start() {
-    await Promise.all([this.storage.algorithms.save(this.tradeAlgos.description), this.initUpdaters()])
-  }
-
-  @HandleError()
-  private async initUpdaters() {
+    await Promise.all([this.storage.algorithms.save(this.tradeAlgos.description)])
     scheduleJob('updateBalance', '*/1 * * * *', () => {
       this.updateCurrenciesBalance()
     })
@@ -55,12 +51,64 @@ export class ExchangeAnalyzer<Domain extends DomainTemplate, TExchangeApi>
   }
 
   @HandleError()
-  private async loadSecurityIfNotExist(ticker: string): Promise<GetSecurityType<CommonDomain> | undefined> {
+  async updateCurrencies(): Promise<GetCurrencyType<CommonDomain>[]> {
+    const relevantCurrencies = await this.watcher.getCurrencies()
+    await this.storage.currencies.updateAll(relevantCurrencies)
+    return this.storage.currencies.find()
+  }
+
+  @HandleError()
+  async updateCurrenciesBalance(): Promise<GetCurrencyBalanceType<CommonDomain>[]> {
+    const relevantCurrencies = await this.watcher.getCurrenciesBalance()
+    await this.storage.portfolio.currencies.upsert(relevantCurrencies, {
+      conflictPaths: {
+        assetTicker: true
+      }
+    })
+    return this.storage.portfolio.currencies.find()
+  }
+
+  @HandleError()
+  async updateSecurities(): Promise<GetSecurityType<CommonDomain>[]> {
+    const securities: GetSecurityType<CommonDomain>[] = await this.storage.securities.find()
+    return this.updateSecuritiesList(securities)
+  }
+
+  @HandleError()
+  async updateFollowedSecurities(): Promise<GetSecurityType<CommonDomain>[]> {
+    const securitiesToUpdate = await this.storage.securities.findAllFollowed()
+    return this.updateSecuritiesList(securitiesToUpdate)
+  }
+
+  @HandleError()
+  async updatePortfolio(): Promise<GetPortfolioPositionType<CommonDomain>[]> {
     const { watcher } = this
-    const securityInCache = this.storage.securities.securities.find((s) => s.ticker === ticker)
+    const relevantPortfolio = await watcher.getPortfolio()
+    const securities = await Promise.all(relevantPortfolio.map((p) => watcher.getSecurity(p.assetTicker)))
+    const currencies = await watcher.getCurrenciesBalance()
+    await this.storage.securities.updateAll(...securities)
+    await Promise.all([
+      this.storage.portfolio.securities.upsert(relevantPortfolio, {
+        conflictPaths: {
+          assetTicker: true
+        }
+      }),
+      this.storage.portfolio.currencies.upsert(currencies, {
+        conflictPaths: {
+          assetTicker: true
+        }
+      })
+    ])
+    return this.storage.portfolio.findPositions()
+  }
+
+  @HandleError()
+  private async loadSecurityIfNotExist(ticker: string): Promise<GetSecurityType<CommonDomain> | null> {
+    const { watcher } = this
+    const securityInCache = await this.storage.securities.findByTicker(ticker)
     if (!securityInCache) {
-      await this.addSecurities(await watcher.getSecurity(ticker))
-      return this.storage.securities.securities.find((s) => s.ticker === ticker)
+      await this.storage.securities.save(await watcher.getSecurity(ticker))
+      return await this.storage.securities.findByTicker(ticker)
     }
     return securityInCache
   }
@@ -68,133 +116,27 @@ export class ExchangeAnalyzer<Domain extends DomainTemplate, TExchangeApi>
   @HandleError()
   private async loadSecuritiesIfNotExist(tickers: string[]): Promise<GetSecurityType<CommonDomain>[]> {
     const { watcher } = this
-    const securitiesInCache = this.storage.securities.securities.filter((s) => tickers.includes(s.ticker))
+    const securitiesInCache = await this.storage.securities.findByTickers(tickers)
     const securitiesToAdd = await Promise.all(
       tickers.filter((t) => !securitiesInCache.some((s) => s.ticker === t)).map((ticker) => watcher.getSecurity(ticker))
     )
-    return this.addSecurities(...securitiesToAdd)
-  }
-
-  // Currencies
-
-  @HandleError()
-  async updateCurrencies(): Promise<GetCurrencyType<CommonDomain>[]> {
-    const relevantCurrencies = await this.watcher.getCurrencies()
-    this.storage.currencies.updateCurrenciesAll(relevantCurrencies)
-    return this.storage.currencies.currencies
+    await this.storage.securities.upsert(securitiesToAdd, {
+      conflictPaths: {
+        ticker: true
+      }
+    })
+    return await this.storage.securities.find()
   }
 
   @HandleError()
-  async getCurrencies(): Promise<GetCurrencyType<CommonDomain>[]> {
-    return this.storage.currencies.currencies
-  }
-
-  // Currencies Balance
-
-  @HandleError()
-  async updateCurrenciesBalance(): Promise<GetCurrencyBalanceType<CommonDomain>[]> {
-    const { watcher } = this
-    const relevantCurrencies = await watcher.getCurrenciesBalance()
-    this.storage.portfolio.updatePositions(...relevantCurrencies)
-    return this.storage.portfolio.currencies
-  }
-
-  @HandleError()
-  async getCurrenciesBalance(): Promise<GetCurrencyBalanceType<CommonDomain>[]> {
-    return this.storage.portfolio.currencies
-  }
-
-  // Securities
-
-  @HandleError()
-  async updateSecurities(): Promise<GetSecurityType<CommonDomain>[]> {
-    const { watcher } = this
-    const securities: GetSecurityType<CommonDomain>[] = this.storage.securities.securities
-    const securitiesPrices = await Promise.all(
-      securities.map((security): Promise<number> => watcher.getSecurityLastPrice(security.ticker))
+  private async updateSecuritiesList(securitiesToUpdate: GetSecurityType<CommonDomain>[]) {
+    const updatedSecurities = await Promise.all(
+      securitiesToUpdate.map(async (security) => {
+        security.price = await this.watcher.getSecurityLastPrice(security.ticker)
+        return security
+      })
     )
-    this.storage.securities.updateSecurities(
-      ...securities.map((security, index) => ({
-        ...security,
-        price: securitiesPrices[index]
-      }))
-    )
-    return this.storage.securities.securities
-  }
-
-  @HandleError()
-  async getSecurities(): Promise<GetSecurityType<CommonDomain>[]> {
-    return this.storage.securities.securities
-  }
-
-  @HandleError()
-  async getSecurity(ticker: string): Promise<GetSecurityType<CommonDomain>> {
-    const security = this.storage.securities.securities.find((s) => s.ticker === ticker)
-    if (!security) throw new Error(`Security with ticker:${ticker} was not found`)
-    return security
-  }
-
-  @HandleError()
-  async addSecurities(...securities: GetSecurityType<CommonDomain>[]): Promise<GetSecurityType<CommonDomain>[]> {
-    this.storage.securities.updateSecurities(...securities)
-    return this.storage.securities.securities
-  }
-
-  // Followed Securities
-
-  @HandleError()
-  async getFollowedSecurities(): Promise<GetSecurityType<CommonDomain>[]> {
-    return this.storage.securities.followedSecurities
-  }
-
-  @HandleError()
-  async followSecurity(securityTicker: string): Promise<GetSecurityType<CommonDomain> | undefined> {
-    return this.storage.securities.follow(securityTicker)
-  }
-
-  @HandleError()
-  async unfollowSecurity(securityTicker: string): Promise<GetSecurityType<CommonDomain> | undefined> {
-    return this.storage.securities.unfollow(securityTicker)
-  }
-
-  @HandleError()
-  async updateFollowedSecurities(): Promise<GetSecurityType<CommonDomain>[]> {
-    const { watcher } = this
-    const securitiesToUpdate = this.storage.securities.followedSecurities
-    const securitiesPrices = await Promise.all(
-      securitiesToUpdate.map((security) => watcher.getSecurityLastPrice(security.ticker))
-    )
-    this.storage.securities.updateSecurities(
-      ...securitiesToUpdate.map((s, index) => ({
-        ...s,
-        price: securitiesPrices[index]
-      }))
-    )
-    return this.storage.securities.followedSecurities
-  }
-
-  // Portfolio
-
-  @HandleError()
-  async updatePortfolio(): Promise<GetPortfolioPositionType<CommonDomain>[]> {
-    const { watcher } = this
-    const relevantPortfolio = await watcher.getPortfolio()
-    const securities = await Promise.all(relevantPortfolio.map((p) => watcher.getSecurity(p.securityTicker)))
-    const currencies = await watcher.getCurrenciesBalance()
-    await this.addSecurities(...securities)
-    this.storage.portfolio.updatePositionsAll([...relevantPortfolio, ...currencies])
-    return this.storage.portfolio.portfolio
-  }
-
-  @HandleError()
-  async getPortfolio(): Promise<GetPortfolioPositionType<CommonDomain>[]> {
-    return this.storage.portfolio.portfolio
-  }
-
-  @HandleError()
-  async clearPortfolio(): Promise<number> {
-    const deleted = this.storage.portfolio.portfolio.length
-    this.storage.portfolio.updatePositionsAll([])
-    return deleted
+    await this.storage.securities.updateAll(...updatedSecurities)
+    return this.storage.securities.find()
   }
 }

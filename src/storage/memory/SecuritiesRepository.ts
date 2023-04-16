@@ -1,61 +1,44 @@
-import { deepCopy } from '../utils'
-import { PortfolioRepository } from './PortfolioRepository'
 import { Security } from 'src/domain'
+import { Repository, In } from 'typeorm'
 
-export class SecuritiesRepository {
-  private items: Security[] = []
-  private followList: string[] = []
-  private updateJournal: Map<string, Date> = new Map<string, Date>()
-  private portfolioStore: PortfolioRepository
-
-  setPortfolioStore(store: PortfolioRepository) {
-    if (!this.portfolioStore) this.portfolioStore = store
+export class SecuritiesRepository extends Repository<Security> {
+  async findByTicker(securityTicker: string) {
+    const security = await this.findOneBy({ ticker: securityTicker })
+    return security
   }
 
-  get securities() {
-    return deepCopy(this.items)
-  }
-  get followedSecurities() {
-    return this.securities.filter((s) => this.followList.includes(s.ticker))
-  }
-  get securitiesWithUpdates() {
-    return this.securities.map((sec) => ({
-      ...sec,
-      updatedAt: this.updateJournal.get(sec.ticker)
-    }))
+  async findByTickers(securityTickers: string[]) {
+    const security = await this.findBy({ ticker: In(securityTickers) })
+    return security
   }
 
-  follow(securityTicker: string) {
-    if (!this.followList.includes(securityTicker)) this.followList.push(securityTicker)
-    return deepCopy(this.items.find((s) => s.ticker === securityTicker))
-  }
-  unfollow(securityTicker: string) {
-    const index = this.followList.indexOf(securityTicker)
-    if (index !== -1) this.followList.splice(index, 1)
-    return deepCopy(this.items.find((s) => s.ticker === securityTicker))
+  async findAllFollowed() {
+    return this.findBy({ isFollowed: true })
   }
 
-  updateSecurities(...securities: Security[]) {
-    for (const security of deepCopy(securities)) {
-      const foundSecurity = this.items.find((item) => item.ticker === security.ticker)
-      if (!foundSecurity) {
-        this.items.push(deepCopy(security))
-      } else {
-        foundSecurity.price = security.price
-      }
-      this.updateJournal.set(security.ticker, new Date())
+  async follow(securityTicker: string) {
+    const security = await this.findOneBy({ ticker: securityTicker })
+    if (!security) {
+      throw new Error(`Security with ticker ${securityTicker} not found`)
     }
+    security.isFollowed = true
+    return await this.save(security)
   }
 
-  getBalanceOf(securityTicker: string) {
-    const security = this.items.find((s) => s.ticker === securityTicker)
-    if (!security) return
-    return (
-      this.portfolioStore.securities.find((sec) => sec.securityTicker === securityTicker) ?? {
-        securityTicker,
-        type: 'security',
-        amount: 0
+  async unfollow(securityTicker: string) {
+    const security = await this.findOneBy({ ticker: securityTicker })
+    if (!security) {
+      throw new Error(`Security with ticker ${securityTicker} not found`)
+    }
+    security.isFollowed = false
+    return await this.save(security)
+  }
+
+  async updateAll(...securities: Security[]) {
+    await this.upsert(securities, {
+      conflictPaths: {
+        ticker: true
       }
-    )
+    })
   }
 }

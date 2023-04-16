@@ -1,71 +1,19 @@
-import { deepCopy } from '../utils'
-import { SecuritiesRepository } from './SecuritiesRepository'
-import { CurrencyBalance, SecurityBalance, PortfolioPosition } from 'src/domain'
+import { FindManyOptions, EntityManager, Repository } from 'typeorm'
+import { AssetBalance } from 'src/domain/models/memory/AssetBalance'
+import { CurrencyBalance, SecurityBalance } from 'src/domain'
 
-export class PortfolioRepository {
-  // TODO: Create Proxy on updates
-  private items: PortfolioPosition[] = []
-  private securitiesStore: SecuritiesRepository
+export class PortfolioRepository extends Repository<AssetBalance> {
+  readonly securities: Repository<SecurityBalance>
+  readonly currencies: Repository<CurrencyBalance>
 
-  private findPosition(position: PortfolioPosition, searchIn: PortfolioPosition[] = this.items) {
-    return searchIn.find((item) => {
-      if (item.type === 'security' && position.type === 'security') {
-        return item.securityTicker === position.securityTicker
-      }
-      if (item.type === 'currency' && position.type === 'currency') {
-        return item.currencyTicker === position.currencyTicker
-      }
-      return false
-    })
+  constructor(manager: EntityManager) {
+    super(AssetBalance, manager)
+    this.securities = manager.getRepository(SecurityBalance)
+    this.currencies = manager.getRepository(CurrencyBalance)
   }
 
-  setSecuritiesStore(store: SecuritiesRepository) {
-    if (!this.securitiesStore) this.securitiesStore = store
-  }
-
-  get portfolio() {
-    return deepCopy(this.items)
-  }
-  get currencies() {
-    return this.portfolio.filter((item) => item.type === 'currency') as CurrencyBalance[]
-  }
-  get securities() {
-    return this.portfolio.filter((item) => item.type === 'security') as SecurityBalance[]
-  }
-
-  /**
-   * Update amount of existing items, add new items.
-   *
-   * @param positions
-   */
-  updatePositions(...positions: PortfolioPosition[]) {
-    for (const position of deepCopy(positions)) {
-      const foundPosition = this.findPosition(position)
-      if (!foundPosition) {
-        this.items.push(position)
-      } else {
-        foundPosition.amount = position.amount
-      }
-      if (position.type === 'security') {
-        this.securitiesStore.follow(position.securityTicker)
-      }
-    }
-  }
-
-  /**
-   * Update amount of existing items, add new items.
-   *
-   * If some item does not exist in provided positions, it will be deleted from store.
-   *
-   * @param positions
-   */
-  updatePositionsAll(positions: PortfolioPosition[]) {
-    for (const item of this.items) {
-      const foundItem = this.findPosition(item, positions)
-      if (!foundItem) {
-        this.items.splice(this.items.indexOf(item), 1)
-      }
-    }
-    this.updatePositions(...positions)
+  async findPositions(options?: FindManyOptions<AssetBalance>) {
+    const [currencies, securities] = await Promise.all([this.currencies.find(options), this.securities.find(options)])
+    return [...currencies, ...securities]
   }
 }

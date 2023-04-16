@@ -1,5 +1,10 @@
-export interface SecurityBalance {
-  type: 'security'
-  securityTicker: string
-  amount: number
+import { ChildEntity, OneToOne, JoinColumn } from 'typeorm'
+import { AssetBalance } from './AssetBalance'
+import { Security } from './Security'
+
+@ChildEntity()
+export class SecurityBalance extends AssetBalance {
+  @OneToOne(() => Security, (asset) => asset.balance)
+  @JoinColumn({ referencedColumnName: 'assetTicker' })
+  asset: Security
 }
