@@ -1,5 +1,6 @@
 import { StubExchangeState } from "./State"
-import { Currency, CurrencyBalance, Security, SecurityBalance, Order } from 'src/domain'
+import { Currency, CurrencyBalance, Security, SecurityBalance, Order, CreateOrderOptions } from 'src/domain'
+import { faker } from "@faker-js/faker"
 
 export class StubExchangeApi {
   state = new StubExchangeState()
@@ -53,5 +54,46 @@ export class StubExchangeApi {
 
   getSecurity(ticker: string): Promise<Security | null> {
     return this.state.db.manager.findOneBy(Security, { ticker })
+  }
+
+  sell(options: CreateOrderOptions): Promise<Order> {
+    const order = new Order()
+    order.operation = 'limit_sell'
+    order.price = options.price
+    order.lots = options.lots
+    order.securityTicker = options.ticker
+    order.exchangeId = faker.random.alphaNumeric(10)
+    order.status = 'placed'
+    return this.state.db.manager.save(order)
+  }
+  buy(options: CreateOrderOptions): Promise<Order> {
+    const order = new Order()
+    order.operation = 'limit_buy'
+    order.price = options.price
+    order.lots = options.lots
+    order.securityTicker = options.ticker
+    order.exchangeId = faker.random.alphaNumeric(10)
+    order.status = 'placed'
+    return this.state.db.manager.save(order)
+  }
+  marketSell(options: CreateOrderOptions): Promise<Order> {
+    const order = new Order()
+    order.operation = 'market_sell'
+    order.price = options.price
+    order.lots = options.lots
+    order.securityTicker = options.ticker
+    order.exchangeId = faker.random.alphaNumeric(10)
+    order.status = 'placed'
+    return this.state.db.manager.save(order)
+  }
+  marketBuy(options: CreateOrderOptions): Promise<Order> {
+    const order = new Order()
+    order.operation = 'market_buy'
+    order.price = options.price
+    order.lots = options.lots
+    order.securityTicker = options.ticker
+    order.exchangeId = faker.random.alphaNumeric(10)
+    order.status = 'placed'
+    return this.state.db.manager.save(order)
   }
 }

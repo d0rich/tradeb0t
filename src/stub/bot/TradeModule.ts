@@ -2,17 +2,17 @@ import { AbstractTradeModule, CommonDomain, CreateOrderOptions, Order } from 'sr
 import { StubExchangeApi } from '../exchange'
 
 export class TradeModule extends AbstractTradeModule<CommonDomain, StubExchangeApi> {
-  sell({ ticker, lots, price }: CreateOrderOptions): Promise<Order> {
-    throw new Error('Method not implemented.')
+  sell(options: CreateOrderOptions): Promise<Order> {
+    return this.exchangeClient.api.sell(options)
   }
-  buy({ ticker, lots, price }: CreateOrderOptions): Promise<Order> {
-    throw new Error('Method not implemented.')
+  buy(options: CreateOrderOptions): Promise<Order> {
+    return this.exchangeClient.api.buy(options)
   }
-  marketSell({ ticker, lots }: CreateOrderOptions): Promise<Order> {
-    throw new Error('Method not implemented.')
+  marketSell(options: CreateOrderOptions): Promise<Order> {
+    return this.exchangeClient.api.marketSell(options)
   }
-  marketBuy({ ticker, lots }: CreateOrderOptions): Promise<Order> {
-    throw new Error('Method not implemented.')
+  marketBuy(options: CreateOrderOptions): Promise<Order> {
+    return this.exchangeClient.api.marketBuy(options)
   }
   sellOrCancel(): Promise<Order> {
     throw new Error('Method not implemented.')
