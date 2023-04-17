@@ -3,36 +3,43 @@ import { PortfolioRepository } from './PortfolioRepository'
 import { CurrenciesRepository } from './CurrenciesRepository'
 import { IInMemoryStorage } from './IInMemoryStorage'
 import { DataSource } from 'typeorm'
-import { Currency, Security, CurrencyBalance, SecurityBalance } from 'src/domain'
+import { Currency, Security, CurrencyBalance, SecurityBalance, Asset, AssetBalance } from 'src/domain'
 
 export class InMemoryStorage implements IInMemoryStorage {
-  readonly securities: SecuritiesRepository
-  readonly portfolio: PortfolioRepository
-  readonly currencies: CurrenciesRepository
+  isInitialized = false
 
-  private readonly datasource: DataSource
-
-  constructor() {
-    this.datasource = this.initDatasource()
-    this.securities = new SecuritiesRepository(Security, this.datasource.manager)
-    this.currencies = new CurrenciesRepository(Currency, this.datasource.manager)
-    this.portfolio = new PortfolioRepository(this.datasource.manager)
+  get securities() {
+    return this._securities
   }
 
-  private initDatasource() {
-    const datasource = new DataSource({
+  get currencies() {
+    return this._currencies
+  }
+
+  get portfolio() {
+    return this._portfolio
+  }
+
+  private _securities: SecuritiesRepository
+  private _portfolio: PortfolioRepository
+  private _currencies: CurrenciesRepository
+  private datasource: DataSource
+
+  constructor() {
+    this.datasource = new DataSource({
       type: 'better-sqlite3',
       database: ':memory:',
       logging: false,
       synchronize: true,
-      entities: [Currency, Security, CurrencyBalance, SecurityBalance]
+      entities: [Currency, Security, CurrencyBalance, SecurityBalance, Asset, AssetBalance]
     })
-    datasource.initialize()
-    // TODO: remove this hack
-    // Wait for datasource to be initialized
-    while (!datasource.isInitialized) {
-      continue
-    }
-    return datasource
+  }
+
+  async initialize() {
+    await this.datasource.initialize()
+    this._securities = new SecuritiesRepository(Security, this.datasource.manager)
+    this._currencies = new CurrenciesRepository(Currency, this.datasource.manager)
+    this._portfolio = new PortfolioRepository(this.datasource.manager)
+    this.isInitialized = true
   }
 }

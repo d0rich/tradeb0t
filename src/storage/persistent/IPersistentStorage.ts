@@ -6,4 +6,7 @@ export interface IPersistentStorage {
   orders: OrdersRepository
   algorithms: AlgorithmsRepository
   algorithmRuns: AlgorithmRunsRepository
+
+  isInitialized: boolean
+  initialize(): Promise<void>
 }

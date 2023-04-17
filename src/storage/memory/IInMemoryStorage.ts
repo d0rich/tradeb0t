@@ -6,4 +6,7 @@ export interface IInMemoryStorage {
   readonly securities: SecuritiesRepository
   readonly portfolio: PortfolioRepository
   readonly currencies: CurrenciesRepository
+
+  isInitialized: boolean
+  initialize(): Promise<void>
 }

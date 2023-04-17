@@ -6,32 +6,42 @@ import { OrdersRepository } from './OrdersRepository'
 import { IPersistentStorage } from './IPersistentStorage'
 
 export class PersistentStorage implements IPersistentStorage {
-  orders: OrdersRepository
-  algorithms: AlgorithmsRepository
-  algorithmRuns: AlgorithmRunsRepository
-  private readonly datasource: DataSource
+  isInitialized = false
 
-  constructor(id: string) {
-    this.datasource = this.initDatasource(id)
-    this.orders = new OrdersRepository(Order, this.datasource.manager)
-    this.algorithms = new AlgorithmsRepository(AlgorithmRun, this.datasource.manager)
-    this.algorithmRuns = new AlgorithmRunsRepository(AlgorithmRun, this.datasource.manager)
+  get orders() {
+    return this._orders
   }
 
-  private initDatasource(id: string) {
-    const datasource = new DataSource({
+  get algorithms() {
+    return this._algorithms
+  }
+
+  get algorithmRuns() {
+    return this._algorithmRuns
+  }
+
+  private _orders: OrdersRepository
+  private _algorithms: AlgorithmsRepository
+  private _algorithmRuns: AlgorithmRunsRepository
+
+  constructor(private id: string) {
+    this.datasource = new DataSource({
       type: 'better-sqlite3',
-      database: `./storage-${id}.db`,
+      database: `./storage-${this.id}.db`,
       logging: false,
       synchronize: true,
       entities: [Algorithm, AlgorithmRun, Order]
     })
-    datasource.initialize()
-    // TODO: remove this hack
-    // Wait for datasource to be initialized
-    while (!datasource.isInitialized) {
-      continue
-    }
-    return datasource
+
   }
+
+  async initialize() {
+    await this.datasource.initialize()
+    this._orders = new OrdersRepository(Order, this.datasource.manager)
+    this._algorithms = new AlgorithmsRepository(AlgorithmRun, this.datasource.manager)
+    this._algorithmRuns = new AlgorithmRunsRepository(AlgorithmRun, this.datasource.manager)
+    this.isInitialized = true
+  }
+
+  private datasource: DataSource
 }

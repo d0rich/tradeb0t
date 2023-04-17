@@ -16,7 +16,8 @@ export class CurrenciesRepository extends Repository<Currency> {
     await this.upsert(currencies, {
       conflictPaths: {
         ticker: true,
-        exchangeTicker: true
+        // FIXME: it seems exchangeTicker is not unique because of table inheritance
+        // exchangeTicker: true
       }
     })
   }

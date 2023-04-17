@@ -17,10 +17,14 @@ import { ITradeBot } from 'src/bot'
 export class ExchangeAnalyzer<Domain extends DomainTemplate, TExchangeApi>
   implements IExchangeAnalyzer<Domain, TExchangeApi>
 {
-  readonly tradeAlgos: ITradeAlgorithmsEngine
   // FIXME: generate unique id
   readonly storage = new UnitedStorage('id')
   readonly tradebot: ITradeBot<Domain, TExchangeApi>
+
+  get tradeAlgos(): ITradeAlgorithmsEngine {
+    return this._tradeAlgos
+  }
+
   get trader(): IExchangeTrader {
     return this.tradebot.trader
   }
@@ -28,16 +32,21 @@ export class ExchangeAnalyzer<Domain extends DomainTemplate, TExchangeApi>
     return this.tradebot.watcher
   }
 
+  private _tradeAlgos: ITradeAlgorithmsEngine
+  private _initAlgorithmsCallback: (analyzer: IExchangeAnalyzer<Domain, TExchangeApi>) => ITradeAlgorithm[]
+
   constructor(
     tradebot: ITradeBot<Domain, TExchangeApi>,
     initAlgorithmsCallback: (analyzer: IExchangeAnalyzer<Domain, TExchangeApi>) => ITradeAlgorithm[] = () => []
   ) {
     this.tradebot = tradebot
-    this.tradeAlgos = new TradeAlgorithmsEngine<Domain, TExchangeApi>(this, initAlgorithmsCallback)
+    this._initAlgorithmsCallback = initAlgorithmsCallback
   }
 
   @HandleError()
   async start() {
+    await this.storage.initialize()
+    this._tradeAlgos = new TradeAlgorithmsEngine<Domain, TExchangeApi>(this, this._initAlgorithmsCallback)
     await Promise.all([this.storage.algorithms.save(this.tradeAlgos.description)])
     scheduleJob('updateBalance', '*/1 * * * *', () => {
       this.updateCurrenciesBalance()
