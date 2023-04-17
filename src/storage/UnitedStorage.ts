@@ -2,6 +2,8 @@ import { IPersistentStorage, PersistentStorage } from './persistent'
 import { IInMemoryStorage, InMemoryStorage } from './memory'
 
 export class UnitedStorage implements IPersistentStorage, IInMemoryStorage {
+  isInitialized = false
+
   get currencies() {
     return this._memory.currencies
   }
@@ -26,11 +28,16 @@ export class UnitedStorage implements IPersistentStorage, IInMemoryStorage {
     return this._persistent.algorithmRuns
   }
 
-  private readonly _persistent: IPersistentStorage
-  private readonly _memory: IInMemoryStorage
+  private _persistent: IPersistentStorage
+  private _memory: IInMemoryStorage
 
-  constructor(id: string) {
-    this._persistent = new PersistentStorage(id)
+  constructor(private id: string) {
+    this._persistent = new PersistentStorage(this.id)
     this._memory = new InMemoryStorage()
+  }
+
+  async initialize() {
+    await Promise.all([this._persistent.initialize(), this._memory.initialize()])
+    this.isInitialized = true
   }
 }

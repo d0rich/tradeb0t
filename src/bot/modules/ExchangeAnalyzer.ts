@@ -38,6 +38,7 @@ export class ExchangeAnalyzer<Domain extends DomainTemplate, TExchangeApi>
 
   @HandleError()
   async start() {
+    await this.storage.initialize()
     await Promise.all([this.storage.algorithms.save(this.tradeAlgos.description)])
     scheduleJob('updateBalance', '*/1 * * * *', () => {
       this.updateCurrenciesBalance()

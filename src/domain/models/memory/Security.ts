@@ -1,4 +1,4 @@
-import { Entity, Column, ManyToOne, JoinColumn, OneToOne, ChildEntity } from 'typeorm'
+import { Column, ManyToOne, JoinColumn, OneToOne, ChildEntity } from 'typeorm'
 import { onlyPositiveNumbersTransformer } from 'src/storage'
 import { Currency } from './Currency'
 import { Asset } from './Asset'

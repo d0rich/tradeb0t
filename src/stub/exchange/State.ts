@@ -39,10 +39,6 @@ export class StubExchangeState {
     if (currencies.length === 0) {
       await this.fillDatabase(ExchangeDataSource)
     }
-    console.log(await ExchangeDataSource.manager.find(Security, { relations: {
-      currency: true,
-      balance: true
-    }}))
     this.db = ExchangeDataSource
     this.isInitialized = true
   }
