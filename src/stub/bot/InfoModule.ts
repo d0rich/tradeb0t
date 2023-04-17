@@ -3,19 +3,19 @@ import { StubExchangeApi } from '../exchange'
 
 export class InfoModule extends AbstractInfoModule<CommonDomain, StubExchangeApi> {
   getCurrencies(): Promise<Currency[]> {
-    throw new Error('Method not implemented.')
+    return this.exchangeClient.api.getCurrencies()
   }
   getSecurityLastPrice(ticker: string): Promise<number> {
-    throw new Error('Method not implemented.')
+    return this.exchangeClient.api.getSecurityLastPrice(ticker)
   }
   getSecurityCurrency(ticker: string): Promise<Currency> {
-    throw new Error('Method not implemented.')
+    return this.exchangeClient.api.getSecurityCurrency(ticker)
   }
   getSecurityName(ticker: string): Promise<string> {
-    throw new Error('Method not implemented.')
+    return this.exchangeClient.api.getSecurityName(ticker)
   }
   getSecurity(ticker: string, ignoreCache?: boolean | undefined): Promise<Security | null> {
-    throw new Error('Method not implemented.')
+    return this.exchangeClient.api.getSecurity(ticker)
   }
   getSecurityByExchangeId(id: string, ignoreCache?: boolean | undefined): Promise<Security | null> {
     throw new Error('Method not implemented.')
