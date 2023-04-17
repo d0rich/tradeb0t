@@ -1,6 +1,6 @@
-import { StubExchangeState } from "./State"
+import { StubExchangeState } from './State'
 import { Currency, CurrencyBalance, Security, SecurityBalance, Order, CreateOrderOptions } from 'src/domain'
-import { faker } from "@faker-js/faker"
+import { faker } from '@faker-js/faker'
 
 export class StubExchangeApi {
   state = new StubExchangeState()
@@ -37,7 +37,7 @@ export class StubExchangeApi {
       relations: {
         currency: true
       }
-     })
+    })
     if (!security) {
       throw new Error(`Security with ticker ${ticker} not found`)
     }

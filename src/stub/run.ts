@@ -1,6 +1,6 @@
-import { DomainMapper, ExchangeConnector, InfoModule, TradeModule } from "./bot"
-import { runTradeBot } from "src"
-import { StubExchangeApi } from "./exchange"
+import { DomainMapper, ExchangeConnector, InfoModule, TradeModule } from './bot'
+import { runTradeBot } from 'src'
+import { StubExchangeApi } from './exchange'
 
 async function main() {
   const stubApi = new StubExchangeApi()
