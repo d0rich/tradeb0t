@@ -6,9 +6,9 @@ export class ExchangeConnector extends AbstractExchangeConnector<CommonDomain, S
     console.log('Account initialized')
   }
   getPortfolio(): Promise<SecurityBalance[]> {
-    throw new Error('Method not implemented.')
+    return this.api.getPortfolio()
   }
   getCurrenciesBalance(): Promise<CurrencyBalance[]> {
-    throw new Error('Method not implemented.')
+    return this.api.getCurrenciesBalance()
   }
 }
