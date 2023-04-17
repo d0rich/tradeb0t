@@ -1,4 +1,14 @@
-import { Currency, CurrencyBalance, Security, SecurityBalance, Order } from 'src/domain'
+import {
+  Currency,
+  CurrencyBalance,
+  Security,
+  SecurityBalance,
+  Order,
+  Asset,
+  AssetBalance,
+  Algorithm,
+  AlgorithmRun
+} from 'src/domain'
 import { DataSource } from 'typeorm'
 import { faker } from '@faker-js/faker'
 
@@ -9,13 +19,30 @@ export class StubExchangeState {
   async initialize() {
     const ExchangeDataSource = new DataSource({
       type: 'better-sqlite3',
-      database: ':memory:',
+      database: './stub-exchange.db',
       logging: false,
       synchronize: true,
-      entities: [Currency, Security, CurrencyBalance, SecurityBalance, Order]
+      entities: [
+        Currency,
+        Security,
+        CurrencyBalance,
+        SecurityBalance,
+        Order,
+        Asset,
+        AssetBalance,
+        Algorithm,
+        AlgorithmRun
+      ]
     })
-    await ExchangeDataSource.initialize()
+    const currencies = await ExchangeDataSource.manager.find(Currency)
+    if (currencies.length === 0) {
+      await ExchangeDataSource.initialize()
+    }
     await this.fillDatabase(ExchangeDataSource)
+    console.log(await ExchangeDataSource.manager.find(Security, { relations: {
+      currency: true,
+      balance: true
+    }}))
     this.db = ExchangeDataSource
     this.isInitialized = true
   }
@@ -25,26 +52,39 @@ export class StubExchangeState {
       const currency = new Currency()
       currency.name = faker.finance.currencyName()
       currency.ticker = faker.finance.currencyCode()
-      if (Math.random() > 0.5) {
-        currency.balance = new CurrencyBalance()
-        currency.balance.amount = Number(faker.finance.amount(500, 5000, 0))
-      }
       try {
         await ExchangeDataSource.manager.save(currency)
-      } catch {}
+        if (Math.random() > 0.5) {
+          currency.balance = new CurrencyBalance()
+          currency.balance.assetTicker = currency.ticker
+          currency.balance.amount = Number(faker.finance.amount(500, 5000, 0))
+          console.log(currency.balance)
+          await ExchangeDataSource.manager.save(currency.balance)
+        }
+      } catch (err) {
+        console.error(err)
+      }
     }
+
+    const currencies = await ExchangeDataSource.manager.find(Currency)
 
     for (let i = 0; i < 50; i++) {
       const security = new Security()
       security.name = faker.company.name()
       security.ticker = faker.company.bsBuzz().toUpperCase()
-      if (Math.random() > 0.9) {
-        security.balance = new SecurityBalance()
-        security.balance.amount = Number(faker.finance.amount(10, 100, 0))
-      }
+      security.price = Number(faker.finance.amount(10, 100, 0))
+      security.currency = currencies[Math.floor(Math.random() * currencies.length)]
       try {
         await ExchangeDataSource.manager.save(security)
-      } catch {}
+        if (Math.random() > 0.9) {
+          security.balance = new SecurityBalance()
+          security.balance.assetTicker = security.ticker
+          security.balance.amount = Number(faker.finance.amount(10, 100, 0))
+          await ExchangeDataSource.manager.save(security.balance)
+        }
+      } catch (err) {
+        console.error(err)
+      }
     }
   }
 }

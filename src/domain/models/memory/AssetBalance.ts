@@ -9,7 +9,7 @@ export class AssetBalance {
   assetTicker: string
 
   @OneToOne(() => Asset, (asset) => asset.balance)
-  @JoinColumn({ referencedColumnName: 'assetTicker' })
+  @JoinColumn({ name: 'assetTicker' })
   asset: Asset
 
   @Column('integer', { default: 0, transformer: onlyPositiveNumbersTransformer })

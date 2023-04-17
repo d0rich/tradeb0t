@@ -3,7 +3,7 @@ import { PortfolioRepository } from './PortfolioRepository'
 import { CurrenciesRepository } from './CurrenciesRepository'
 import { IInMemoryStorage } from './IInMemoryStorage'
 import { DataSource } from 'typeorm'
-import { Currency, Security, CurrencyBalance, SecurityBalance } from 'src/domain'
+import { Currency, Security, CurrencyBalance, SecurityBalance, Asset, AssetBalance } from 'src/domain'
 
 export class InMemoryStorage implements IInMemoryStorage {
   readonly securities: SecuritiesRepository
@@ -25,7 +25,7 @@ export class InMemoryStorage implements IInMemoryStorage {
       database: ':memory:',
       logging: false,
       synchronize: true,
-      entities: [Currency, Security, CurrencyBalance, SecurityBalance]
+      entities: [Currency, Security, CurrencyBalance, SecurityBalance, Asset, AssetBalance]
     })
     datasource.initialize()
     // TODO: remove this hack

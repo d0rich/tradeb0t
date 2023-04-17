@@ -5,6 +5,6 @@ import { Currency } from './Currency'
 @ChildEntity()
 export class CurrencyBalance extends AssetBalance {
   @OneToOne(() => Currency, (asset) => asset.balance)
-  @JoinColumn({ referencedColumnName: 'assetTicker' })
+  @JoinColumn({ name: 'assetTicker' })
   asset: Currency
 }
