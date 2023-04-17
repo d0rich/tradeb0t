@@ -8,9 +8,21 @@ import { Currency, Security, CurrencyBalance, SecurityBalance, Asset, AssetBalan
 export class InMemoryStorage implements IInMemoryStorage {
   isInitialized = false
 
-  readonly securities: SecuritiesRepository
-  readonly portfolio: PortfolioRepository
-  readonly currencies: CurrenciesRepository
+  get securities() {
+    return this._securities
+  }
+
+  get currencies() {
+    return this._currencies
+  }
+
+  get portfolio() {
+    return this._portfolio
+  }
+
+  private _securities: SecuritiesRepository
+  private _portfolio: PortfolioRepository
+  private _currencies: CurrenciesRepository
   private datasource: DataSource
 
   constructor() {
@@ -21,13 +33,13 @@ export class InMemoryStorage implements IInMemoryStorage {
       synchronize: true,
       entities: [Currency, Security, CurrencyBalance, SecurityBalance, Asset, AssetBalance]
     })
-    this.securities = new SecuritiesRepository(Security, this.datasource.manager)
-    this.currencies = new CurrenciesRepository(Currency, this.datasource.manager)
-    this.portfolio = new PortfolioRepository(this.datasource.manager)
   }
 
   async initialize() {
     await this.datasource.initialize()
+    this._securities = new SecuritiesRepository(Security, this.datasource.manager)
+    this._currencies = new CurrenciesRepository(Currency, this.datasource.manager)
+    this._portfolio = new PortfolioRepository(this.datasource.manager)
     this.isInitialized = true
   }
 }

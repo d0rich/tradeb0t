@@ -8,9 +8,21 @@ import { IPersistentStorage } from './IPersistentStorage'
 export class PersistentStorage implements IPersistentStorage {
   isInitialized = false
 
-  readonly orders: OrdersRepository
-  readonly algorithms: AlgorithmsRepository
-  readonly algorithmRuns: AlgorithmRunsRepository
+  get orders() {
+    return this._orders
+  }
+
+  get algorithms() {
+    return this._algorithms
+  }
+
+  get algorithmRuns() {
+    return this._algorithmRuns
+  }
+
+  private _orders: OrdersRepository
+  private _algorithms: AlgorithmsRepository
+  private _algorithmRuns: AlgorithmRunsRepository
 
   constructor(private id: string) {
     this.datasource = new DataSource({
@@ -20,13 +32,14 @@ export class PersistentStorage implements IPersistentStorage {
       synchronize: true,
       entities: [Algorithm, AlgorithmRun, Order]
     })
-    this.orders = new OrdersRepository(Order, this.datasource.manager)
-    this.algorithms = new AlgorithmsRepository(AlgorithmRun, this.datasource.manager)
-    this.algorithmRuns = new AlgorithmRunsRepository(AlgorithmRun, this.datasource.manager)
+
   }
 
   async initialize() {
     await this.datasource.initialize()
+    this._orders = new OrdersRepository(Order, this.datasource.manager)
+    this._algorithms = new AlgorithmsRepository(AlgorithmRun, this.datasource.manager)
+    this._algorithmRuns = new AlgorithmRunsRepository(AlgorithmRun, this.datasource.manager)
     this.isInitialized = true
   }
 
