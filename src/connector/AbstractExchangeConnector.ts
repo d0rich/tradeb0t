@@ -47,7 +47,7 @@ export abstract class AbstractExchangeConnector<Domain extends DomainTemplate = 
     this.initAccount()
   }
 
-  protected abstract initAccount(): Promise<unknown>
+  protected abstract initAccount(): Promise<void> | void
 
   abstract getPortfolio(): Promise<GetSecurityBalanceType<Domain>[]>
 

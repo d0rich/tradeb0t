@@ -1,6 +1,7 @@
 import { AbstractInfoModule, CommonDomain, Currency, Security } from 'src'
+import { StubExchangeApi } from '../exchange'
 
-export class InfoModule extends AbstractInfoModule<CommonDomain> {
+export class InfoModule extends AbstractInfoModule<CommonDomain, StubExchangeApi> {
   getCurrencies(): Promise<Currency[]> {
     throw new Error('Method not implemented.')
   }

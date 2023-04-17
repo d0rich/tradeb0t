@@ -8,8 +8,9 @@ import {
   Security,
   SecurityBalance
 } from 'src'
+import { StubExchangeApi } from '../exchange'
 
-export class DomainMapper extends AbstractDomainMapper<CommonDomain> {
+export class DomainMapper extends AbstractDomainMapper<CommonDomain, StubExchangeApi> {
   async currency(currency: Currency): Promise<Currency> {
     return currency
   }

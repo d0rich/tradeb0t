@@ -1,6 +1,7 @@
 import { AbstractTradeModule, CommonDomain, CreateOrderOptions, Order } from 'src'
+import { StubExchangeApi } from '../exchange'
 
-export class TradeModule extends AbstractTradeModule<CommonDomain> {
+export class TradeModule extends AbstractTradeModule<CommonDomain, StubExchangeApi> {
   sell({ ticker, lots, price }: CreateOrderOptions): Promise<Order> {
     throw new Error('Method not implemented.')
   }
