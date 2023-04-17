@@ -1,18 +1,26 @@
 import { Currency, CurrencyBalance, Security, SecurityBalance, Order } from 'src/domain'
 import { DataSource } from 'typeorm'
-import {faker} from '@faker-js/faker'
+import { faker } from '@faker-js/faker'
 
-const ExchangeDataSource = new DataSource({
-  type: 'better-sqlite3',
-  database: ':memory:',
-  logging: false,
-  synchronize: true,
-  entities: [Currency, Security, CurrencyBalance, SecurityBalance, Order]
-})
+export class StubExchangeState {
+  db: DataSource
+  isInitialized = false
 
-ExchangeDataSource
-  .initialize()
-  .then(async () => {
+  async initialize() {
+    const ExchangeDataSource = new DataSource({
+      type: 'better-sqlite3',
+      database: ':memory:',
+      logging: false,
+      synchronize: true,
+      entities: [Currency, Security, CurrencyBalance, SecurityBalance, Order]
+    })
+    await ExchangeDataSource.initialize()
+    await this.fillDatabase(ExchangeDataSource)
+    this.db = ExchangeDataSource
+    this.isInitialized = true
+  }
+
+  private async fillDatabase(ExchangeDataSource: DataSource) {
     for (let i = 0; i < 10; i++) {
       const currency = new Currency()
       currency.name = faker.finance.currencyName()
@@ -38,10 +46,5 @@ ExchangeDataSource
         await ExchangeDataSource.manager.save(security)
       } catch {}
     }
-  })
-
-while (!ExchangeDataSource.isInitialized) {
-  continue
+  }
 }
-
-export { ExchangeDataSource }
