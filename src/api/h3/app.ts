@@ -42,7 +42,10 @@ export function initH3(tradeBot: ITradeBot) {
   app.use({
     match: (url) => url.startsWith('/api/trpc'),
     handler: eventHandler(async (event) => {
-      if (!tradeBot.auth.authByRequest(event.node.req)) {
+      if (tradeBot.auth.authByRequest(event.node.req)) {
+        return
+      }
+      else {
         tradeBot.logger.log(
           {
             type: 'warning',
@@ -51,7 +54,7 @@ export function initH3(tradeBot: ITradeBot) {
           },
           { internal: true }
         )
-        createError({
+        return createError({
           statusCode: 401,
           message: 'Error: Not Authorized'
         })
