@@ -1,17 +1,18 @@
 import { Express } from 'express'
+import { App, toNodeListener } from 'h3'
 import { networkInterfaces } from 'os'
 import http from 'http'
 import ws, { WebSocketServer } from 'ws'
 import colors from 'colors/safe'
 import { ITradeBot } from '../ITradeBot'
-import { initExpress, registerExpressRoutes, registerWSSHandler } from 'src/api'
+import { initExpress, registerH3Routes, registerWSSHandler, initH3 } from 'src/api'
 import { useConfig } from '../../config'
 import { HandleError } from '../../decorators'
 import { StubDomain } from 'src/domain'
 
 export class ApiService {
   private readonly tradeBot: ITradeBot<StubDomain, unknown>
-  private express: Express
+  private h3: App
   private wss: WebSocketServer
   private http: http.Server
 
@@ -23,12 +24,12 @@ export class ApiService {
   @HandleError()
   private async configureServers() {
     const config = useConfig()
-    this.express = initExpress(this.tradeBot)
-    registerExpressRoutes({
+    this.h3 = initH3(this.tradeBot)
+    registerH3Routes({
       tradeBot: this.tradeBot,
-      express: this.express
+      h3App: this.h3
     })
-    this.http = http.createServer(this.express)
+    this.http = http.createServer(toNodeListener(this.h3))
     this.wss = new ws.Server({
       server: this.http
     })

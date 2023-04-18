@@ -1,5 +1,5 @@
 import { ITradeBot } from 'src/bot'
-import { createApp, eventHandler, getQuery, readBody, getMethod, createError } from 'h3'
+import { createApp, eventHandler, getMethod, createError } from 'h3'
 import { getRequestMeta } from './utils'
 
 export function initH3(tradeBot: ITradeBot) {
@@ -54,4 +54,6 @@ export function initH3(tradeBot: ITradeBot) {
     })
   })
 
+
+  return app
 }
