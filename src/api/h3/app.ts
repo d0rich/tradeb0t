@@ -1,5 +1,5 @@
 import { ITradeBot } from 'src/bot'
-import { createApp, eventHandler, getMethod, createError } from 'h3'
+import { createApp, eventHandler, getMethod, createError, createRouter } from 'h3'
 import { getRequestMeta } from './utils'
 
 export function initH3(tradeBot: ITradeBot) {
@@ -8,20 +8,22 @@ export function initH3(tradeBot: ITradeBot) {
   // Log all requests
   app.use({
     match: () => true,
-    handler: eventHandler((event) => {
+    handler: eventHandler(async (event) => {
       tradeBot.logger.log(
         {
           type: 'info',
           message: `Incoming HTTP request: ${getMethod(event)} ${event.path}`,
-          attachment: getRequestMeta(event)
+          attachment: await getRequestMeta(event)
         },
         { internal: true }
       )
     })
   })
 
+  const apiRouter = createRouter()
+
   // Authorizations
-  app.use(
+  apiRouter.get(
     '/api/auth/check',
     eventHandler((event) => {
       if (tradeBot.auth.authByRequest(event.node.req)) {
@@ -39,13 +41,13 @@ export function initH3(tradeBot: ITradeBot) {
 
   app.use({
     match: (url) => url.startsWith('/api/trpc'),
-    handler: eventHandler((event) => {
+    handler: eventHandler(async (event) => {
       if (!tradeBot.auth.authByRequest(event.node.req)) {
         tradeBot.logger.log(
           {
             type: 'warning',
             message: `Unauthorized HTTP request: ${getMethod(event)} ${event.path}`,
-            attachment: getRequestMeta(event)
+            attachment: await getRequestMeta(event)
           },
           { internal: true }
         )
@@ -56,6 +58,8 @@ export function initH3(tradeBot: ITradeBot) {
       }
     })
   })
+
+  app.use(apiRouter)
 
   return app
 }

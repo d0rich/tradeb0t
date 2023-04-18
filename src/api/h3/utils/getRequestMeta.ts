@@ -1,9 +1,9 @@
-import { H3Event, getQuery, readBody } from 'h3'
+import { H3Event, getQuery, readBody, getMethod } from 'h3'
 
-export function getRequestMeta(event: H3Event) {
+export async function getRequestMeta(event: H3Event) {
   return {
     remote: event.node.req.socket.remoteAddress,
     params: getQuery(event),
-    body: readBody(event)
+    body: getMethod(event) === 'POST' ? await readBody(event) : undefined
   }
 }
