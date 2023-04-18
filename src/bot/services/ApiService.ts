@@ -24,7 +24,7 @@ export class ApiService {
   private async configureServers() {
     const config = useConfig()
     this.h3 = initH3(this.tradeBot)
-    registerH3Routes({
+    await registerH3Routes({
       tradeBot: this.tradeBot,
       h3App: this.h3
     })
