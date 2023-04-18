@@ -45,14 +45,13 @@ export const registerH3Routes = async ({ tradeBot, h3App }: { tradeBot: ITradeBo
   )
   if (process.env.NODE_ENV === 'development') {
     h3App.use(
-      '/api/trpc-playground',
+      '/trpc-playground',
       await h3Handler({
         trpcApiEndpoint: '/api/trpc',
-        playgroundEndpoint: '/api/trpc-playground',
+        playgroundEndpoint: '/trpc-playground',
         router: router
       })
     )
-    console.info('TRPC Playground is available at /api/trpc-playground')
   }
 }
 
