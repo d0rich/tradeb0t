@@ -32,7 +32,6 @@ export class PersistentStorage implements IPersistentStorage {
       synchronize: true,
       entities: [Algorithm, AlgorithmRun, Order]
     })
-
   }
 
   async initialize() {

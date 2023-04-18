@@ -1,4 +1,4 @@
-import { H3Event, getQuery, readBody, getRequestHost } from "h3";
+import { H3Event, getQuery, readBody } from 'h3'
 
 export function getRequestMeta(event: H3Event) {
   return {

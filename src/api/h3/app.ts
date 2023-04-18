@@ -21,18 +21,21 @@ export function initH3(tradeBot: ITradeBot) {
   })
 
   // Authorizations
-  app.use('/api/auth/check', eventHandler((event) => {
-    if (tradeBot.auth.authByRequest(event.node.req)) {
-      return {
-        status: 'Authorized',
-        auth: true
+  app.use(
+    '/api/auth/check',
+    eventHandler((event) => {
+      if (tradeBot.auth.authByRequest(event.node.req)) {
+        return {
+          status: 'Authorized',
+          auth: true
+        }
       }
-    }
-    return {
-      status: 'Not Authorized',
-      auth: false
-    }
-  }))
+      return {
+        status: 'Not Authorized',
+        auth: false
+      }
+    })
+  )
 
   app.use({
     match: (url) => url.startsWith('/api/trpc'),
@@ -53,7 +56,6 @@ export function initH3(tradeBot: ITradeBot) {
       }
     })
   })
-
 
   return app
 }
