@@ -1,5 +1,6 @@
 import { ITradeBot } from 'src/bot'
-import { createApp, eventHandler, getQuery, readBody, getMethod, createRouter, createError } from 'h3'
+import { createApp, eventHandler, getQuery, readBody, getMethod, createError } from 'h3'
+import { getRequestMeta } from './utils'
 
 export function initH3(tradeBot: ITradeBot) {
   const app = createApp()
@@ -12,11 +13,7 @@ export function initH3(tradeBot: ITradeBot) {
         {
           type: 'info',
           message: `Incoming HTTP request: ${getMethod(event)} ${event.path}`,
-          attachment: {
-            remote: event.node.req.socket.remoteAddress,
-            params: getQuery(event),
-            body: readBody(event)
-          }
+          attachment: getRequestMeta(event)
         },
         { internal: true }
       )
@@ -45,11 +42,7 @@ export function initH3(tradeBot: ITradeBot) {
           {
             type: 'warning',
             message: `Unauthorized HTTP request: ${getMethod(event)} ${event.path}`,
-            attachment: {
-              remote: event.node.req.socket.remoteAddress,
-              params: getQuery(event),
-              body: readBody(event)
-            }
+            attachment: getRequestMeta(event)
           },
           { internal: true }
         )
