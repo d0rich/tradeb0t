@@ -1,6 +1,4 @@
-import { createExpressMiddleware } from '@trpc/server/adapters/express'
 import { createHTTPHandler } from '@trpc/server/adapters/standalone'
-import { Express } from 'express'
 import { ITradeBot } from 'src/bot'
 import { App, fromNodeMiddleware } from 'h3'
 import { createContext, router } from './trpc'
@@ -18,16 +16,6 @@ const initHTTPRouter = (tradeBot: ITradeBot) => {
     portfolio: initPortfolioRouter(tradeBot),
     orders: initOrderRouter(tradeBot)
   })
-}
-
-export const registerExpressRoutes = ({ tradeBot, express }: { tradeBot: ITradeBot; express: Express }) => {
-  express.use(
-    '/api/trpc',
-    createExpressMiddleware({
-      router: initHTTPRouter(tradeBot),
-      createContext
-    })
-  )
 }
 
 export const registerH3Routes = async ({ tradeBot, h3App }: { tradeBot: ITradeBot; h3App: App }) => {
