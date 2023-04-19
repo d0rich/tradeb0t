@@ -1,15 +1,27 @@
-name: Publish Package
+name: Test & Publish Package
 
 on:
   push:
-    branches: [master]
   workflow_dispatch:
 
 jobs:
+  test:
+    name: Test
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run build
+
   publish-npm:
     name: Publish to NPM
+    needs: [test]
     runs-on: ubuntu-20.04
-    if: github.repository_owner == 'd0rich'
+    if: github.ref == 'refs/heads/master'
     outputs:
       version: ${{ steps.publish.outputs.version }}
       type: ${{ steps.publish.outputs.type }}
