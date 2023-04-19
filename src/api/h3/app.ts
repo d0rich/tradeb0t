@@ -8,6 +8,7 @@ export function initH3(tradeBot: ITradeBot) {
   // Log all requests
   app.use({
     match: (url) => {
+      // This middleware breaks the playground, so we need to exclude it
       return !url.startsWith('/trpc-playground')
     },
     handler: eventHandler(async (event) => {
