@@ -44,8 +44,7 @@ export function initH3(tradeBot: ITradeBot) {
     handler: eventHandler(async (event) => {
       if (tradeBot.auth.authByRequest(event.node.req)) {
         return
-      }
-      else {
+      } else {
         tradeBot.logger.log(
           {
             type: 'warning',
