@@ -1,6 +1,6 @@
-import { createExpressMiddleware } from '@trpc/server/adapters/express'
-import { Express } from 'express'
+import { createHTTPHandler } from '@trpc/server/adapters/standalone'
 import { ITradeBot } from 'src/bot'
+import { App, fromNodeMiddleware } from 'h3'
 import { createContext, router } from './trpc'
 import initAlgorithmRouter from './algorithm'
 import initSecurityRouter from './security'
@@ -18,14 +18,29 @@ const initHTTPRouter = (tradeBot: ITradeBot) => {
   })
 }
 
-export const registerExpressRoutes = ({ tradeBot, express }: { tradeBot: ITradeBot; express: Express }) => {
-  express.use(
+export const registerH3Routes = async ({ tradeBot, h3App }: { tradeBot: ITradeBot; h3App: App }) => {
+  const router = initHTTPRouter(tradeBot)
+
+  h3App.use(
     '/api/trpc',
-    createExpressMiddleware({
-      router: initHTTPRouter(tradeBot),
-      createContext
-    })
+    fromNodeMiddleware(
+      createHTTPHandler({
+        router: router,
+        createContext
+      })
+    )
   )
+  if (process.env.NODE_ENV === 'development') {
+    const { h3Handler } = await import('trpc-playground/handlers/h3')
+    h3App.use(
+      '/trpc-playground',
+      await h3Handler({
+        trpcApiEndpoint: '/api/trpc',
+        playgroundEndpoint: '/trpc-playground',
+        router: router
+      })
+    )
+  }
 }
 
 export type HTTPRouter = ReturnType<typeof initHTTPRouter>
