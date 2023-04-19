@@ -9,6 +9,7 @@ import {
 import { ApiService, AuthService, LoggerService } from './services'
 import { IExchangeConnector } from 'src/connector'
 import { ITradeAlgorithm } from 'src/algorithms'
+import { HandleError } from 'src/decorators'
 import { globalStore } from '../global/store'
 import { DomainTemplate, StubDomain } from '../domain'
 import { ITradeBot } from './ITradeBot'
@@ -76,6 +77,7 @@ export class TradeBot<Domain extends DomainTemplate, TExchangeApi> implements IT
     }
   }
 
+  @HandleError()
   private async setup({
     exchangeClient,
     botToken,
@@ -88,6 +90,7 @@ export class TradeBot<Domain extends DomainTemplate, TExchangeApi> implements IT
       message: 'TradeBot Initialization...'
     })
     this._exchangeClient = exchangeClient
+    await this._exchangeClient.initAccount()
     this._analyzer = new ExchangeAnalyzer(this, initAlgorithmsCallback)
     this._trader = new ExchangeTrader(this)
     this._watcher = new ExchangeWatcher(this)
