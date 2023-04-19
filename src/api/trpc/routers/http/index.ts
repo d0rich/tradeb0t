@@ -1,6 +1,5 @@
 import { createExpressMiddleware } from '@trpc/server/adapters/express'
 import { createHTTPHandler } from '@trpc/server/adapters/standalone'
-import { h3Handler } from 'trpc-playground/handlers/h3'
 import { Express } from 'express'
 import { ITradeBot } from 'src/bot'
 import { App, fromNodeMiddleware } from 'h3'
@@ -44,6 +43,7 @@ export const registerH3Routes = async ({ tradeBot, h3App }: { tradeBot: ITradeBo
     )
   )
   if (process.env.NODE_ENV === 'development') {
+    const { h3Handler } = await import('trpc-playground/handlers/h3')
     // FIXME: types for playground are broken
     h3App.use(
       '/trpc-playground',
