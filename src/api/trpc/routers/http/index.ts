@@ -44,6 +44,7 @@ export const registerH3Routes = async ({ tradeBot, h3App }: { tradeBot: ITradeBo
     )
   )
   if (process.env.NODE_ENV === 'development') {
+    // FIXME: types for playground are broken
     h3App.use(
       '/trpc-playground',
       await h3Handler({
