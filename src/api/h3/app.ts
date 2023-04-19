@@ -7,7 +7,9 @@ export function initH3(tradeBot: ITradeBot) {
 
   // Log all requests
   app.use({
-    match: () => true,
+    match: (url) => {
+      return !url.startsWith('/trpc-playground')
+    },
     handler: eventHandler(async (event) => {
       tradeBot.logger.log(
         {
