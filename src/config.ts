@@ -1,6 +1,6 @@
 import 'dotenv/config'
-import merge from 'deepmerge'
 import { DeepPartial } from 'typeorm'
+import {defu} from 'defu'
 
 export type ConfigOpts<TExchange = unknown> = {
   exchange: TExchange
@@ -32,18 +32,13 @@ const defaultConfig: ConfigOpts = {
   }
 }
 
+const globalState = {
+  config: defaultConfig
+}
+
 export const useConfig = <TExchange = unknown>(config: DeepPartial<ConfigOpts<TExchange>> | null = null) => {
   if (config) {
-    const keys = Object.keys(config) as (keyof ConfigOpts)[]
-    for (const prop of keys) {
-      // FIXME: find way to avoid any
-      defaultConfig[prop] = merge(
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        defaultConfig[prop] as any,
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        config[prop] as any
-      )
-    }
+    globalState.config = defu(config, globalState.config)
   }
-  return defaultConfig
+  return globalState.config
 }
