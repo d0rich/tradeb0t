@@ -1,4 +1,3 @@
-import { HandleError } from '../decorators'
 import { DomainTemplate, AlgorithmRun, Algorithm, InputTypes } from 'src/domain'
 import { ITradeAlgorithm } from './ITradeAlgorithm'
 import { IExchangeWatcher, IExchangeAnalyzer, LoggerService, IExchangeTrader } from 'src/bot'
@@ -35,7 +34,6 @@ export abstract class AbstractTradeAlgorithm<
     this.analyzer = analyzer
   }
 
-  @HandleError()
   protected async fixStart(inputs: InputsType, state: StateType): Promise<AlgorithmRun> {
     const { name, analyzer, logger } = this
     const algoRun: AlgorithmRun = await analyzer.storage.algorithmRuns.runOne(name, inputs, state)
@@ -52,7 +50,6 @@ export abstract class AbstractTradeAlgorithm<
     return algoRun
   }
 
-  @HandleError()
   protected async fixStop(id: number): Promise<AlgorithmRun> {
     const { name, analyzer, logger } = this
     logger.log({
@@ -67,7 +64,6 @@ export abstract class AbstractTradeAlgorithm<
     return await analyzer.storage.algorithmRuns.stopOne(id)
   }
 
-  @HandleError()
   protected async fixContinue(id: number): Promise<AlgorithmRun> {
     const { name, analyzer, logger } = this
     logger.log({
@@ -81,7 +77,6 @@ export abstract class AbstractTradeAlgorithm<
     return await analyzer.storage.algorithmRuns.resumeOne(id)
   }
 
-  @HandleError()
   protected async fixFinish(id: number): Promise<AlgorithmRun> {
     const { name, analyzer, logger } = this
     logger.log({
@@ -95,7 +90,6 @@ export abstract class AbstractTradeAlgorithm<
     return await analyzer.storage.algorithmRuns.finishOne(id)
   }
 
-  @HandleError()
   protected async fixError(id: number, error: Error): Promise<AlgorithmRun> {
     const { name, analyzer, logger } = this
     await this.stop(id)
@@ -112,7 +106,6 @@ export abstract class AbstractTradeAlgorithm<
     return run
   }
 
-  @HandleError()
   protected async saveProgress(id: number, progress: StateType): Promise<AlgorithmRun> {
     const { name, analyzer, logger } = this
     logger.log({
@@ -127,7 +120,6 @@ export abstract class AbstractTradeAlgorithm<
     return await analyzer.storage.algorithmRuns.saveProgress(id, progress)
   }
 
-  @HandleError()
   protected async loadProgress(id: number): Promise<AlgorithmRun> {
     const { name, analyzer, logger } = this
     const algoRun: AlgorithmRun | null = await analyzer.storage.algorithmRuns.loadProgress(id)

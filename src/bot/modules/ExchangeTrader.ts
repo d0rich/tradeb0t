@@ -1,6 +1,5 @@
 import { Job, JobCallback, scheduleJob } from 'node-schedule'
 import { LoggerService } from '../services'
-import { HandleError } from '../../decorators'
 import { IExchangeTrader } from './IExchangeTrader'
 import { IExchangeWatcher } from './IExchangeWatcher'
 import { IExchangeConnector } from 'src/connector'
@@ -38,7 +37,6 @@ export class ExchangeTrader<Domain extends DomainTemplate, TExchangeApi> impleme
     })
   }
 
-  @HandleError()
   async sendOrder(orderDetails: CreateOrderOptions, algorithm_name?: string, run_id?: number): Promise<OrderStatus> {
     const { watcher } = this
     this.logger.log({
