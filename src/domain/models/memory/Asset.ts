@@ -1,5 +1,6 @@
 import { Entity, Column, PrimaryColumn, TableInheritance, OneToOne, UpdateDateColumn } from 'typeorm'
 import { AssetBalance } from './AssetBalance'
+import { dateTransformer } from 'src/storage'
 
 @Entity()
 @TableInheritance({ column: { type: 'text', name: 'type' } })
@@ -13,6 +14,9 @@ export class Asset {
   @OneToOne(() => AssetBalance, (assetBalance) => assetBalance.asset)
   balance: AssetBalance
 
-  @UpdateDateColumn()
+  @UpdateDateColumn({
+    type: 'int',
+    transformer: dateTransformer
+  })
   updatedAt: Date
 }

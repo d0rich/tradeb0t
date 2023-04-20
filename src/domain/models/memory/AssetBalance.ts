@@ -1,6 +1,6 @@
 import { Entity, Column, PrimaryColumn, TableInheritance, OneToOne, UpdateDateColumn, JoinColumn } from 'typeorm'
 import { Asset } from './Asset'
-import { onlyPositiveNumbersTransformer } from 'src/storage'
+import { onlyPositiveNumbersTransformer, dateTransformer } from 'src/storage'
 
 @Entity()
 @TableInheritance({ column: { type: 'text', name: 'type' } })
@@ -15,6 +15,9 @@ export class AssetBalance {
   @Column('integer', { default: 0, transformer: onlyPositiveNumbersTransformer })
   amount: number
 
-  @UpdateDateColumn()
+  @UpdateDateColumn({
+    type: 'int',
+    transformer: dateTransformer
+  })
   updatedAt: Date
 }
