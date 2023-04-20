@@ -6,10 +6,10 @@ import { ITradeBot } from 'src/bot/ITradeBot'
 
 export class TradeAlgorithmsEngine<Domain extends DomainTemplate, TExchangeApi> implements ITradeAlgorithmsEngine {
   protected readonly analyzer: IExchangeAnalyzer<Domain, TExchangeApi>
-  protected get trader(): IExchangeTrader {
+  protected get trader(): IExchangeTrader<Domain> {
     return this.analyzer.trader
   }
-  protected get watcher(): IExchangeWatcher<Domain> {
+  protected get watcher(): IExchangeWatcher {
     return this.analyzer.watcher
   }
   protected get tradebot(): ITradeBot<Domain, TExchangeApi> {

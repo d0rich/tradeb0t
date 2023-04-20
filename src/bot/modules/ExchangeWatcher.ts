@@ -1,6 +1,5 @@
 import { IExchangeTrader } from './IExchangeTrader'
 import { IExchangeConnector } from 'src/connector'
-import { OperationType, OrderStatus } from 'src/domain/models'
 import {
   CommonDomain,
   DomainTemplate,
@@ -8,15 +7,14 @@ import {
   GetSecurityBalanceType,
   GetCurrencyType,
   GetSecurityType,
-  GetCurrencyBalanceType,
-  GetOrderType
+  GetCurrencyBalanceType
 } from 'src/domain'
 
 import { IExchangeWatcher } from './IExchangeWatcher'
 import { IExchangeAnalyzer } from './IExchangeAnalyzer'
 import { ITradeBot } from 'src/bot/ITradeBot'
 
-export class ExchangeWatcher<Domain extends DomainTemplate, TExchangeApi> implements IExchangeWatcher<Domain> {
+export class ExchangeWatcher<Domain extends DomainTemplate, TExchangeApi> implements IExchangeWatcher {
   private readonly tradebot: ITradeBot<Domain, TExchangeApi>
   private get domainMapper(): IDomainMapper<Domain> {
     return this.exchangeClient.domainMapper

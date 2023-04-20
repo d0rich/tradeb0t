@@ -9,8 +9,8 @@ export interface ITradeBot<Domain extends DomainTemplate = any, TExchangeApi = a
 
   get exchangeClient(): IExchangeConnector<Domain, TExchangeApi>
   get analyzer(): IExchangeAnalyzer<Domain, TExchangeApi>
-  get trader(): IExchangeTrader
-  get watcher(): IExchangeWatcher<Domain>
+  get trader(): IExchangeTrader<Domain>
+  get watcher(): IExchangeWatcher
   get api(): ApiService
   get logger(): LoggerService
   get auth(): AuthService

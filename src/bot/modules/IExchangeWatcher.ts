@@ -4,12 +4,10 @@ import {
   GetSecurityBalanceType,
   GetCurrencyBalanceType,
   GetCurrencyType,
-  GetSecurityType,
-  GetOrderType
+  GetSecurityType
 } from 'src/domain'
-import { OperationType, OrderStatus } from 'src/domain/models'
 
-export interface IExchangeWatcher<Domain extends DomainTemplate> {
+export interface IExchangeWatcher {
   getPortfolio(): Promise<GetSecurityBalanceType<CommonDomain>[]>
   getCurrenciesBalance(): Promise<GetCurrencyBalanceType<CommonDomain>[]>
   getCurrencies(): Promise<GetCurrencyType<CommonDomain>[]>

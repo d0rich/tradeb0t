@@ -10,7 +10,7 @@ import { CreateOrderOptions, GetOrderType, DomainTemplate, OrderStatus } from 's
 export class ExchangeTrader<Domain extends DomainTemplate, TExchangeApi> implements IExchangeTrader<Domain> {
   readonly hooks = createHooks<IExchangeTraderHooks<Domain>>()
   private readonly tradebot: ITradeBot<Domain, TExchangeApi>
-  private get watcher(): IExchangeWatcher<Domain> {
+  private get watcher(): IExchangeWatcher {
     return this.tradebot.watcher
   }
   private get logger(): LoggerService {
