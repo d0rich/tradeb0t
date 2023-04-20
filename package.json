@@ -74,6 +74,7 @@
     "cors": "^2.8.5",
     "defu": "^6.1.2",
     "h3": "^1.6.4",
+    "hookable": "^5.5.3",
     "node-schedule": "^2.1.0",
     "reflect-metadata": "^0.1.13",
     "simple-node-logger": "^21.8.12",
