@@ -4,12 +4,10 @@ import {
   GetSecurityBalanceType,
   GetCurrencyBalanceType,
   GetCurrencyType,
-  GetSecurityType,
-  GetOrderType
+  GetSecurityType
 } from 'src/domain'
-import { OperationType, OrderStatus } from 'src/domain/models'
 
-export interface IExchangeWatcher<Domain extends DomainTemplate> {
+export interface IExchangeWatcher {
   getPortfolio(): Promise<GetSecurityBalanceType<CommonDomain>[]>
   getCurrenciesBalance(): Promise<GetCurrencyBalanceType<CommonDomain>[]>
   getCurrencies(): Promise<GetCurrencyType<CommonDomain>[]>
@@ -17,7 +15,4 @@ export interface IExchangeWatcher<Domain extends DomainTemplate> {
   getSecurityName(ticker: string): Promise<string>
   getSecurityLastPrice(ticker: string): Promise<number>
   getSecurityCurrency(ticker: string): Promise<GetCurrencyType<CommonDomain>>
-
-  // TODO: implament with Hookable
-  onOrderSent(order: GetOrderType<Domain>, operation_type: OperationType, runId?: number): OrderStatus
 }

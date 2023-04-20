@@ -15,7 +15,11 @@ class AlgorithmRunsRepository extends Repository {
     +findManyByAlgorithm(algorithmName: string): Promise<AlgorithmRun[]>
     +findAllUnfinished(): Promise<AlgorithmRun[]>
 }
+interface IOrdersRepositoryHooks {
+    +beforeSaveOne: (ticker: string) => Promise<void>
+}
 class OrdersRepository extends Repository {
+    +hooks: Hookable<IOrdersRepositoryHooks, "beforeSaveOne">
     +saveOne(order: GetOrderType<CommonDomain>, operation: OperationType, runId?: number): Promise<GetOrderType<CommonDomain>>
     +search(options: GetOrdersOptions): Promise<GetOrderType<CommonDomain>[]>
 }
@@ -23,13 +27,20 @@ interface IPersistentStorage {
     +orders: OrdersRepository
     +algorithms: AlgorithmsRepository
     +algorithmRuns: AlgorithmRunsRepository
+    +isInitialized: boolean
+    +initialize(): Promise<void>
 }
 class PersistentStorage implements IPersistentStorage {
+    +isInitialized: boolean
     +orders: OrdersRepository
     +algorithms: AlgorithmsRepository
     +algorithmRuns: AlgorithmRunsRepository
+    -_orders: OrdersRepository
+    -_algorithms: AlgorithmsRepository
+    -_algorithmRuns: AlgorithmRunsRepository
+    -id: string
+    +initialize(): Promise<void>
     -datasource: DataSource
-    -initDatasource(id: string): DataSource
 }
 class SecuritiesRepository extends Repository {
     +findByTicker(securityTicker: string): Promise<Security>
@@ -52,15 +63,22 @@ interface IInMemoryStorage {
     +securities: SecuritiesRepository
     +portfolio: PortfolioRepository
     +currencies: CurrenciesRepository
+    +isInitialized: boolean
+    +initialize(): Promise<void>
 }
 class InMemoryStorage implements IInMemoryStorage {
+    +isInitialized: boolean
     +securities: SecuritiesRepository
-    +portfolio: PortfolioRepository
     +currencies: CurrenciesRepository
+    +portfolio: PortfolioRepository
+    -_securities: SecuritiesRepository
+    -_portfolio: PortfolioRepository
+    -_currencies: CurrenciesRepository
     -datasource: DataSource
-    -initDatasource(): DataSource
+    +initialize(): Promise<void>
 }
 class UnitedStorage implements IPersistentStorage, IInMemoryStorage {
+    +isInitialized: boolean
     +currencies: CurrenciesRepository
     +portfolio: PortfolioRepository
     +securities: SecuritiesRepository
@@ -69,7 +87,10 @@ class UnitedStorage implements IPersistentStorage, IInMemoryStorage {
     +algorithmRuns: AlgorithmRunsRepository
     -_persistent: IPersistentStorage
     -_memory: IInMemoryStorage
+    -id: string
+    +initialize(): Promise<void>
 }
+OrdersRepository --> "1" IOrdersRepositoryHooks
 IPersistentStorage --> "1" OrdersRepository
 IPersistentStorage --> "1" AlgorithmsRepository
 IPersistentStorage --> "1" AlgorithmRunsRepository
@@ -80,8 +101,8 @@ IInMemoryStorage --> "1" SecuritiesRepository
 IInMemoryStorage --> "1" PortfolioRepository
 IInMemoryStorage --> "1" CurrenciesRepository
 InMemoryStorage --> "1" SecuritiesRepository
-InMemoryStorage --> "1" PortfolioRepository
 InMemoryStorage --> "1" CurrenciesRepository
+InMemoryStorage --> "1" PortfolioRepository
 UnitedStorage --> "1" CurrenciesRepository
 UnitedStorage --> "1" PortfolioRepository
 UnitedStorage --> "1" SecuritiesRepository

@@ -1,15 +1,21 @@
 import { Repository } from 'typeorm'
 import { Order, CommonDomain, GetOrderType, OperationType } from 'src/domain'
 import { GetOrdersOptions } from 'src/api/trpc/schemas'
+import { createHooks } from 'hookable'
+
+export interface IOrdersRepositoryHooks {
+  beforeSaveOne: (ticker: string) => Promise<void>
+}
 
 export class OrdersRepository extends Repository<Order> {
+  readonly hooks = createHooks<IOrdersRepositoryHooks>()
+
   async saveOne(
     order: GetOrderType<CommonDomain>,
     operation: OperationType,
     runId?: number
   ): Promise<GetOrderType<CommonDomain>> {
-    // TODO: load securities with Hookable
-    // await this.loadSecurityIfNotExist(order.securityTicker)
+    await this.hooks.callHook('beforeSaveOne', order.securityTicker)
     await this.upsert(
       {
         ...order,

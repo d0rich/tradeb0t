@@ -1,14 +1,16 @@
+import { createHooks } from 'hookable'
 import { Job, JobCallback, scheduleJob } from 'node-schedule'
 import { LoggerService } from '../services'
-import { IExchangeTrader } from './IExchangeTrader'
+import { IExchangeTrader, IExchangeTraderHooks } from './IExchangeTrader'
 import { IExchangeWatcher } from './IExchangeWatcher'
 import { IExchangeConnector } from 'src/connector'
 import { ITradeBot } from 'src/bot/ITradeBot'
 import { CreateOrderOptions, GetOrderType, DomainTemplate, OrderStatus } from 'src/domain'
 
-export class ExchangeTrader<Domain extends DomainTemplate, TExchangeApi> implements IExchangeTrader {
+export class ExchangeTrader<Domain extends DomainTemplate, TExchangeApi> implements IExchangeTrader<Domain> {
+  readonly hooks = createHooks<IExchangeTraderHooks<Domain>>()
   private readonly tradebot: ITradeBot<Domain, TExchangeApi>
-  private get watcher(): IExchangeWatcher<Domain> {
+  private get watcher(): IExchangeWatcher {
     return this.tradebot.watcher
   }
   private get logger(): LoggerService {
@@ -38,7 +40,6 @@ export class ExchangeTrader<Domain extends DomainTemplate, TExchangeApi> impleme
   }
 
   async sendOrder(orderDetails: CreateOrderOptions, algorithm_name?: string, run_id?: number): Promise<OrderStatus> {
-    const { watcher } = this
     this.logger.log({
       type: 'info',
       message: 'Sending order',
@@ -70,6 +71,8 @@ export class ExchangeTrader<Domain extends DomainTemplate, TExchangeApi> impleme
       throw new Error(`Wrong operation defined in order: ${JSON.stringify(orderDetails)}`)
     }
 
-    return watcher.onOrderSent(order, operation, run_id)
+    this.hooks.callHook('orderSent', order, operation, run_id)
+
+    return this.exchangeClient.domainMapper.orderStatus(order)
   }
 }

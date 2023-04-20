@@ -12,10 +12,10 @@ export abstract class AbstractTradeAlgorithm<
 > implements ITradeAlgorithm<InputsType, StateType>
 {
   protected readonly analyzer: IExchangeAnalyzer<Domain, TExchangeApi>
-  protected get watcher(): IExchangeWatcher<Domain> {
+  protected get watcher(): IExchangeWatcher {
     return this.analyzer.watcher
   }
-  protected get trader(): IExchangeTrader {
+  protected get trader(): IExchangeTrader<Domain> {
     return this.analyzer.trader
   }
   protected stopData: Map<number, StopDataType> = new Map<number, StopDataType>()

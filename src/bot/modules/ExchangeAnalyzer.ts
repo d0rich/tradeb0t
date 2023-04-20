@@ -24,10 +24,10 @@ export class ExchangeAnalyzer<Domain extends DomainTemplate, TExchangeApi>
     return this._tradeAlgos
   }
 
-  get trader(): IExchangeTrader {
+  get trader(): IExchangeTrader<Domain> {
     return this.tradebot.trader
   }
-  get watcher(): IExchangeWatcher<Domain> {
+  get watcher(): IExchangeWatcher {
     return this.tradebot.watcher
   }
 
@@ -44,6 +44,10 @@ export class ExchangeAnalyzer<Domain extends DomainTemplate, TExchangeApi>
 
   async start() {
     await this.storage.initialize()
+    // Create hooks for repositories
+    this.storage.orders.hooks.hook('beforeSaveOne', async (ticker) => {
+      this.loadSecurityIfNotExist(ticker)
+    })
     this._tradeAlgos = new TradeAlgorithmsEngine<Domain, TExchangeApi>(this, this._initAlgorithmsCallback)
     await Promise.all([this.storage.algorithms.save(this.tradeAlgos.description)])
     scheduleJob('updateBalance', '*/1 * * * *', () => {
