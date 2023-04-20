@@ -18,13 +18,13 @@ import { ITradeBot } from 'src/bot/ITradeBot'
 
 export class ExchangeWatcher<Domain extends DomainTemplate, TExchangeApi> implements IExchangeWatcher<Domain> {
   private readonly tradebot: ITradeBot<Domain, TExchangeApi>
-  private get domainMapper(): IDomainMapper {
+  private get domainMapper(): IDomainMapper<Domain> {
     return this.exchangeClient.domainMapper
   }
   private get analyzer(): IExchangeAnalyzer<Domain, TExchangeApi> {
     return this.tradebot.analyzer
   }
-  private get trader(): IExchangeTrader {
+  private get trader(): IExchangeTrader<Domain> {
     return this.tradebot.trader
   }
   private get exchangeClient(): IExchangeConnector<Domain, TExchangeApi> {
@@ -33,6 +33,12 @@ export class ExchangeWatcher<Domain extends DomainTemplate, TExchangeApi> implem
 
   constructor(tradebot: ITradeBot<Domain, TExchangeApi>) {
     this.tradebot = tradebot
+    this.trader.hooks.hook('orderSent', async (order, operation_type, runId) => {
+      const { domainMapper, analyzer } = this
+      const status = domainMapper.orderStatus(order)
+      const commonOrder = await domainMapper.order(order)
+      await analyzer.storage.orders.saveOne({ ...commonOrder, status: status }, operation_type, runId)
+    })
   }
 
   async getPortfolio(): Promise<GetSecurityBalanceType<CommonDomain>[]> {
@@ -75,18 +81,5 @@ export class ExchangeWatcher<Domain extends DomainTemplate, TExchangeApi> implem
     const { exchangeClient, domainMapper } = this
     const currency = await exchangeClient.infoModule.getSecurityCurrency(ticker)
     return domainMapper.currency(currency)
-  }
-
-  onOrderSent(
-    order: GetOrderType<Domain>,
-    operation_type: OperationType,
-    runId: number | undefined = undefined
-  ): OrderStatus {
-    const { domainMapper, analyzer } = this
-    const status = domainMapper.orderStatus(order)
-    domainMapper
-      .order(order)
-      .then((order) => analyzer.storage.orders.saveOne({ ...order, status: status }, operation_type, runId))
-    return status
   }
 }

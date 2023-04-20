@@ -17,7 +17,4 @@ export interface IExchangeWatcher<Domain extends DomainTemplate> {
   getSecurityName(ticker: string): Promise<string>
   getSecurityLastPrice(ticker: string): Promise<number>
   getSecurityCurrency(ticker: string): Promise<GetCurrencyType<CommonDomain>>
-
-  // TODO: implament with Hookable
-  onOrderSent(order: GetOrderType<Domain>, operation_type: OperationType, runId?: number): OrderStatus
 }

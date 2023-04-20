@@ -24,7 +24,7 @@ export class ExchangeAnalyzer<Domain extends DomainTemplate, TExchangeApi>
     return this._tradeAlgos
   }
 
-  get trader(): IExchangeTrader {
+  get trader(): IExchangeTrader<Domain> {
     return this.tradebot.trader
   }
   get watcher(): IExchangeWatcher<Domain> {
