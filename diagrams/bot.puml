@@ -1,10 +1,14 @@
 @startuml
-interface IExchangeTrader {
+interface IExchangeTraderHooks<Domain extends DomainTemplate> {
+    +orderSent: (order: GetOrderType<Domain>, operation_type: OperationType, runId?: number) => void
+}
+interface IExchangeTrader<Domain extends DomainTemplate> {
+    +hooks: Hookable<IExchangeTraderHooks<Domain>, "orderSent">
     +scheduleAction(action: JobCallback, date: Date): Job
     +scheduleOrder(date: Date, order: CreateOrderOptions, algorithm_name?: string, run_id?: number): Job
     +sendOrder(orderDetails: CreateOrderOptions, algorithm_name?: string, run_id?: number): Promise<OrderStatus>
 }
-interface IExchangeWatcher<Domain extends DomainTemplate> {
+interface IExchangeWatcher {
     +getPortfolio(): Promise<GetSecurityBalanceType<CommonDomain>[]>
     +getCurrenciesBalance(): Promise<GetCurrencyBalanceType<CommonDomain>[]>
     +getCurrencies(): Promise<GetCurrencyType<CommonDomain>[]>
@@ -12,14 +16,13 @@ interface IExchangeWatcher<Domain extends DomainTemplate> {
     +getSecurityName(ticker: string): Promise<string>
     +getSecurityLastPrice(ticker: string): Promise<number>
     +getSecurityCurrency(ticker: string): Promise<GetCurrencyType<CommonDomain>>
-    +onOrderSent(order: GetOrderType<Domain>, operation_type: OperationType, runId?: number): OrderStatus
 }
 interface IExchangeAnalyzer<Domain extends DomainTemplate, TExchangeApi> {
     +tradeAlgos: ITradeAlgorithmsEngine
     +storage: any
     +tradebot: ITradeBot<Domain, TExchangeApi>
-    +trader: IExchangeTrader
-    +watcher: IExchangeWatcher<Domain>
+    +trader: IExchangeTrader<Domain>
+    +watcher: IExchangeWatcher
     +start(): Promise<void>
     +updateCurrencies(): Promise<GetCurrencyType<CommonDomain>[]>
     +updateCurrenciesBalance(): Promise<GetCurrencyBalanceType<CommonDomain>[]>
@@ -28,11 +31,13 @@ interface IExchangeAnalyzer<Domain extends DomainTemplate, TExchangeApi> {
     +updatePortfolio(): Promise<GetPortfolioPositionType<CommonDomain>[]>
 }
 class ExchangeAnalyzer<Domain extends DomainTemplate, TExchangeApi> implements IExchangeAnalyzer {
-    +tradeAlgos: ITradeAlgorithmsEngine
     +storage: any
     +tradebot: ITradeBot<Domain, TExchangeApi>
-    +trader: IExchangeTrader
-    +watcher: IExchangeWatcher<Domain>
+    +tradeAlgos: ITradeAlgorithmsEngine
+    +trader: IExchangeTrader<Domain>
+    +watcher: IExchangeWatcher
+    -_tradeAlgos: ITradeAlgorithmsEngine
+    -_initAlgorithmsCallback: (analyzer: IExchangeAnalyzer<Domain, TExchangeApi>) => ITradeAlgorithm[]
     +start(): Promise<void>
     +updateCurrencies(): Promise<GetCurrencyType<CommonDomain>[]>
     +updateCurrenciesBalance(): Promise<GetCurrencyBalanceType<CommonDomain>[]>
@@ -64,6 +69,7 @@ interface IExchangeConnector<Domain extends DomainTemplate, TExchangeApi> {
     +tradeModule: ITradeModule<Domain>
     +infoModule: IInfoModule<Domain>
     +domainMapper: IDomainMapper<Domain>
+    +initAccount(): void | Promise<void>
     +getPortfolio(): Promise<GetSecurityBalanceType<Domain>[]>
     +getCurrenciesBalance(): Promise<GetCurrencyBalanceType<Domain>[]>
 }
@@ -95,7 +101,7 @@ abstract class AbstractExchangeConnector<Domain extends DomainTemplate, TExchang
     +tradeModule: ITradeModule<Domain>
     +infoModule: IInfoModule<Domain>
     +domainMapper: IDomainMapper<Domain>
-    #{abstract} initAccount(): Promise<unknown>
+    +{abstract} initAccount(): void | Promise<void>
     +{abstract} getPortfolio(): Promise<GetSecurityBalanceType<Domain>[]>
     +{abstract} getCurrenciesBalance(): Promise<GetCurrencyBalanceType<Domain>[]>
 }
@@ -177,19 +183,23 @@ interface IDomainMapper<Domain extends DomainTemplate> {
     +orderStatus(order: GetOrderType<Domain>): OrderStatus
     +orderOperation(order: GetOrderType<Domain>): OperationType
 }
+interface ITradeBotConfig {
+    +auth: { token: string; required: boolean; }
+    +api: { port: number | string; host: string; }
+    +logs: { directory: string; }
+}
 interface ITradeBot<Domain extends DomainTemplate<unknown, unknown, unknown, unknown, unknown>, TExchangeApi> {
+    +config: ITradeBotConfig
     +exchangeClient: IExchangeConnector<Domain, TExchangeApi>
     +analyzer: IExchangeAnalyzer<Domain, TExchangeApi>
-    +trader: IExchangeTrader
-    +watcher: IExchangeWatcher<Domain>
+    +trader: IExchangeTrader<Domain>
+    +watcher: IExchangeWatcher
     +api: ApiService
     +logger: LoggerService
     +auth: AuthService
 }
 class ApiService {
     -tradeBot: ITradeBot<StubDomain, unknown>
-    -express: Express
-    -wss: WebSocketServer
     -http: http.Server
     -configureServers(): Promise<void>
 }
@@ -197,7 +207,7 @@ interface IHttpHeadersCarrier {
     +headers: IncomingHttpHeaders
 }
 class AuthService {
-    -botToken: string
+    -tradebot: ITradeBot<any, any>
     +authByToken(token?: string): boolean
     +authByRequest(request: IHttpHeadersCarrier): boolean
 }
@@ -224,20 +234,22 @@ class LoggerService {
     -logger: Logger
     -lastLogs: SocketLogs[]
     -eventEmitter: EventEmitter
+    +getLastLogs(): SocketLogs[]
+    +log(body: Omit<Omit<SocketLogs, "robot_id">, "timestamp">, __1?: { internal?: boolean; }): void
+    +subscribe(callback: (logs: SocketLogs) => void): void
+    +unsubscribe(callback: (logs: SocketLogs) => void): void
+    +createErrorHandlingProxy(object: T): T
     -createLogsDirIfNotExist(): void
     -logToString(log: SocketLogs, __1?: LogToStringOptions): string
     -logToFile(log: SocketLogs): void
     -logToConsole(log: SocketLogs): void
     -logToSocket(log: SocketLogs): void
     -updateLastLogs(log: SocketLogs): void
-    +getLastLogs(): SocketLogs[]
-    +log(body: Omit<Omit<SocketLogs, "robot_id">, "timestamp">, __1?: { internal?: boolean; }): void
-    +subscribe(callback: (logs: SocketLogs) => void): void
-    +unsubscribe(callback: (logs: SocketLogs) => void): void
 }
 class ExchangeTrader<Domain extends DomainTemplate, TExchangeApi> implements IExchangeTrader {
+    +hooks: Hookable<IExchangeTraderHooks<Domain>, "orderSent">
     -tradebot: ITradeBot<Domain, TExchangeApi>
-    -watcher: IExchangeWatcher<Domain>
+    -watcher: IExchangeWatcher
     -logger: LoggerService
     -exchangeClient: IExchangeConnector<Domain, TExchangeApi>
     +scheduleAction(action: JobCallback, date: Date): Job
@@ -246,9 +258,9 @@ class ExchangeTrader<Domain extends DomainTemplate, TExchangeApi> implements IEx
 }
 class ExchangeWatcher<Domain extends DomainTemplate, TExchangeApi> implements IExchangeWatcher {
     -tradebot: ITradeBot<Domain, TExchangeApi>
-    -domainMapper: IDomainMapper
+    -domainMapper: IDomainMapper<Domain>
     -analyzer: IExchangeAnalyzer<Domain, TExchangeApi>
-    -trader: IExchangeTrader
+    -trader: IExchangeTrader<Domain>
     -exchangeClient: IExchangeConnector<Domain, TExchangeApi>
     +getPortfolio(): Promise<GetSecurityBalanceType<CommonDomain>[]>
     +getCurrenciesBalance(): Promise<GetCurrencyBalanceType<CommonDomain>[]>
@@ -257,12 +269,11 @@ class ExchangeWatcher<Domain extends DomainTemplate, TExchangeApi> implements IE
     +getSecurityName(ticker: string): Promise<string>
     +getSecurityLastPrice(ticker: string): Promise<number>
     +getSecurityCurrency(ticker: string): Promise<GetCurrencyType<CommonDomain>>
-    +onOrderSent(order: GetOrderType<Domain>, operation_type: OperationType, runId?: number): OrderStatus
 }
 interface TradeBotProductionInitOptions<Domain extends DomainTemplate<unknown, unknown, unknown, unknown, unknown>, TExchangeApi> {
     +mode: "production"
     +exchangeClient: IExchangeConnector<Domain, TExchangeApi>
-    +botToken?: string
+    +config?: DeepPartial<ITradeBotConfig>
     +initAlgorithmsCallback?: (analyzer: IExchangeAnalyzer<Domain, TExchangeApi>) => ITradeAlgorithm[]
 }
 interface TradeBotNoSetupInitOptions {
@@ -270,32 +281,34 @@ interface TradeBotNoSetupInitOptions {
 }
 interface TradeBotSetupOptions<Domain extends DomainTemplate<unknown, unknown, unknown, unknown, unknown>, TExchangeApi> {
     +exchangeClient: IExchangeConnector<Domain, TExchangeApi>
-    +botToken?: string
     +initAlgorithmsCallback?: (analyzer: IExchangeAnalyzer<Domain, TExchangeApi>) => ITradeAlgorithm[]
 }
 class TradeBot<Domain extends DomainTemplate<unknown, unknown, unknown, unknown, unknown>, TExchangeApi> implements ITradeBot {
-    -_exchangeClient: IExchangeConnector<Domain, TExchangeApi>
-    -_analyzer: IExchangeAnalyzer<Domain, TExchangeApi>
-    -_trader: IExchangeTrader
-    -_watcher: IExchangeWatcher<Domain>
-    -_api: ApiService
-    -_logger: LoggerService
-    -_auth: AuthService
+    +config: ITradeBotConfig
     +exchangeClient: IExchangeConnector<Domain, TExchangeApi>
     +analyzer: IExchangeAnalyzer<Domain, TExchangeApi>
-    +trader: IExchangeTrader
-    +watcher: IExchangeWatcher<Domain>
+    +trader: IExchangeTrader<Domain>
+    +watcher: IExchangeWatcher
     +api: ApiService
     +logger: LoggerService
     +auth: AuthService
+    -_exchangeClient: IExchangeConnector<Domain, TExchangeApi>
+    -_analyzer: IExchangeAnalyzer<Domain, TExchangeApi>
+    -_trader: IExchangeTrader<Domain>
+    -_watcher: IExchangeWatcher
+    -_api: ApiService
+    -_logger: LoggerService
+    -_auth: AuthService
     -setup(__0: TradeBotSetupOptions<Domain, TExchangeApi>): Promise<void>
 }
+IExchangeTrader --> "1" IExchangeTraderHooks
 IExchangeAnalyzer --> "1" ITradeBot
 IExchangeAnalyzer --> "1" IExchangeTrader
 IExchangeAnalyzer --> "1" IExchangeWatcher
 ExchangeAnalyzer --> "1" ITradeBot
 ExchangeAnalyzer --> "1" IExchangeTrader
 ExchangeAnalyzer --> "1" IExchangeWatcher
+ExchangeAnalyzer --> "1" IExchangeAnalyzer
 IExchangeConnector --> "1" ITradeModule
 IExchangeConnector --> "1" IInfoModule
 IExchangeConnector --> "1" IDomainMapper
@@ -322,6 +335,7 @@ AbstractDomainMapper --> "1" CurrencyBalance
 AbstractDomainMapper --> "1" Security
 AbstractDomainMapper --> "1" SecurityBalance
 AbstractDomainMapper --> "1" Order
+ITradeBot --> "1" ITradeBotConfig
 ITradeBot --> "1" IExchangeConnector
 ITradeBot --> "1" IExchangeAnalyzer
 ITradeBot --> "1" IExchangeTrader
@@ -330,11 +344,13 @@ ITradeBot --> "1" ApiService
 ITradeBot --> "1" LoggerService
 ITradeBot --> "1" AuthService
 ApiService --> "1" ITradeBot
+AuthService --> "1" ITradeBot
 AuthService --> "1" IHttpHeadersCarrier
 LoggerService --> "1" ITradeBot
 LoggerService --> "*" SocketLogs
 LoggerService --> "1" SocketLogs
 LoggerService --> "1" LogToStringOptions
+ExchangeTrader --> "1" IExchangeTraderHooks
 ExchangeTrader --> "1" ITradeBot
 ExchangeTrader --> "1" IExchangeWatcher
 ExchangeTrader --> "1" LoggerService
@@ -345,9 +361,11 @@ ExchangeWatcher --> "1" IExchangeAnalyzer
 ExchangeWatcher --> "1" IExchangeTrader
 ExchangeWatcher --> "1" IExchangeConnector
 TradeBotProductionInitOptions --> "1" IExchangeConnector
+TradeBotProductionInitOptions --> "1" ITradeBotConfig
 TradeBotProductionInitOptions --> "1" IExchangeAnalyzer
 TradeBotSetupOptions --> "1" IExchangeConnector
 TradeBotSetupOptions --> "1" IExchangeAnalyzer
+TradeBot --> "1" ITradeBotConfig
 TradeBot --> "1" IExchangeConnector
 TradeBot --> "1" IExchangeAnalyzer
 TradeBot --> "1" IExchangeTrader
