@@ -1,7 +1,8 @@
-import { globalStore } from '../global/store'
 import { ExchangeAnalyzer, LoggerService, TradeBot, ExchangeTrader, ExchangeWatcher, AuthService, ApiService } from 'src/bot'
 
-export function HandleError() {
+type LoggerContainer = TradeBot<any, any> | ExchangeAnalyzer<any, any> | ExchangeTrader<any, any> | ExchangeWatcher<any, any> | AuthService | ApiService
+
+export function HandleError(context: LoggerContainer) {
   return function (target: unknown, propertyKey: string, descriptor: PropertyDescriptor) {
     // Check of the decorated property is a function
     if (typeof descriptor.value !== 'function') {
@@ -14,7 +15,7 @@ export function HandleError() {
     const declaredFn = descriptor.value
     // Provide a new function for this property that wraps the original function
     descriptor.value = function (...args: unknown[]) {
-      const logger = extractLogger(this)
+      const logger = extractLogger()
       console.log('logger', logger)
       // Call the method with `this` set the object with the method,
       // in case that matters.
@@ -45,40 +46,40 @@ export function HandleError() {
           console.error(`Error occurred in ${propertyKey}`, e)
         }
       }
-
-      function extractLogger(context: PropertyDescriptor) {
-        console.log(context)
-        console.log(context instanceof TradeBot)
-        // @ts-ignore
-        console.log(context?.logger)
-        // Try to access logger
-        if (context instanceof LoggerService) {
-          return context
-        }
-        if (context instanceof TradeBot) {
-          return context.logger
-        }
-        if (context instanceof ExchangeAnalyzer) {
-          return context.tradebot.logger
-        }
-        if (context instanceof ExchangeTrader) {
-          // @ts-ignore
-          return context.tradebot.logger
-        }
-        if (context instanceof ExchangeWatcher) {
-          // @ts-ignore
-          return context.tradebot.logger
-        }
-        if (context instanceof AuthService) {
-          // TODO: Add logger to AuthService
-          return
-        }
-        if (context instanceof ApiService) {
-          // @ts-ignore
-          return context.tradeBot.logger
-        }
-        return
-      }
     }
+  }
+
+  function extractLogger() {
+    console.log(context)
+    console.log(context instanceof TradeBot)
+    // @ts-ignore
+    console.log(context?.logger)
+    // Try to access logger
+    if (context instanceof LoggerService) {
+      return context
+    }
+    if (context instanceof TradeBot) {
+      return context.logger
+    }
+    if (context instanceof ExchangeAnalyzer) {
+      return context.tradebot.logger
+    }
+    if (context instanceof ExchangeTrader) {
+      // @ts-ignore
+      return context.tradebot.logger
+    }
+    if (context instanceof ExchangeWatcher) {
+      // @ts-ignore
+      return context.tradebot.logger
+    }
+    if (context instanceof AuthService) {
+      // TODO: Add logger to AuthService
+      return
+    }
+    if (context instanceof ApiService) {
+      // @ts-ignore
+      return context.tradeBot.logger
+    }
+    return
   }
 }
