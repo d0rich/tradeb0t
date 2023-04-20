@@ -70,7 +70,7 @@ export class LoggerService {
     this.eventEmitter.off('log', callback)
   }
 
-  createErrorHandlingProxy<T extends Object>(object: T): T {
+  createErrorHandlingProxy<T extends object>(object: T): T {
     const logError = (className: string, methodName: string, error: Error) => {
       this.log({
         type: 'error',
@@ -81,8 +81,7 @@ export class LoggerService {
 
     return new Proxy(object, {
       get: (target, property) => {
-        // @ts-ignore
-        const value = target[property]
+        const value = target[property as keyof T]
         if (typeof value === 'function') {
           return (...args: unknown[]) => {
             try {
