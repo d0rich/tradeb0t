@@ -80,10 +80,7 @@ export class TradeBot<Domain extends DomainTemplate, TExchangeApi> implements IT
     }
   }
 
-  private async setup({
-    exchangeClient,
-    initAlgorithmsCallback
-  }: TradeBotSetupOptions<Domain, TExchangeApi>) {
+  private async setup({ exchangeClient, initAlgorithmsCallback }: TradeBotSetupOptions<Domain, TExchangeApi>) {
     // Logger setup
     this._logger = new LoggerService(this)
     this.logger.log({
