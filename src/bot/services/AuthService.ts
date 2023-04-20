@@ -1,19 +1,15 @@
-import { useConfig } from '../../config'
 import { IncomingHttpHeaders } from 'http'
+import { ITradeBot } from '../ITradeBot'
 
 interface IHttpHeadersCarrier {
   headers: IncomingHttpHeaders
 }
 export class AuthService {
-  private readonly botToken: string
-
-  constructor(botToken: string | null = null) {
-    this.botToken = botToken ? botToken : useConfig().auth.token
-  }
+  constructor(private readonly tradebot: ITradeBot) {}
 
   authByToken(token = ''): boolean {
-    if (!useConfig().auth.required) return true
-    return this.botToken === token
+    if (!this.tradebot.config.auth.required) return true
+    return this.tradebot.config.auth.token === token
   }
 
   authByRequest(request: IHttpHeadersCarrier): boolean {

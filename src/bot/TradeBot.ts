@@ -106,7 +106,7 @@ export class TradeBot<Domain extends DomainTemplate, TExchangeApi> implements IT
     const apiService = new ApiService(this)
     this._api = this.logger.createErrorHandlingProxy(apiService)
     // Auth setup
-    const authService = new AuthService(this.config.auth.token)
+    const authService = new AuthService(this)
     this._auth = this.logger.createErrorHandlingProxy(authService)
 
     this.logger.log({

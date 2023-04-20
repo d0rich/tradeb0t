@@ -3,7 +3,6 @@ import http from 'http'
 import colors from 'colors/safe'
 import { ITradeBot } from '../ITradeBot'
 import { initH3WithWss } from 'src/api'
-import { useConfig } from '../../config'
 import { StubDomain } from 'src/domain'
 
 export class ApiService {
@@ -17,7 +16,7 @@ export class ApiService {
   }
 
   private async configureServers() {
-    const config = useConfig()
+    const config = this.tradeBot.config
     this.http = await initH3WithWss(this.tradeBot)
     this.http.listen(config.api.port, () => {
       console.info(`${colors.blue('[i]')} TradeBot is online on: `)
