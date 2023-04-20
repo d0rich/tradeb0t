@@ -1,3 +1,4 @@
+import { defu } from 'defu'
 import {
   IExchangeTrader,
   IExchangeWatcher,
@@ -11,11 +12,13 @@ import { IExchangeConnector } from 'src/connector'
 import { ITradeAlgorithm } from 'src/algorithms'
 import { DomainTemplate, StubDomain } from '../domain'
 import { ITradeBot } from './ITradeBot'
+import { ITradeBotConfig, defaultConfig } from './ITradeBotConfig'
+import type { DeepPartial } from 'typeorm'
 
 interface TradeBotProductionInitOptions<Domain extends DomainTemplate, TExchangeApi> {
   mode: 'production'
   exchangeClient: IExchangeConnector<Domain, TExchangeApi>
-  botToken?: string
+  config?: DeepPartial<ITradeBotConfig>
   initAlgorithmsCallback?: (analyzer: IExchangeAnalyzer<Domain, TExchangeApi>) => ITradeAlgorithm[]
 }
 
@@ -33,18 +36,11 @@ export type TradeBotInitOptions<Domain extends DomainTemplate = StubDomain, TExc
 
 interface TradeBotSetupOptions<Domain extends DomainTemplate, TExchangeApi> {
   exchangeClient: IExchangeConnector<Domain, TExchangeApi>
-  botToken?: string
   initAlgorithmsCallback?: (analyzer: IExchangeAnalyzer<Domain, TExchangeApi>) => ITradeAlgorithm[]
 }
 
 export class TradeBot<Domain extends DomainTemplate, TExchangeApi> implements ITradeBot<Domain, TExchangeApi> {
-  private _exchangeClient: IExchangeConnector<Domain, TExchangeApi>
-  private _analyzer: IExchangeAnalyzer<Domain, TExchangeApi>
-  private _trader: IExchangeTrader
-  private _watcher: IExchangeWatcher<Domain>
-  private _api: ApiService
-  private _logger: LoggerService
-  private _auth: AuthService
+  readonly config: ITradeBotConfig
 
   get exchangeClient() {
     return this._exchangeClient
@@ -68,18 +64,23 @@ export class TradeBot<Domain extends DomainTemplate, TExchangeApi> implements IT
     return this._auth
   }
 
+  private _exchangeClient: IExchangeConnector<Domain, TExchangeApi>
+  private _analyzer: IExchangeAnalyzer<Domain, TExchangeApi>
+  private _trader: IExchangeTrader
+  private _watcher: IExchangeWatcher<Domain>
+  private _api: ApiService
+  private _logger: LoggerService
+  private _auth: AuthService
+
   constructor(options: TradeBotInitOptions<Domain, TExchangeApi>) {
     if (options.mode === 'production') {
-      const { exchangeClient, botToken, initAlgorithmsCallback } = options
-      this.setup({ exchangeClient, botToken, initAlgorithmsCallback })
+      const { exchangeClient, config, initAlgorithmsCallback } = options
+      this.config = defu(config, defaultConfig)
+      this.setup({ exchangeClient, initAlgorithmsCallback })
     }
   }
 
-  private async setup({
-    exchangeClient,
-    botToken,
-    initAlgorithmsCallback
-  }: TradeBotSetupOptions<Domain, TExchangeApi>) {
+  private async setup({ exchangeClient, initAlgorithmsCallback }: TradeBotSetupOptions<Domain, TExchangeApi>) {
     // Logger setup
     this._logger = new LoggerService(this)
     this.logger.log({
@@ -102,7 +103,7 @@ export class TradeBot<Domain extends DomainTemplate, TExchangeApi> implements IT
     const apiService = new ApiService(this)
     this._api = this.logger.createErrorHandlingProxy(apiService)
     // Auth setup
-    const authService = new AuthService(botToken)
+    const authService = new AuthService(this)
     this._auth = this.logger.createErrorHandlingProxy(authService)
 
     this.logger.log({

@@ -3,7 +3,6 @@ import { createRollingFileLogger, Logger } from 'simple-node-logger'
 import { EventEmitter } from 'events'
 import colors from 'colors/safe'
 import { ITradeBot } from '../ITradeBot'
-import { useConfig } from '../../config'
 
 interface LogToStringOptions {
   useColors?: boolean
@@ -40,7 +39,7 @@ export class LoggerService {
     this.createLogsDirIfNotExist()
     this.tradebot = tradeBot
     this.logger = createRollingFileLogger({
-      logDirectory: useConfig().logs.directory,
+      logDirectory: this.tradebot.config.logs.directory,
       fileNamePattern: 'trade-bot-<DATE>.log'
     })
     this.lastLogs = []
@@ -101,7 +100,7 @@ export class LoggerService {
   }
 
   private createLogsDirIfNotExist() {
-    const config = useConfig()
+    const config = this.tradebot.config
     if (!fs.existsSync(config.logs.directory)) fs.mkdirSync(config.logs.directory)
   }
 
