@@ -36,6 +36,70 @@ export class LoggerService {
   private readonly lastLogs: SocketLogs[]
   private readonly eventEmitter = new EventEmitter()
 
+  constructor(tradeBot: ITradeBot) {
+    this.createLogsDirIfNotExist()
+    this.tradebot = tradeBot
+    this.logger = createRollingFileLogger({
+      logDirectory: useConfig().logs.directory,
+      fileNamePattern: 'trade-bot-<DATE>.log'
+    })
+    this.lastLogs = []
+  }
+
+  getLastLogs() {
+    return this.lastLogs
+  }
+
+  log(body: Omit<Omit<SocketLogs, 'robot_id'>, 'timestamp'>, { internal = false } = {}) {
+    const newLog: SocketLogs = {
+      robot_id: 'test',
+      timestamp: new Date().toISOString(),
+      ...body
+    }
+    this.logToFile(newLog)
+    this.logToConsole(newLog)
+    if (!internal) this.logToSocket(newLog)
+    this.updateLastLogs(newLog)
+  }
+
+  subscribe(callback: (logs: SocketLogs) => void) {
+    this.eventEmitter.on('log', callback)
+  }
+
+  unsubscribe(callback: (logs: SocketLogs) => void) {
+    this.eventEmitter.off('log', callback)
+  }
+
+  createErrorHandlingProxy<T extends object>(object: T): T {
+    const logError = (className: string, methodName: string, error: Error) => {
+      this.log({
+        type: 'error',
+        message: `Error in ${className}.${methodName}: ${error.message}`,
+        attachment: error
+      })
+    }
+
+    return new Proxy(object, {
+      get: (target, property) => {
+        const value = target[property as keyof T]
+        if (typeof value === 'function') {
+          return (...args: unknown[]) => {
+            try {
+              const result = value.apply(target, args)
+              if (result instanceof Promise) {
+                result.catch((error) => logError(target.constructor.name, property as string, error as Error))
+              }
+              return result
+            } catch (error) {
+              logError(target.constructor.name, property as string, error as Error)
+            }
+          }
+        }
+        return value
+      }
+    })
+  }
+
   private createLogsDirIfNotExist() {
     const config = useConfig()
     if (!fs.existsSync(config.logs.directory)) fs.mkdirSync(config.logs.directory)
@@ -125,44 +189,10 @@ export class LoggerService {
     this.eventEmitter.emit('log', log)
   }
 
-  constructor(tradeBot: ITradeBot) {
-    this.createLogsDirIfNotExist()
-    this.tradebot = tradeBot
-    this.logger = createRollingFileLogger({
-      logDirectory: useConfig().logs.directory,
-      fileNamePattern: 'trade-bot-<DATE>.log'
-    })
-    this.lastLogs = []
-  }
-
   private updateLastLogs(log: SocketLogs) {
     this.lastLogs.push(log)
     if (this.lastLogs.length > 30) {
       this.lastLogs.shift()
     }
-  }
-
-  getLastLogs() {
-    return this.lastLogs
-  }
-
-  log(body: Omit<Omit<SocketLogs, 'robot_id'>, 'timestamp'>, { internal = false } = {}) {
-    const newLog: SocketLogs = {
-      robot_id: 'test',
-      timestamp: new Date().toISOString(),
-      ...body
-    }
-    this.logToFile(newLog)
-    this.logToConsole(newLog)
-    if (!internal) this.logToSocket(newLog)
-    this.updateLastLogs(newLog)
-  }
-
-  subscribe(callback: (logs: SocketLogs) => void) {
-    this.eventEmitter.on('log', callback)
-  }
-
-  unsubscribe(callback: (logs: SocketLogs) => void) {
-    this.eventEmitter.off('log', callback)
   }
 }

@@ -44,10 +44,9 @@ export abstract class AbstractExchangeConnector<Domain extends DomainTemplate = 
     this.infoModule = options.modules.infoModule
     this.domainMapper = options.modules.domainMapper
     this.api = options.api
-    this.initAccount()
   }
 
-  protected abstract initAccount(): Promise<void> | void
+  abstract initAccount(): Promise<void> | void
 
   abstract getPortfolio(): Promise<GetSecurityBalanceType<Domain>[]>
 

@@ -9,7 +9,6 @@ import {
 } from 'src/domain'
 import { ITradeAlgorithm, ITradeAlgorithmsEngine, TradeAlgorithmsEngine } from 'src/algorithms'
 import { UnitedStorage } from 'src/storage'
-import { HandleError } from '../../decorators'
 import { IExchangeAnalyzer } from './IExchangeAnalyzer'
 import { IExchangeTrader } from './IExchangeTrader'
 import { IExchangeWatcher } from './IExchangeWatcher'
@@ -43,7 +42,6 @@ export class ExchangeAnalyzer<Domain extends DomainTemplate, TExchangeApi>
     this._initAlgorithmsCallback = initAlgorithmsCallback
   }
 
-  @HandleError()
   async start() {
     await this.storage.initialize()
     this._tradeAlgos = new TradeAlgorithmsEngine<Domain, TExchangeApi>(this, this._initAlgorithmsCallback)
@@ -59,14 +57,12 @@ export class ExchangeAnalyzer<Domain extends DomainTemplate, TExchangeApi>
     })
   }
 
-  @HandleError()
   async updateCurrencies(): Promise<GetCurrencyType<CommonDomain>[]> {
     const relevantCurrencies = await this.watcher.getCurrencies()
     await this.storage.currencies.updateAll(relevantCurrencies)
     return this.storage.currencies.find()
   }
 
-  @HandleError()
   async updateCurrenciesBalance(): Promise<GetCurrencyBalanceType<CommonDomain>[]> {
     const relevantCurrencies = await this.watcher.getCurrenciesBalance()
     await this.storage.portfolio.currencies.upsert(relevantCurrencies, {
@@ -77,19 +73,16 @@ export class ExchangeAnalyzer<Domain extends DomainTemplate, TExchangeApi>
     return this.storage.portfolio.currencies.find()
   }
 
-  @HandleError()
   async updateSecurities(): Promise<GetSecurityType<CommonDomain>[]> {
     const securities: GetSecurityType<CommonDomain>[] = await this.storage.securities.find()
     return this.updateSecuritiesList(securities)
   }
 
-  @HandleError()
   async updateFollowedSecurities(): Promise<GetSecurityType<CommonDomain>[]> {
     const securitiesToUpdate = await this.storage.securities.findAllFollowed()
     return this.updateSecuritiesList(securitiesToUpdate)
   }
 
-  @HandleError()
   async updatePortfolio(): Promise<GetPortfolioPositionType<CommonDomain>[]> {
     const { watcher } = this
     const relevantPortfolio = await watcher.getPortfolio()
@@ -111,7 +104,6 @@ export class ExchangeAnalyzer<Domain extends DomainTemplate, TExchangeApi>
     return this.storage.portfolio.findPositions()
   }
 
-  @HandleError()
   private async loadSecurityIfNotExist(ticker: string): Promise<GetSecurityType<CommonDomain> | null> {
     const { watcher } = this
     const securityInCache = await this.storage.securities.findByTicker(ticker)
@@ -122,7 +114,6 @@ export class ExchangeAnalyzer<Domain extends DomainTemplate, TExchangeApi>
     return securityInCache
   }
 
-  @HandleError()
   private async loadSecuritiesIfNotExist(tickers: string[]): Promise<GetSecurityType<CommonDomain>[]> {
     const { watcher } = this
     const securitiesInCache = await this.storage.securities.findByTickers(tickers)
@@ -137,7 +128,6 @@ export class ExchangeAnalyzer<Domain extends DomainTemplate, TExchangeApi>
     return await this.storage.securities.find()
   }
 
-  @HandleError()
   private async updateSecuritiesList(securitiesToUpdate: GetSecurityType<CommonDomain>[]) {
     const updatedSecurities = await Promise.all(
       securitiesToUpdate.map(async (security) => {

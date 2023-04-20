@@ -4,7 +4,6 @@ import colors from 'colors/safe'
 import { ITradeBot } from '../ITradeBot'
 import { initH3WithWss } from 'src/api'
 import { useConfig } from '../../config'
-import { HandleError } from '../../decorators'
 import { StubDomain } from 'src/domain'
 
 export class ApiService {
@@ -17,7 +16,6 @@ export class ApiService {
     this.configureServers()
   }
 
-  @HandleError()
   private async configureServers() {
     const config = useConfig()
     this.http = await initH3WithWss(this.tradeBot)

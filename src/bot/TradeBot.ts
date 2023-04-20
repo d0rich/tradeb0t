@@ -9,7 +9,6 @@ import {
 import { ApiService, AuthService, LoggerService } from './services'
 import { IExchangeConnector } from 'src/connector'
 import { ITradeAlgorithm } from 'src/algorithms'
-import { globalStore } from '../global/store'
 import { DomainTemplate, StubDomain } from '../domain'
 import { ITradeBot } from './ITradeBot'
 
@@ -81,18 +80,31 @@ export class TradeBot<Domain extends DomainTemplate, TExchangeApi> implements IT
     botToken,
     initAlgorithmsCallback
   }: TradeBotSetupOptions<Domain, TExchangeApi>) {
+    // Logger setup
     this._logger = new LoggerService(this)
-    globalStore.logger = this.logger
     this.logger.log({
       type: 'info',
       message: 'TradeBot Initialization...'
     })
-    this._exchangeClient = exchangeClient
-    this._analyzer = new ExchangeAnalyzer(this, initAlgorithmsCallback)
-    this._trader = new ExchangeTrader(this)
-    this._watcher = new ExchangeWatcher(this)
-    this._api = new ApiService(this)
-    this._auth = new AuthService(botToken)
+    // ExchangeConnector setup
+    this._exchangeClient = this.logger.createErrorHandlingProxy(exchangeClient)
+    await this._exchangeClient.initAccount()
+    // Analyzer setup
+    const analyzer = new ExchangeAnalyzer(this, initAlgorithmsCallback)
+    this._analyzer = this.logger.createErrorHandlingProxy(analyzer)
+    // Trader setup
+    const trader = new ExchangeTrader(this)
+    this._trader = this.logger.createErrorHandlingProxy(trader)
+    // Watcher setup
+    const watcher = new ExchangeWatcher(this)
+    this._watcher = this.logger.createErrorHandlingProxy(watcher)
+    // Api setup
+    const apiService = new ApiService(this)
+    this._api = this.logger.createErrorHandlingProxy(apiService)
+    // Auth setup
+    const authService = new AuthService(botToken)
+    this._auth = this.logger.createErrorHandlingProxy(authService)
+
     this.logger.log({
       type: 'info',
       message: 'All modules are initialized'

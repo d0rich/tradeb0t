@@ -11,7 +11,6 @@ import {
   GetCurrencyBalanceType,
   GetOrderType
 } from 'src/domain'
-import { HandleError } from '../../decorators'
 
 import { IExchangeWatcher } from './IExchangeWatcher'
 import { IExchangeAnalyzer } from './IExchangeAnalyzer'
@@ -36,7 +35,6 @@ export class ExchangeWatcher<Domain extends DomainTemplate, TExchangeApi> implem
     this.tradebot = tradebot
   }
 
-  @HandleError()
   async getPortfolio(): Promise<GetSecurityBalanceType<CommonDomain>[]> {
     const { exchangeClient, domainMapper } = this
     const portfolio = await exchangeClient.getPortfolio()
@@ -44,21 +42,18 @@ export class ExchangeWatcher<Domain extends DomainTemplate, TExchangeApi> implem
     return Promise.all(promises)
   }
 
-  @HandleError()
   async getCurrenciesBalance(): Promise<GetCurrencyBalanceType<CommonDomain>[]> {
     const { exchangeClient, domainMapper } = this
     const currencies = await exchangeClient.getCurrenciesBalance()
     return await Promise.all(currencies.map((c) => domainMapper.currencyBalance(c)))
   }
 
-  @HandleError()
   async getCurrencies(): Promise<GetCurrencyType<CommonDomain>[]> {
     const { exchangeClient, domainMapper } = this
     const currencies = await exchangeClient.infoModule.getCurrencies()
     return await Promise.all(currencies.map((c) => domainMapper.currency(c)))
   }
 
-  @HandleError()
   async getSecurity(ticker: string): Promise<GetSecurityType<CommonDomain>> {
     const { exchangeClient, domainMapper } = this
     const security = await exchangeClient.infoModule.getSecurity(ticker, false)
@@ -66,19 +61,16 @@ export class ExchangeWatcher<Domain extends DomainTemplate, TExchangeApi> implem
     return domainMapper.security(security)
   }
 
-  @HandleError()
   async getSecurityName(ticker: string): Promise<string> {
     const { exchangeClient } = this
     return await exchangeClient.infoModule.getSecurityName(ticker)
   }
 
-  @HandleError()
   async getSecurityLastPrice(ticker: string): Promise<number> {
     const { exchangeClient } = this
     return await exchangeClient.infoModule.getSecurityLastPrice(ticker)
   }
 
-  @HandleError()
   async getSecurityCurrency(ticker: string): Promise<GetCurrencyType<CommonDomain>> {
     const { exchangeClient, domainMapper } = this
     const currency = await exchangeClient.infoModule.getSecurityCurrency(ticker)

@@ -2,7 +2,7 @@ import { AbstractExchangeConnector, CommonDomain, CurrencyBalance, SecurityBalan
 import { StubExchangeApi } from '../exchange'
 
 export class ExchangeConnector extends AbstractExchangeConnector<CommonDomain, StubExchangeApi> {
-  protected initAccount() {
+  initAccount() {
     console.log('Account initialized')
   }
   getPortfolio(): Promise<SecurityBalance[]> {
