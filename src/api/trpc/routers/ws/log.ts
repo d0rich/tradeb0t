@@ -25,45 +25,24 @@ export const initLogRouter = (tradeBot: ITradeBot) => {
                 code: 'UNAUTHORIZED'
               })
             )
-            tradeBot.logger.log(
-              {
-                type: 'warning',
-                message: 'Unauthorized attempt of reading logs',
-                attachment: {
-                  remote: ctx.req.socket.remoteAddress
-                }
-              },
-              { internal: true }
-            )
+            tradeBot.logger.warn('Unauthorized attempt of reading logs', {
+              remote: ctx.req.socket.remoteAddress
+            })
             // eslint-disable-next-line @typescript-eslint/no-empty-function
             return () => {}
           }
-          tradeBot.logger.log(
-            {
-              type: 'info',
-              message: 'Logs subscription started',
-              attachment: {
-                remote: ctx.req.socket.remoteAddress
-              }
-            },
-            { internal: true }
-          )
+          tradeBot.logger.debug('Logs subscription started', {
+            remote: ctx.req.socket.remoteAddress
+          })
           const onLog = (log: LogObject) => {
             emit.next(log)
           }
           tradeBot.logger.subscribe(onLog)
 
           return () => {
-            tradeBot.logger.log(
-              {
-                type: 'info',
-                message: 'Logs subscription finished',
-                attachment: {
-                  remote: ctx.req.socket.remoteAddress
-                }
-              },
-              { internal: true }
-            )
+            tradeBot.logger.log('Logs subscription finished', {
+              remote: ctx.req.socket.remoteAddress
+            })
             tradeBot.logger.unsubscribe(onLog)
           }
         })
