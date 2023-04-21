@@ -37,9 +37,18 @@ export class ApiService {
         for (const addr of ipAddresses) {
           logger.log(`    ${colors.grey('-')} ws://${addr.replace('127.0.0.1', 'localhost')}:${config.api.port}/`)
         }
+        if (process.env.NODE_ENV === 'development') {
+          logger.info(`TRPC Playground:`)
+          for (const addr of ipAddresses) {
+            logger.log(`    ${colors.grey('-')} http://${addr.replace('127.0.0.1', 'localhost')}:${config.api.port}/trpc-playground`)
+          }
+        }
       } else {
         console.info(`REST API - http://${config.api.host}:${config.api.port}/`)
         console.info(`WebSocket - ws://${config.api.host}:${config.api.port}/`)
+        if (process.env.NODE_ENV === 'development') {
+          console.info(`TRPC Playground - http://${config.api.host}:${config.api.port}/trpc-playground`)
+        }
       }
     })
   }
