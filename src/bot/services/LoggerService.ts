@@ -30,7 +30,7 @@ export class LoggerService {
       formatOptions: {
         date: true
       }
-    }).withTag('test')
+    }).withTag(this.tradebot.config.meta.id)
     this.createLogsDirIfNotExist()
     this.fileLogger = createRollingFileLogger({
       logDirectory: this.tradebot.config.logs.directory,

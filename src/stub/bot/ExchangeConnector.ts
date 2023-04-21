@@ -3,7 +3,7 @@ import { StubExchangeApi } from '../exchange'
 
 export class ExchangeConnector extends AbstractExchangeConnector<CommonDomain, StubExchangeApi> {
   initAccount() {
-    console.log('Account initialized')
+
   }
   getPortfolio(): Promise<SecurityBalance[]> {
     return this.api.getPortfolio()
