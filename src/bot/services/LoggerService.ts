@@ -74,11 +74,7 @@ export class LoggerService {
   }
 
   createErrorHandlingProxy<T extends object>(object: T): T {
-    const logError = (className: string, methodName: string, error: Error) => {
-      this.error(`Error in ${className}.${methodName}:`, error)
-    }
-
-    return new Proxy(object, {
+    const handler: ProxyHandler<T> = {
       get: (target, property) => {
         const value = target[property as keyof T]
         if (typeof value === 'function') {
@@ -86,17 +82,18 @@ export class LoggerService {
             try {
               const result = value.apply(target, args)
               if (result instanceof Promise) {
-                result.catch((error) => logError(target.constructor.name, property as string, error as Error))
+                result.catch((error) => this.error(error))
               }
               return result
             } catch (error) {
-              logError(target.constructor.name, property as string, error as Error)
+              this.error(error)
             }
           }
         }
         return value
       }
-    })
+    }
+    return new Proxy(object, handler)
   }
 
   private createLogsDirIfNotExist() {
