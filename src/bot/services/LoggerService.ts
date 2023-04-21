@@ -1,5 +1,6 @@
 import fs from 'fs'
 import { createRollingFileLogger, Logger } from 'simple-node-logger'
+import { createConsola, consola, ConsolaInstance } from 'consola'
 import { EventEmitter } from 'events'
 import colors from 'colors/safe'
 import { ITradeBot } from '../ITradeBot'
@@ -30,15 +31,19 @@ export interface SocketLogs {
 }
 
 export class LoggerService {
-  private readonly tradebot: ITradeBot
-  private readonly logger: Logger
+  private readonly consoleLogger: ConsolaInstance
+  private readonly fileLogger: Logger
   private readonly lastLogs: SocketLogs[]
   private readonly eventEmitter = new EventEmitter()
 
-  constructor(tradeBot: ITradeBot) {
+  constructor(private readonly tradebot: ITradeBot) {
+    this.consoleLogger = createConsola({
+      formatOptions: {
+        date: true
+      }
+    }).withTag('test')
     this.createLogsDirIfNotExist()
-    this.tradebot = tradeBot
-    this.logger = createRollingFileLogger({
+    this.fileLogger = createRollingFileLogger({
       logDirectory: this.tradebot.config.logs.directory,
       fileNamePattern: 'trade-bot-<DATE>.log'
     })
@@ -104,6 +109,40 @@ export class LoggerService {
     if (!fs.existsSync(config.logs.directory)) fs.mkdirSync(config.logs.directory)
   }
 
+  private logToFile(log: SocketLogs) {
+    const output = this.logToString(log, {
+      showTimestamp: false,
+      showRobotId: false,
+      showType: false
+    })
+    if (log.type === 'info') this.fileLogger.info(output)
+    else if (log.type === 'error') this.fileLogger.error(output)
+    else if (log.type === 'warning') this.fileLogger.warn(output)
+  }
+
+  private logToConsole(log: SocketLogs) {
+    // console.log(
+    //   this.logToString(log, {
+    //     useColors: true
+    //   })
+    // )
+    const type = log.type
+    if (type === 'info') this.consoleLogger.info(log)
+    else if (type === 'error') this.consoleLogger.error(log)
+    else if (type === 'warning') this.consoleLogger.warn(log)
+  }
+
+  private logToSocket(log: SocketLogs) {
+    this.eventEmitter.emit('log', log)
+  }
+
+  private updateLastLogs(log: SocketLogs) {
+    this.lastLogs.push(log)
+    if (this.lastLogs.length > 30) {
+      this.lastLogs.shift()
+    }
+  }
+
   private logToString(
     log: SocketLogs,
     {
@@ -163,35 +202,5 @@ export class LoggerService {
       `${algorithmRun || algorithmState ? ' | ' : ''} ${algorithmRun} ${algorithmState} ${algorithmInputs}` +
       `${attachment ? ' | ' : ''} ${attachment}`
     return result.trim()
-  }
-
-  private logToFile(log: SocketLogs) {
-    const output = this.logToString(log, {
-      showTimestamp: false,
-      showRobotId: false,
-      showType: false
-    })
-    if (log.type === 'info') this.logger.info(output)
-    else if (log.type === 'error') this.logger.error(output)
-    else if (log.type === 'warning') this.logger.warn(output)
-  }
-
-  private logToConsole(log: SocketLogs) {
-    console.log(
-      this.logToString(log, {
-        useColors: true
-      })
-    )
-  }
-
-  private logToSocket(log: SocketLogs) {
-    this.eventEmitter.emit('log', log)
-  }
-
-  private updateLastLogs(log: SocketLogs) {
-    this.lastLogs.push(log)
-    if (this.lastLogs.length > 30) {
-      this.lastLogs.shift()
-    }
   }
 }
