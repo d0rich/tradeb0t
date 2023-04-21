@@ -2,20 +2,9 @@ import fs from 'fs'
 import { createRollingFileLogger, Logger } from 'simple-node-logger'
 import { createConsola, consola, ConsolaInstance } from 'consola'
 import { EventEmitter } from 'events'
-import colors from 'colors/safe'
 import { ITradeBot } from '../ITradeBot'
 
-interface LogToStringOptions {
-  useColors?: boolean
-  showRobotId?: boolean
-  showType?: boolean
-  showTimestamp?: boolean
-  showAlgorithmName?: boolean
-  showAlgorithmRunId?: boolean
-  showAlgorithmState?: boolean
-  showAttachment?: boolean
-}
-
+type LogType = 'log' | 'info' | 'error' | 'warning'
 export interface SocketLogs {
   robot_id: string
   type: 'info' | 'error' | 'warning'
@@ -54,16 +43,20 @@ export class LoggerService {
     return this.lastLogs
   }
 
-  log(body: Omit<Omit<SocketLogs, 'robot_id'>, 'timestamp'>, { internal = false } = {}) {
-    const newLog: SocketLogs = {
-      robot_id: 'test',
-      timestamp: new Date().toISOString(),
-      ...body
-    }
-    this.logToFile(newLog)
-    this.logToConsole(newLog)
-    if (!internal) this.logToSocket(newLog)
-    this.updateLastLogs(newLog)
+  log(message: unknown, ...args: unknown[]) {
+    this.logWithSpecificType('log', message, ...args)
+  }
+
+  info(message: unknown, ...args: unknown[]) {
+    this.logWithSpecificType('info', message, ...args)
+  }
+
+  warn(message: unknown, ...args: unknown[]) {
+    this.logWithSpecificType('warning', message, ...args)
+  }
+
+  error(message: unknown, ...args: unknown[]) {
+    this.logWithSpecificType('error', message, ...args)
   }
 
   subscribe(callback: (logs: SocketLogs) => void) {
@@ -76,11 +69,7 @@ export class LoggerService {
 
   createErrorHandlingProxy<T extends object>(object: T): T {
     const logError = (className: string, methodName: string, error: Error) => {
-      this.log({
-        type: 'error',
-        message: `Error in ${className}.${methodName}: ${error.message}`,
-        attachment: error
-      })
+      this.error(`Error in ${className}.${methodName}:`, error)
     }
 
     return new Proxy(object, {
@@ -109,27 +98,25 @@ export class LoggerService {
     if (!fs.existsSync(config.logs.directory)) fs.mkdirSync(config.logs.directory)
   }
 
-  private logToFile(log: SocketLogs) {
-    const output = this.logToString(log, {
-      showTimestamp: false,
-      showRobotId: false,
-      showType: false
-    })
-    if (log.type === 'info') this.fileLogger.info(output)
-    else if (log.type === 'error') this.fileLogger.error(output)
-    else if (log.type === 'warning') this.fileLogger.warn(output)
+  private logWithSpecificType(type: LogType, message: unknown, ...args: unknown[]) {
+    this.logToFile(type, message, ...args)
+    this.logToConsole(type, message, ...args)
+    // if (!internal) this.logToSocket(newLog)
+    // this.updateLastLogs(newLog)
   }
 
-  private logToConsole(log: SocketLogs) {
-    // console.log(
-    //   this.logToString(log, {
-    //     useColors: true
-    //   })
-    // )
-    const type = log.type
-    if (type === 'info') this.consoleLogger.info(log)
-    else if (type === 'error') this.consoleLogger.error(log)
-    else if (type === 'warning') this.consoleLogger.warn(log)
+  private logToFile(type: LogType, message: unknown, ...args: unknown[]) {
+    if (type === 'log') this.fileLogger.debug(message, ...args)
+    else if (type === 'info') this.fileLogger.info(message, ...args)
+    else if (type === 'error') this.fileLogger.error(message, ...args)
+    else if (type === 'warning') this.fileLogger.warn(message, ...args)
+  }
+
+  private logToConsole(type: LogType, message: unknown, ...args: unknown[]) {
+    if (type === 'log') this.consoleLogger.log(message, ...args)
+    else if (type === 'info') this.consoleLogger.info(message, ...args)
+    else if (type === 'error') this.consoleLogger.error(message, ...args)
+    else if (type === 'warning') this.consoleLogger.warn(message, ...args)
   }
 
   private logToSocket(log: SocketLogs) {
@@ -141,66 +128,5 @@ export class LoggerService {
     if (this.lastLogs.length > 30) {
       this.lastLogs.shift()
     }
-  }
-
-  private logToString(
-    log: SocketLogs,
-    {
-      useColors = false,
-      showRobotId = true,
-      showType = true,
-      showTimestamp = true,
-      showAlgorithmName = true,
-      showAlgorithmRunId = true,
-      showAlgorithmState = true,
-      showAttachment = true
-    }: LogToStringOptions = {}
-  ) {
-    // Show or hide
-    let robotId = showRobotId ? log.robot_id : ''
-    let type = showType ? log.type : ''
-    let timestamp = showTimestamp ? log.timestamp : ''
-    const algorithmName = showAlgorithmName ? log.algorithm?.name ?? '' : ''
-    const algorithmRunId = showAlgorithmRunId ? log.algorithm?.run_id ?? '' : ''
-    let algorithmState = showAlgorithmState ? (log.algorithm?.state ? JSON.stringify(log.algorithm.state) : '') : ''
-    let algorithmInputs = showAlgorithmState ? (log.algorithm?.inputs ? JSON.stringify(log.algorithm.inputs) : '') : ''
-    let attachment = showAttachment ? (log.attachment ? JSON.stringify(log.attachment) : '') : ''
-
-    // Apply layout
-    robotId = robotId ? `<${robotId}>` : ''
-    type = type ? `[${type.toUpperCase()}]` : ''
-    let algorithmRun =
-      algorithmName || algorithmRunId ? `<${algorithmName ?? 'algo'}${algorithmRunId ? ':' : ''}${algorithmRunId}>` : ''
-    algorithmState = algorithmState ? `${algorithmRun ? 'Algorithm state' : 'State'}: ${algorithmState}` : ''
-    algorithmInputs = algorithmInputs ? `${algorithmRun ? 'Algorithm inputs' : 'Inputs'}: ${algorithmInputs}` : ''
-    attachment = attachment ? `Attachment: ${attachment}` : ''
-
-    // Apply colors
-    if (useColors) {
-      timestamp = timestamp ? colors.grey(timestamp) : ''
-      robotId = robotId ? colors.green(robotId) : ''
-      if (type)
-        switch (log.type) {
-          case 'info':
-            type = colors.blue(type)
-            break
-          case 'error':
-            type = colors.red(type)
-            break
-          case 'warning':
-            type = colors.yellow(type)
-            break
-        }
-      algorithmRun = algorithmRun ? colors.cyan(algorithmRun) : ''
-      algorithmState = algorithmState ? colors.bgMagenta(algorithmRun) : ''
-      algorithmInputs = algorithmInputs ? colors.bgBlue(algorithmInputs) : ''
-      attachment = attachment ? colors.bgGreen(attachment) : ''
-    }
-
-    const result =
-      `${timestamp} ${robotId} ${type} ${log.message}` +
-      `${algorithmRun || algorithmState ? ' | ' : ''} ${algorithmRun} ${algorithmState} ${algorithmInputs}` +
-      `${attachment ? ' | ' : ''} ${attachment}`
-    return result.trim()
   }
 }
