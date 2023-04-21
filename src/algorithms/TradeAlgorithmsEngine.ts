@@ -44,20 +44,13 @@ export class TradeAlgorithmsEngine<Domain extends DomainTemplate, TExchangeApi> 
     for (const run of unfinishedRuns) {
       const resumedRun = await algorithms.find((algo) => algo.name === run.algorithmName)?.continue(run.id)
       if (resumedRun)
-        tradebot.logger.log({
-          type: 'info',
-          message: 'Algorithm is resumed',
-          algorithm: {
-            name: resumedRun.algorithmName,
-            run_id: resumedRun.id,
-            state: resumedRun.state
-          }
+        tradebot.logger.success('Algorithm is resumed: ', {
+          name: resumedRun.algorithmName,
+          run_id: resumedRun.id,
+          state: resumedRun.state
         })
     }
-    tradebot.logger.log({
-      type: 'info',
-      message: 'All algorithms are resumed'
-    })
+    tradebot.logger.success('All algorithms are resumed')
   }
 
   // TODO: rename to resume

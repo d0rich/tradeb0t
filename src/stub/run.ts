@@ -5,7 +5,6 @@ import { StubExchangeApi } from './exchange'
 async function main() {
   const stubApi = new StubExchangeApi()
   await stubApi.initialize()
-  console.log('Stub API Initialized')
   runTradeBot({
     mode: 'production',
     exchangeClient: new ExchangeConnector({

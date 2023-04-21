@@ -83,10 +83,7 @@ export class TradeBot<Domain extends DomainTemplate, TExchangeApi> implements IT
   private async setup({ exchangeClient, initAlgorithmsCallback }: TradeBotSetupOptions<Domain, TExchangeApi>) {
     // Logger setup
     this._logger = new LoggerService(this)
-    this.logger.log({
-      type: 'info',
-      message: 'TradeBot Initialization...'
-    })
+    this.logger.start('TradeBot Initialization...')
     // ExchangeConnector setup
     this._exchangeClient = this.logger.createErrorHandlingProxy(exchangeClient)
     await this._exchangeClient.initAccount()
@@ -106,10 +103,7 @@ export class TradeBot<Domain extends DomainTemplate, TExchangeApi> implements IT
     const authService = new AuthService(this)
     this._auth = this.logger.createErrorHandlingProxy(authService)
 
-    this.logger.log({
-      type: 'info',
-      message: 'All modules are initialized'
-    })
+    this.logger.success('All modules are initialized')
     await this.analyzer.start()
     await this.analyzer.updateCurrencies()
   }

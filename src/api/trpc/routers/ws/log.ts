@@ -40,7 +40,7 @@ export const initLogRouter = (tradeBot: ITradeBot) => {
           tradeBot.logger.subscribe(onLog)
 
           return () => {
-            tradeBot.logger.log('Logs subscription finished', {
+            tradeBot.logger.debug('Logs subscription finished', {
               remote: ctx.req.socket.remoteAddress
             })
             tradeBot.logger.unsubscribe(onLog)

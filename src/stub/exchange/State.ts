@@ -54,7 +54,6 @@ export class StubExchangeState {
           currency.balance = new CurrencyBalance()
           currency.balance.assetTicker = currency.ticker
           currency.balance.amount = Number(faker.finance.amount(500, 5000, 0))
-          console.log(currency.balance)
           await ExchangeDataSource.manager.save(currency.balance)
         }
       } catch (err) {
