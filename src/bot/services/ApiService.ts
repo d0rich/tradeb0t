@@ -17,9 +17,10 @@ export class ApiService {
 
   private async configureServers() {
     const config = this.tradeBot.config
+    const logger = this.tradeBot.logger.consoleLogger
     this.http = await initH3WithWss(this.tradeBot)
     this.http.listen(config.api.port, () => {
-      console.info(`${colors.blue('[i]')} TradeBot is online on: `)
+      logger.ready(`TradeBot is online`)
       if (config.api.host === '0.0.0.0') {
         const nets = networkInterfaces()
         const ipAddresses: string[] = []
@@ -28,17 +29,17 @@ export class ApiService {
             if (n.family === 'IPv4') ipAddresses.push(n.address)
           })
         }
-        console.info(`    ${colors.blue('[i]')} REST API:`)
+        logger.info(`REST API:`)
         for (const addr of ipAddresses) {
-          console.info(`        ${colors.grey('-')} http://${addr}:${config.api.port}/`)
+          logger.log(`    ${colors.grey('-')} http://${addr.replace('127.0.0.1', 'localhost')}:${config.api.port}/`)
         }
-        console.info(`    ${colors.blue('[i]')} WebSocket:`)
+        logger.info(`WebSocket:`)
         for (const addr of ipAddresses) {
-          console.info(`        ${colors.grey('-')} ws://${addr}:${config.api.port}/`)
+          logger.log(`    ${colors.grey('-')} ws://${addr.replace('127.0.0.1', 'localhost')}:${config.api.port}/`)
         }
       } else {
-        console.info(`    ${colors.blue('[i]')} REST API - http://${config.api.host}:${config.api.port}/`)
-        console.info(`    ${colors.blue('[i]')} WebSocket - ws://${config.api.host}:${config.api.port}/`)
+        console.info(`REST API - http://${config.api.host}:${config.api.port}/`)
+        console.info(`WebSocket - ws://${config.api.host}:${config.api.port}/`)
       }
     })
   }

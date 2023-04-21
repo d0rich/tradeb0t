@@ -19,8 +19,8 @@ export interface SocketLogs {
 
 export class LoggerService {
   readonly internalTypes: LogType[] = ['debug', 'silent']
+  readonly consoleLogger: ConsolaInstance
 
-  private readonly consoleLogger: ConsolaInstance
   private readonly fileLogger: Logger
   private readonly lastLogs: LogObject[]
   private readonly eventEmitter = new EventEmitter()
