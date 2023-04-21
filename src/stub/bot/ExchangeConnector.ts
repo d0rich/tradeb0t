@@ -2,9 +2,8 @@ import { AbstractExchangeConnector, CommonDomain, CurrencyBalance, SecurityBalan
 import { StubExchangeApi } from '../exchange'
 
 export class ExchangeConnector extends AbstractExchangeConnector<CommonDomain, StubExchangeApi> {
-  initAccount() {
-
-  }
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  initAccount() {}
   getPortfolio(): Promise<SecurityBalance[]> {
     return this.api.getPortfolio()
   }

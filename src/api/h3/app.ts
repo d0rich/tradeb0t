@@ -41,7 +41,10 @@ export function initH3(tradeBot: ITradeBot) {
       if (tradeBot.auth.authByRequest(event.node.req)) {
         return
       } else {
-        tradeBot.logger.warn(`Unauthorized HTTP request: ${getMethod(event)} ${event.path}: `, await getRequestMeta(event))
+        tradeBot.logger.warn(
+          `Unauthorized HTTP request: ${getMethod(event)} ${event.path}: `,
+          await getRequestMeta(event)
+        )
         return createError({
           statusCode: 401,
           message: 'Error: Not Authorized'

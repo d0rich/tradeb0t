@@ -20,7 +20,7 @@ export class ApiService {
     const logger = this.tradeBot.logger.consoleLogger
     this.http = await initH3WithWss(this.tradeBot)
     this.http.listen(config.api.port, () => {
-      logger.ready(`TradeBot is online`)
+      logger.ready('TradeBot is online')
       if (config.api.host === '0.0.0.0') {
         const nets = networkInterfaces()
         const ipAddresses: string[] = []
@@ -29,18 +29,22 @@ export class ApiService {
             if (n.family === 'IPv4') ipAddresses.push(n.address)
           })
         }
-        logger.info(`REST API:`)
+        logger.info('REST API:')
         for (const addr of ipAddresses) {
           logger.log(`    ${colors.grey('-')} http://${addr.replace('127.0.0.1', 'localhost')}:${config.api.port}/`)
         }
-        logger.info(`WebSocket:`)
+        logger.info('WebSocket:')
         for (const addr of ipAddresses) {
           logger.log(`    ${colors.grey('-')} ws://${addr.replace('127.0.0.1', 'localhost')}:${config.api.port}/`)
         }
         if (process.env.NODE_ENV === 'development') {
-          logger.info(`TRPC Playground:`)
+          logger.info('TRPC Playground:')
           for (const addr of ipAddresses) {
-            logger.log(`    ${colors.grey('-')} http://${addr.replace('127.0.0.1', 'localhost')}:${config.api.port}/trpc-playground`)
+            logger.log(
+              `    ${colors.grey('-')} http://${addr.replace('127.0.0.1', 'localhost')}:${
+                config.api.port
+              }/trpc-playground`
+            )
           }
         }
       } else {
