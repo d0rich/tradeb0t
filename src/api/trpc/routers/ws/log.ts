@@ -2,8 +2,8 @@ import { observable } from '@trpc/server/observable'
 import { z } from 'zod'
 import { ITradeBot } from 'src/bot'
 import { publicProcedure, router } from './trpc'
-import { SocketLogs } from 'src/bot'
 import { TRPCError } from '@trpc/server'
+import { LogObject } from 'consola'
 
 export const initLogRouter = (tradeBot: ITradeBot) => {
   return router({
@@ -18,7 +18,7 @@ export const initLogRouter = (tradeBot: ITradeBot) => {
         })
       )
       .subscription(({ input, ctx }) => {
-        return observable<SocketLogs>((emit) => {
+        return observable<LogObject>((emit) => {
           if (!tradeBot.auth.authByToken(input.auth?.token)) {
             emit.error(
               new TRPCError({
@@ -48,7 +48,7 @@ export const initLogRouter = (tradeBot: ITradeBot) => {
             },
             { internal: true }
           )
-          const onLog = (log: SocketLogs) => {
+          const onLog = (log: LogObject) => {
             emit.next(log)
           }
           tradeBot.logger.subscribe(onLog)
