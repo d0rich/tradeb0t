@@ -18,7 +18,7 @@ export interface SocketLogs {
 }
 
 export class LoggerService {
-  readonly internalTypes: LogType[] = ['debug']
+  readonly internalTypes: LogType[] = ['debug', 'silent']
 
   private readonly consoleLogger: ConsolaInstance
   private readonly fileLogger: Logger
@@ -43,6 +43,8 @@ export class LoggerService {
     return this.lastLogs
   }
 
+  // Different log types
+
   log(message: unknown, ...args: unknown[]) {
     this.logWithSpecificType('log', message, ...args)
   }
@@ -63,6 +65,40 @@ export class LoggerService {
     this.logWithSpecificType('debug', message, ...args)
   }
 
+  fail(message: unknown, ...args: unknown[]) {
+    this.logWithSpecificType('fail', message, ...args)
+  }
+
+  fatal(message: unknown, ...args: unknown[]) {
+    this.logWithSpecificType('fatal', message, ...args)
+  }
+
+  ready(message: unknown, ...args: unknown[]) {
+    this.logWithSpecificType('ready', message, ...args)
+  }
+
+  silent(message: unknown, ...args: unknown[]) {
+    this.logWithSpecificType('silent', message, ...args)
+  }
+
+  start(message: unknown, ...args: unknown[]) {
+    this.logWithSpecificType('start', message, ...args)
+  }
+
+  success(message: unknown, ...args: unknown[]) {
+    this.logWithSpecificType('success', message, ...args)
+  }
+
+  trace(message: unknown, ...args: unknown[]) {
+    this.logWithSpecificType('trace', message, ...args)
+  }
+
+  verbose(message: unknown, ...args: unknown[]) {
+    this.logWithSpecificType('verbose', message, ...args)
+  }
+
+  // Subscriptions
+
   subscribe(callback: (logs: LogObject) => void) {
     this.eventEmitter.on('log', callback)
   }
@@ -70,6 +106,8 @@ export class LoggerService {
   unsubscribe(callback: (logs: LogObject) => void) {
     this.eventEmitter.off('log', callback)
   }
+
+  // Error handling utils
 
   createErrorHandlingProxy<T extends object>(object: T): T {
     const handler: ProxyHandler<T> = {
@@ -116,6 +154,14 @@ export class LoggerService {
     else if (type === 'error') this.fileLogger.error(message, ...args)
     else if (type === 'warn') this.fileLogger.warn(message, ...args)
     else if (type === 'debug') this.fileLogger.debug(message, ...args)
+    else if (type === 'fail') this.fileLogger.error(message, ...args)
+    else if (type === 'fatal') this.fileLogger.fatal(message, ...args)
+    else if (type === 'ready') this.fileLogger.info(message, ...args)
+    else if (type === 'silent') this.fileLogger.debug(message, ...args)
+    else if (type === 'start') this.fileLogger.info(message, ...args)
+    else if (type === 'success') this.fileLogger.info(message, ...args)
+    else if (type === 'trace') this.fileLogger.trace(message, ...args)
+    else if (type === 'verbose') this.fileLogger.info(message, ...args)
   }
 
   private logToConsole(type: LogType, message: unknown, ...args: unknown[]) {
@@ -124,6 +170,14 @@ export class LoggerService {
     else if (type === 'error') this.consoleLogger.error(message, ...args)
     else if (type === 'warn') this.consoleLogger.warn(message, ...args)
     else if (type === 'debug') this.consoleLogger.debug(message, ...args)
+    else if (type === 'fail') this.consoleLogger.fail(message, ...args)
+    else if (type === 'fatal') this.consoleLogger.fatal(message, ...args)
+    else if (type === 'ready') this.consoleLogger.ready(message, ...args)
+    else if (type === 'silent') this.consoleLogger.silent(message, ...args)
+    else if (type === 'start') this.consoleLogger.start(message, ...args)
+    else if (type === 'success') this.consoleLogger.success(message, ...args)
+    else if (type === 'trace') this.consoleLogger.trace(message, ...args)
+    else if (type === 'verbose') this.consoleLogger.verbose(message, ...args)
   }
 
   private logToSocket(log: LogObject) {
