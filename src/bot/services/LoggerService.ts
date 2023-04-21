@@ -4,7 +4,7 @@ import { createConsola, consola, ConsolaInstance, LogObject,  } from 'consola'
 import { EventEmitter } from 'events'
 import { ITradeBot } from '../ITradeBot'
 
-type LogType = 'log' | 'info' | 'error' | 'warning'
+type LogType = 'log' | 'info' | 'error' | 'warning' | 'debug'
 export interface SocketLogs {
   robot_id: string
   type: 'info' | 'error' | 'warning'
@@ -20,6 +20,8 @@ export interface SocketLogs {
 }
 
 export class LoggerService {
+  readonly internalTypes: LogType[] = ['debug']
+
   private readonly consoleLogger: ConsolaInstance
   private readonly fileLogger: Logger
   private readonly lastLogs: LogObject[]
@@ -57,6 +59,10 @@ export class LoggerService {
 
   error(message: unknown, ...args: unknown[]) {
     this.logWithSpecificType('error', message, ...args)
+  }
+
+  debug(message: unknown, ...args: unknown[]) {
+    this.logWithSpecificType('debug', message, ...args)
   }
 
   subscribe(callback: (logs: LogObject) => void) {
@@ -103,9 +109,7 @@ export class LoggerService {
     this.logToConsole(type, message, ...args)
     const logObj = this.consoleLogger._lastLog.object
     if (!logObj) return
-    // TODO: define internal parameter
-    const internal = false
-    if (!internal) {
+    if (!this.internalTypes.includes(type)) {
       this.logToSocket(logObj)
     }
     this.updateLastLogs(logObj)
@@ -116,6 +120,7 @@ export class LoggerService {
     else if (type === 'info') this.fileLogger.info(message, ...args)
     else if (type === 'error') this.fileLogger.error(message, ...args)
     else if (type === 'warning') this.fileLogger.warn(message, ...args)
+    else if (type === 'debug') this.fileLogger.debug(message, ...args)
   }
 
   private logToConsole(type: LogType, message: unknown, ...args: unknown[]) {
@@ -123,6 +128,7 @@ export class LoggerService {
     else if (type === 'info') this.consoleLogger.info(message, ...args)
     else if (type === 'error') this.consoleLogger.error(message, ...args)
     else if (type === 'warning') this.consoleLogger.warn(message, ...args)
+    else if (type === 'debug') this.consoleLogger.debug(message, ...args)
   }
 
   private logToSocket(log: LogObject) {
