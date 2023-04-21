@@ -1,6 +1,6 @@
 import fs from 'fs'
 import { createRollingFileLogger, Logger } from 'simple-node-logger'
-import { createConsola, consola, ConsolaInstance, LogObject,  } from 'consola'
+import { createConsola, ConsolaInstance, LogObject } from 'consola'
 import { EventEmitter } from 'events'
 import { ITradeBot } from '../ITradeBot'
 

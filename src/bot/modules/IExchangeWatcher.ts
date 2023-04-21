@@ -1,6 +1,5 @@
 import {
   CommonDomain,
-  DomainTemplate,
   GetSecurityBalanceType,
   GetCurrencyBalanceType,
   GetCurrencyType,
