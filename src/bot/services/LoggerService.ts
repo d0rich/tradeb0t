@@ -1,6 +1,6 @@
 import fs from 'fs'
 import { createRollingFileLogger, Logger } from 'simple-node-logger'
-import { createConsola, consola, ConsolaInstance } from 'consola'
+import { createConsola, consola, ConsolaInstance, LogObject,  } from 'consola'
 import { EventEmitter } from 'events'
 import { ITradeBot } from '../ITradeBot'
 
@@ -22,7 +22,7 @@ export interface SocketLogs {
 export class LoggerService {
   private readonly consoleLogger: ConsolaInstance
   private readonly fileLogger: Logger
-  private readonly lastLogs: SocketLogs[]
+  private readonly lastLogs: LogObject[]
   private readonly eventEmitter = new EventEmitter()
 
   constructor(private readonly tradebot: ITradeBot) {
@@ -59,11 +59,11 @@ export class LoggerService {
     this.logWithSpecificType('error', message, ...args)
   }
 
-  subscribe(callback: (logs: SocketLogs) => void) {
+  subscribe(callback: (logs: LogObject) => void) {
     this.eventEmitter.on('log', callback)
   }
 
-  unsubscribe(callback: (logs: SocketLogs) => void) {
+  unsubscribe(callback: (logs: LogObject) => void) {
     this.eventEmitter.off('log', callback)
   }
 
@@ -101,8 +101,14 @@ export class LoggerService {
   private logWithSpecificType(type: LogType, message: unknown, ...args: unknown[]) {
     this.logToFile(type, message, ...args)
     this.logToConsole(type, message, ...args)
-    // if (!internal) this.logToSocket(newLog)
-    // this.updateLastLogs(newLog)
+    const logObj = this.consoleLogger._lastLog.object
+    if (!logObj) return
+    // TODO: define internal parameter
+    const internal = false
+    if (!internal) {
+      this.logToSocket(logObj)
+    }
+    this.updateLastLogs(logObj)
   }
 
   private logToFile(type: LogType, message: unknown, ...args: unknown[]) {
@@ -119,11 +125,11 @@ export class LoggerService {
     else if (type === 'warning') this.consoleLogger.warn(message, ...args)
   }
 
-  private logToSocket(log: SocketLogs) {
+  private logToSocket(log: LogObject) {
     this.eventEmitter.emit('log', log)
   }
 
-  private updateLastLogs(log: SocketLogs) {
+  private updateLastLogs(log: LogObject) {
     this.lastLogs.push(log)
     if (this.lastLogs.length > 30) {
       this.lastLogs.shift()
