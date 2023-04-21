@@ -1,10 +1,8 @@
 import fs from 'fs'
 import { createRollingFileLogger, Logger } from 'simple-node-logger'
-import { createConsola, ConsolaInstance, LogObject } from 'consola'
+import { createConsola, ConsolaInstance, LogObject, LogType } from 'consola'
 import { EventEmitter } from 'events'
 import { ITradeBot } from '../ITradeBot'
-
-type LogType = 'log' | 'info' | 'error' | 'warning' | 'debug'
 export interface SocketLogs {
   robot_id: string
   type: 'info' | 'error' | 'warning'
@@ -54,7 +52,7 @@ export class LoggerService {
   }
 
   warn(message: unknown, ...args: unknown[]) {
-    this.logWithSpecificType('warning', message, ...args)
+    this.logWithSpecificType('warn', message, ...args)
   }
 
   error(message: unknown, ...args: unknown[]) {
@@ -116,7 +114,7 @@ export class LoggerService {
     if (type === 'log') this.fileLogger.debug(message, ...args)
     else if (type === 'info') this.fileLogger.info(message, ...args)
     else if (type === 'error') this.fileLogger.error(message, ...args)
-    else if (type === 'warning') this.fileLogger.warn(message, ...args)
+    else if (type === 'warn') this.fileLogger.warn(message, ...args)
     else if (type === 'debug') this.fileLogger.debug(message, ...args)
   }
 
@@ -124,7 +122,7 @@ export class LoggerService {
     if (type === 'log') this.consoleLogger.log(message, ...args)
     else if (type === 'info') this.consoleLogger.info(message, ...args)
     else if (type === 'error') this.consoleLogger.error(message, ...args)
-    else if (type === 'warning') this.consoleLogger.warn(message, ...args)
+    else if (type === 'warn') this.consoleLogger.warn(message, ...args)
     else if (type === 'debug') this.consoleLogger.debug(message, ...args)
   }
 
