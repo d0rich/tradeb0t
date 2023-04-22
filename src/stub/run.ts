@@ -7,7 +7,7 @@ async function main() {
   await stubApi.initialize()
   runTradeBot({
     mode: 'production',
-    exchangeClient: new ExchangeConnector({
+    exchangeConnector: new ExchangeConnector({
       modules: {
         domainMapper: new DomainMapper(),
         infoModule: new InfoModule(),

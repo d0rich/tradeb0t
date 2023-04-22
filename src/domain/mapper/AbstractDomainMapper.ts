@@ -14,10 +14,10 @@ import { IDomainMapper } from '../mapper'
 export abstract class AbstractDomainMapper<Domain extends DomainTemplate, TExchangeApi = unknown>
   implements IDomainMapper<Domain>
 {
-  protected exchangeClient: IExchangeConnector<Domain, TExchangeApi>
+  protected exchangeConnector: IExchangeConnector<Domain, TExchangeApi>
 
-  setExchangeClient(exchangeClient: IExchangeConnector<Domain, TExchangeApi>) {
-    this.exchangeClient = exchangeClient
+  setExchangeClient(exchangeConnector: IExchangeConnector<Domain, TExchangeApi>) {
+    this.exchangeConnector = exchangeConnector
   }
 
   abstract currency(currency: GetCurrencyType<Domain>): Promise<GetCurrencyType<CommonDomain>>
