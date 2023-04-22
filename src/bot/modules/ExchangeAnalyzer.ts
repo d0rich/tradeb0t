@@ -44,6 +44,12 @@ export class ExchangeAnalyzer<Domain extends DomainTemplate, TExchangeApi>
 
   async start() {
     await this.storage.initialize()
+    this.trader.hooks.hook('orderSent', async (order, operation_type, runId) => {
+      const domainMapper = this.tradebot.exchangeConnector.domainMapper
+      const status = domainMapper.orderStatus(order)
+      const commonOrder = await domainMapper.order(order)
+      await this.storage.orders.saveOne({ ...commonOrder, status: status }, operation_type, runId)
+    })
     // Create hooks for repositories
     this.storage.orders.hooks.hook('beforeSaveOne', async (ticker) => {
       this.loadSecurityIfNotExist(ticker)

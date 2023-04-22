@@ -31,12 +31,6 @@ export class ExchangeWatcher<Domain extends DomainTemplate, TExchangeApi> implem
 
   constructor(tradebot: ITradeBot<Domain, TExchangeApi>) {
     this.tradebot = tradebot
-    this.trader.hooks.hook('orderSent', async (order, operation_type, runId) => {
-      const { domainMapper, analyzer } = this
-      const status = domainMapper.orderStatus(order)
-      const commonOrder = await domainMapper.order(order)
-      await analyzer.storage.orders.saveOne({ ...commonOrder, status: status }, operation_type, runId)
-    })
   }
 
   async getPortfolio(): Promise<GetSecurityBalanceType<CommonDomain>[]> {
