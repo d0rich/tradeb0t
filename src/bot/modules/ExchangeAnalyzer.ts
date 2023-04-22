@@ -31,7 +31,6 @@ export class ExchangeAnalyzer<Domain extends DomainTemplate, TExchangeApi>
   }
 
   private _tradeAlgos: ITradeAlgorithmsEngine
-  private _initAlgorithmsCallback: (analyzer: IExchangeAnalyzer<Domain, TExchangeApi>) => ITradeAlgorithm[]
 
   constructor(
     tradebot: ITradeBot<Domain, TExchangeApi>,
@@ -42,7 +41,7 @@ export class ExchangeAnalyzer<Domain extends DomainTemplate, TExchangeApi>
     this._initAlgorithmsCallback = initAlgorithmsCallback
   }
 
-  async start() {
+  async initialize() {
     await this.storage.initialize()
     this.trader.hooks.hook('orderSent', async (order, operation_type, runId) => {
       const domainMapper = this.tradebot.exchangeConnector.domainMapper
@@ -113,6 +112,8 @@ export class ExchangeAnalyzer<Domain extends DomainTemplate, TExchangeApi>
     ])
     return this.storage.portfolio.findPositions()
   }
+
+  private _initAlgorithmsCallback: (analyzer: IExchangeAnalyzer<Domain, TExchangeApi>) => ITradeAlgorithm[]
 
   private async loadSecurityIfNotExist(ticker: string): Promise<GetSecurityType<CommonDomain> | null> {
     const { watcher } = this

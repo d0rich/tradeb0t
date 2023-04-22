@@ -88,7 +88,7 @@ export class TradeBot<Domain extends DomainTemplate, TExchangeApi> implements IT
     this._auth = this.logger.createErrorHandlingProxy(authService)
 
     this.logger.success('All modules are initialized')
-    await this.analyzer.start()
+    await this.analyzer.initialize()
     await this.analyzer.updateCurrencies()
   }
 }

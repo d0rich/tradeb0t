@@ -18,7 +18,7 @@ export interface IExchangeAnalyzer<Domain extends DomainTemplate, TExchangeApi> 
   readonly tradebot: ITradeBot<Domain, TExchangeApi>
   get trader(): IExchangeTrader<Domain>
   get watcher(): IExchangeWatcher
-  start(): Promise<void>
+  initialize(): Promise<void>
   updateCurrencies(): Promise<GetCurrencyType<CommonDomain>[]>
   updateCurrenciesBalance(): Promise<GetCurrencyBalanceType<CommonDomain>[]>
   updateSecurities(): Promise<GetSecurityType<CommonDomain>[]>

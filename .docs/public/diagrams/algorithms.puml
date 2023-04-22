@@ -1,4 +1,41 @@
 @startuml
+interface ITradeAlgorithm<InputsType, StateType> {
+    +name: string
+    +description: string
+    +inputs: InputTypes
+    +details: Algorithm
+    +main(inputs: InputsType): Promise<AlgorithmRun<InputsType, StateType>>
+    +resume(id: number): Promise<AlgorithmRun<InputsType, StateType>>
+    +stop(id: number): Promise<AlgorithmRun<InputsType, StateType>>
+}
+abstract class AbstractTradeAlgorithm<Domain extends DomainTemplate, TExchangeApi, InputsType, StateType, StopStateType> implements ITradeAlgorithm {
+    +{abstract} name: string
+    +{abstract} description: string
+    +{abstract} inputs: InputTypes
+    +{abstract} main(inputs: InputsType): Promise<AlgorithmRun<InputsType, StateType>>
+    +{abstract} resume(id: number): Promise<AlgorithmRun<InputsType, StateType>>
+    +{abstract} stop(id: number): Promise<AlgorithmRun<InputsType, StateType>>
+    +details: Algorithm
+    #stopState: Map<number, StopStateType>
+    #watcher: IExchangeWatcher
+    #trader: IExchangeTrader<Domain>
+    -logger: LoggerService
+    #analyzer: IExchangeAnalyzer<Domain, TExchangeApi>
+    #commitStart(inputs: InputsType, state: StateType): Promise<AlgorithmRun>
+    #commitStop(id: number): Promise<AlgorithmRun>
+    #commitContinue(id: number): Promise<AlgorithmRun>
+    #commitFinish(id: number): Promise<AlgorithmRun>
+    #commitError(id: number, error: Error): Promise<AlgorithmRun>
+    #saveProgress(id: number, progress: StateType): Promise<AlgorithmRun>
+    #loadProgress(id: number): Promise<AlgorithmRun>
+}
+interface ITradeAlgorithmsEngine {
+    +description: Algorithm[]
+    +runAlgorithm(name: string, inputs: unknown): Promise<AlgorithmRun>
+    +resumeAlgorithms(): Promise<void>
+    +resumeAlgorithm(name: string, run_id: number): Promise<AlgorithmRun>
+    +stopAlgorithm(name: string, run_id: number): Promise<AlgorithmRun>
+}
 interface IExchangeTraderHooks<Domain extends DomainTemplate> {
     +orderSent: (order: GetOrderType<Domain>, operation_type: OperationType, runId?: number) => void
 }
@@ -294,14 +331,39 @@ class TradeBot<Domain extends DomainTemplate<unknown, unknown, unknown, unknown,
     -_auth: AuthService
     -setup(__0: TradeBotSetupOptions<Domain, TExchangeApi>): Promise<void>
 }
+class TradeAlgorithmsEngine<Domain extends DomainTemplate, TExchangeApi> implements ITradeAlgorithmsEngine {
+    +description: Algorithm[]
+    #analyzer: IExchangeAnalyzer<Domain, TExchangeApi>
+    #trader: IExchangeTrader<Domain>
+    #watcher: IExchangeWatcher
+    #tradebot: ITradeBot<Domain, TExchangeApi>
+    #algorithms: ITradeAlgorithm[]
+    +runAlgorithm(name: string, inputs: unknown): Promise<AlgorithmRun>
+    +resumeAlgorithms(): Promise<void>
+    +resumeAlgorithm(name: string, id: number): Promise<AlgorithmRun>
+    +stopAlgorithm(name: string, id: number): Promise<AlgorithmRun>
+}
+ITradeAlgorithm --> "1" Algorithm
+ITradeAlgorithm --> "1" AlgorithmRun
+AbstractTradeAlgorithm --> "1" AlgorithmRun
+AbstractTradeAlgorithm --> "1" Algorithm
+AbstractTradeAlgorithm --> "1" IExchangeWatcher
+AbstractTradeAlgorithm --> "1" IExchangeTrader
+AbstractTradeAlgorithm --> "1" LoggerService
+AbstractTradeAlgorithm --> "1" IExchangeAnalyzer
+ITradeAlgorithmsEngine --> "*" Algorithm
+ITradeAlgorithmsEngine --> "1" AlgorithmRun
 IExchangeTrader --> "1" IExchangeTraderHooks
+IExchangeAnalyzer --> "1" ITradeAlgorithmsEngine
 IExchangeAnalyzer --> "1" ITradeBot
 IExchangeAnalyzer --> "1" IExchangeTrader
 IExchangeAnalyzer --> "1" IExchangeWatcher
 ExchangeAnalyzer --> "1" ITradeBot
+ExchangeAnalyzer --> "1" ITradeAlgorithmsEngine
 ExchangeAnalyzer --> "1" IExchangeTrader
 ExchangeAnalyzer --> "1" IExchangeWatcher
 ExchangeAnalyzer --> "1" IExchangeAnalyzer
+ExchangeAnalyzer --> "*" ITradeAlgorithm
 IExchangeConnector --> "1" ITradeModule
 IExchangeConnector --> "1" IInfoModule
 IExchangeConnector --> "1" IDomainMapper
@@ -353,8 +415,10 @@ ExchangeWatcher --> "1" IExchangeConnector
 TradeBotInitOptions --> "1" IExchangeConnector
 TradeBotInitOptions --> "1" ITradeBotConfig
 TradeBotInitOptions --> "1" IExchangeAnalyzer
+TradeBotInitOptions --> "*" ITradeAlgorithm
 TradeBotSetupOptions --> "1" IExchangeConnector
 TradeBotSetupOptions --> "1" IExchangeAnalyzer
+TradeBotSetupOptions --> "*" ITradeAlgorithm
 TradeBot --> "1" ITradeBotConfig
 TradeBot --> "1" IExchangeConnector
 TradeBot --> "1" IExchangeAnalyzer
@@ -364,4 +428,11 @@ TradeBot --> "1" ApiService
 TradeBot --> "1" LoggerService
 TradeBot --> "1" AuthService
 TradeBot --> "1" TradeBotSetupOptions
+TradeAlgorithmsEngine --> "*" Algorithm
+TradeAlgorithmsEngine --> "1" IExchangeAnalyzer
+TradeAlgorithmsEngine --> "1" IExchangeTrader
+TradeAlgorithmsEngine --> "1" IExchangeWatcher
+TradeAlgorithmsEngine --> "1" ITradeBot
+TradeAlgorithmsEngine --> "*" ITradeAlgorithm
+TradeAlgorithmsEngine --> "1" AlgorithmRun
 @enduml

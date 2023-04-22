@@ -17,7 +17,6 @@ export abstract class AbstractTradeAlgorithm<
   abstract resume(id: number): Promise<AlgorithmRun<InputsType, StateType>>
   abstract stop(id: number): Promise<AlgorithmRun<InputsType, StateType>>
 
-  protected stopState: Map<number, StopStateType> = new Map<number, StopStateType>()
   get details(): Algorithm {
     return {
       name: this.name,
@@ -25,12 +24,16 @@ export abstract class AbstractTradeAlgorithm<
       inputTypes: this.inputs
     }
   }
+
+  protected stopState: Map<number, StopStateType> = new Map<number, StopStateType>()
+
   protected get watcher(): IExchangeWatcher {
     return this.analyzer.watcher
   }
   protected get trader(): IExchangeTrader<Domain> {
     return this.analyzer.trader
   }
+
   private get logger(): LoggerService {
     return this.analyzer.tradebot.logger
   }
