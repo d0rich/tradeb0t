@@ -14,7 +14,7 @@ Domain includes types of entities in the integrated exchange.
 
 Technically, you can provide `any` types for `DomainTemplate`. But it is not recommended, as these types will be helpful in process of creating other modules.
 
-```typescript
+```ts
 import {DomainTemplate} from 'tradeb0t-core'
 import {
     CurrencyType,
@@ -28,34 +28,90 @@ import {
 export type Domain = DomainTemplate<CurrencyType, CurrencyBalanceType, SecurityType, SecurityBalanceType, OrderType>
 ```
 
-### Implement ExchangeClient
+### Implement ExchangeConnector
 
-`ExchangeClient` is layer between exchange and tradebot internal logic. 
+`ExchangeConnector` is layer between exchange and tradebot internal logic. 
 
 It also includes two submodules for splitting logic:
 - `InfoModule` - get different information from exchange;
 - `TradeModule` - send requests to place orders to exchange;
-- `Translator` - for translation exchange types to tradebot types.
+- `DomainMapper` - for translation exchange types to tradebot types.
 
-You can access `ExchangeClient` instance with `this.exchangeConnector` from these modules.
+You can access `ExchangeConnector` instance with `this.exchangeConnector` from these modules.
 
-Note, that you can provide object containing API methods to exchange (`API` in example). It will be available in `ExchangeClient` instance as `api`.
+Note, that you can provide object containing API methods to exchange (`API` in example). It will be available in `ExchangeConnector` instance as `api`.
 
-```typescript
-import {AbstractExchangeClient} from 'tradeb0t-core'
+#### DomainMapper
+
+Also, you should implement `DomainMapper` to make it possible for tradebot to understand types of your exchange. 
+
+Internal domain of tradebot is provided by `CommonDomain` type in core library.
+
+```ts
+import {OperationType, OrderStatus, CommonDomain,
+    AbstractDomainMapper,
+    GetCurrencyBalanceType,
+    GetCurrencyType,
+    GetOrderType,
+    GetSecurityBalanceType,
+    GetSecurityType} from 'tradeb0t-core'
+import type API from '@exchange/sdk'
+
+import {Domain} from "../Domain";
+export class DomainMapper extends AbstractDomainMapper<Domain, API>{
+    async currency(currency: GetCurrencyType<Domain>): Promise<GetCurrencyType<CommonDomain>>{
+        //...
+    }
+    //...
+}
+```
+
+Note, that you can extract specific domains types from `Domain` or `ExchangeConnector` with following generic types:
+- `GetCurrencyType<T>`
+- `GetCurrencyBalanceType<T>`
+- `GetSecurityType<T>`
+- `GetSecurityBalanceType<T>`
+- `GetOrderType<T>`
+
+#### InfoModule
+
+```ts
+import {AbstractInfoModule} from 'tradeb0t-core'
+import type API from '@exchange/sdk'
+
+import {Domain} from '../Domain'
+
+export class InfoModule extends AbstractInfoModule<Domain, API>{/*...*/}
+```
+
+#### TradeModule
+
+```ts
+import {AbstractTradeModule} from 'tradeb0t-core'
+import type API from '@exchange/sdk'
+
+import {Domain} from '../Domain'
+
+export class TradeModule extends AbstractTradeModule<Domain, API>{/*...*/}
+```
+
+#### ExchangeConnector
+
+```ts
+import {AbstractExchangeConnector} from 'tradeb0t-core'
 import API from '@exchange/sdk'
 
 import {Domain} from '../Domain'
 import {TradeModule} from './TradeModule'
 import {InfoModule} from './InfoModule'
-import {Translator} from "./Translator"
+import {DomainMapper} from "./DomainMapper"
 
-export class ExchangeClient extends AbstractExchangeClient<Domain, API>{
+export class ExchangeConnector extends AbstractExchangeConnector<Domain, API>{
     constructor(token: string){
         super({
             infoModule: new InfoModule(),
             tradeModule: new TradeModule(),
-            translator: new Translator()
+            DomainMapper: new DomainMapper()
         }, new OpenAPI({
             apiURL: 'https://api-invest.tinkoff.ru/openapi/sandbox',
             socketURL: 'wss://api-invest.tinkoff.ru/openapi/md/v1/md-openapi/ws',
@@ -75,67 +131,29 @@ export class ExchangeClient extends AbstractExchangeClient<Domain, API>{
 }
 ```
 
-Don't forget to implement `InfoModule` and `TradeModule`.
-
-```typescript
-import {AbstractInfoModule} from 'tradeb0t-core'
-
-import {ExchangeClient} from './ExchangeClient'
-
-export class InfoModule extends AbstractInfoModule<ExchangeClient>{/*...*/}
-```
-
-```typescript
-import {AbstractTradeModule} from 'tradeb0t-core'
-
-import {ExchangeClient} from './ExchangeClient'
-
-export class TradeModule extends AbstractTradeModule<ExchangeClient>{/*...*/}
-```
-
-Also, you should implement `Translator` to make it possible for tradebot to understand types of your exchange. 
-
-Internal domain of tradebot is provided by `CommonDomain` type in core library.
-
-```typescript
-import {OperationType, OrderStatus, CommonDomain,
-    AbstractTranslator,
-    GetCurrencyBalanceType,
-    GetCurrencyType,
-    GetOrderType,
-    GetSecurityBalanceType,
-    GetSecurityType} from 'tradeb0t-core'
-
-import {ExchangeClient} from './ExchangeClient'
-import {Domain} from "../Domain";
-export class Translator extends AbstractTranslator<ExchangeClient>{
-    async currency(currency: GetCurrencyType<Domain>): Promise<GetCurrencyType<CommonDomain>>{
-        //...
-    }
-    //...
-}
-```
-
-Note, that you can extract specific domains types from `Domain` or `ExchangeClient` with following generic types:
-- `GetCurrencyType<T>`
-- `GetCurrencyBalanceType<T>`
-- `GetSecurityType<T>`
-- `GetSecurityBalanceType<T>`
-- `GetOrderType<T>`
-
 ### Start tradebot
 
 Finally, start tradebot with `runTradeBot` function:
 
 ```typescript
 import {runTradeBot} from 'tradeb0t-core'
+import API from '@exchange/sdk'
 
-import {ExchangeClient} from './exchange-client'
+import { DomainMapper, ExchangeConnector, InfoModule, TradeModule } from './bot'
 import {initAlgorithms} from './algorithms'
 
 runTradeBot({
-  exchangeClient: new ExchangeClient(/*your exchange client args*/),
-  botToken: process.env.BOT_TOKEN || '',
-  initAlgorithmsCallback: initAlgorithms
+  ExchangeConnector: new ExchangeConnector({
+    modules: {
+      domainMapper: new DomainMapper(),
+      infoModule: new InfoModule(),
+      tradeModule: new TradeModule()
+    },
+    api: API
+  }),
+  initAlgorithmsCallback: initAlgorithms,
+  config: {
+    // ...
+  }
 })
 ```
