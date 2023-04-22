@@ -12,7 +12,6 @@ async function main() {
         infoModule: new InfoModule(),
         tradeModule: new TradeModule()
       },
-      // TODO: make api optional
       api: stubApi
     })
   })
