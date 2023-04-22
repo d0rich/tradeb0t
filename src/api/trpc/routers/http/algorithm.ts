@@ -44,7 +44,7 @@ export default (tradebot: ITradeBot) => {
         })
       )
       .mutation(async ({ input }) => {
-        return await tradebot.analyzer.tradeAlgos.continueAlgorithm(input.algorithmName, input.runId)
+        return await tradebot.analyzer.tradeAlgos.resumeAlgorithm(input.algorithmName, input.runId)
       })
   })
 }

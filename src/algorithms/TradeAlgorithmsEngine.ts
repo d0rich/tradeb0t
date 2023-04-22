@@ -53,8 +53,7 @@ export class TradeAlgorithmsEngine<Domain extends DomainTemplate, TExchangeApi> 
     tradebot.logger.success('All algorithms are resumed')
   }
 
-  // TODO: rename to resume
-  async continueAlgorithm(name: string, id: number): Promise<AlgorithmRun> {
+  async resumeAlgorithm(name: string, id: number): Promise<AlgorithmRun> {
     const { algorithms } = this
     const algo = algorithms.find((a) => a.name === name)
     if (!algo) throw new Error(`Algorithm with name "${name}" was not found`)
