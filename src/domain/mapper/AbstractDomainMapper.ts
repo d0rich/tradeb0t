@@ -16,7 +16,7 @@ export abstract class AbstractDomainMapper<Domain extends DomainTemplate, TExcha
 {
   protected exchangeConnector: IExchangeConnector<Domain, TExchangeApi>
 
-  setExchangeClient(exchangeConnector: IExchangeConnector<Domain, TExchangeApi>) {
+  setExchangeConnector(exchangeConnector: IExchangeConnector<Domain, TExchangeApi>) {
     this.exchangeConnector = exchangeConnector
   }
 

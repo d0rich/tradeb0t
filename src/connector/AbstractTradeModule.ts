@@ -7,7 +7,7 @@ export abstract class AbstractTradeModule<Domain extends DomainTemplate, TExchan
 {
   protected exchangeConnector: IExchangeConnector<Domain, TExchangeApi>
 
-  setExchangeClient(exchangeConnector: IExchangeConnector<Domain, TExchangeApi>) {
+  setExchangeConnector(exchangeConnector: IExchangeConnector<Domain, TExchangeApi>) {
     this.exchangeConnector = exchangeConnector
   }
 

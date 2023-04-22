@@ -45,9 +45,9 @@ export abstract class AbstractExchangeConnector<
   }
 
   constructor(options: AbstractExchangeConnectorConstructorParams<Domain, TExchangeApi>) {
-    options.modules.tradeModule.setExchangeClient(this)
-    options.modules.infoModule.setExchangeClient(this)
-    options.modules.domainMapper.setExchangeClient(this)
+    options.modules.tradeModule.setExchangeConnector(this)
+    options.modules.infoModule.setExchangeConnector(this)
+    options.modules.domainMapper.setExchangeConnector(this)
     this.tradeModule = options.modules.tradeModule
     this.infoModule = options.modules.infoModule
     this.domainMapper = options.modules.domainMapper
