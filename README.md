@@ -107,17 +107,6 @@ import {InfoModule} from './InfoModule'
 import {DomainMapper} from "./DomainMapper"
 
 export class ExchangeConnector extends AbstractExchangeConnector<Domain, API>{
-    constructor(token: string){
-        super({
-            infoModule: new InfoModule(),
-            tradeModule: new TradeModule(),
-            DomainMapper: new DomainMapper()
-        }, new OpenAPI({
-            apiURL: 'https://api-invest.tinkoff.ru/openapi/sandbox',
-            socketURL: 'wss://api-invest.tinkoff.ru/openapi/md/v1/md-openapi/ws',
-            secretToken: token
-        }))
-    }
 
     protected async initAccount(){
         const { api } = this
