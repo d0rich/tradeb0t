@@ -52,9 +52,9 @@ abstract class AbstractExchangeConnector<Domain extends DomainTemplate, TExchang
     +{abstract} initAccount(): void | Promise<void>
     +{abstract} getPortfolio(): Promise<GetSecurityBalanceType<Domain>[]>
     +{abstract} getCurrenciesBalance(): Promise<GetCurrencyBalanceType<Domain>[]>
-    -_isAccountInitialized: boolean
     +isAccountInitialized: boolean
     #isAccountInitialized: boolean
+    -_isAccountInitialized: boolean
 }
 class Algorithm {
     +name: string
