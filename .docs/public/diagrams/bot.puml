@@ -199,7 +199,7 @@ interface ITradeBot<Domain extends DomainTemplate<unknown, unknown, unknown, unk
     +auth: AuthService
 }
 class ApiService {
-    -tradeBot: ITradeBot<StubDomain, unknown>
+    -tradebot: ITradeBot<StubDomain, unknown>
     -http: http.Server
     -configureServers(): Promise<void>
 }

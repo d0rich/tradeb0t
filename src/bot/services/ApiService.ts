@@ -6,19 +6,19 @@ import { initH3WithWss } from 'src/api'
 import { StubDomain } from 'src/domain'
 
 export class ApiService {
-  private readonly tradeBot: ITradeBot<StubDomain, unknown>
+  private readonly tradebot: ITradeBot<StubDomain, unknown>
 
   private http: http.Server
 
-  constructor(tradeBot: ITradeBot) {
-    this.tradeBot = tradeBot
+  constructor(tradebot: ITradeBot) {
+    this.tradebot = tradebot
     this.configureServers()
   }
 
   private async configureServers() {
-    const config = this.tradeBot.config
-    const logger = this.tradeBot.logger.consoleLogger
-    this.http = await initH3WithWss(this.tradeBot)
+    const config = this.tradebot.config
+    const logger = this.tradebot.logger.consoleLogger
+    this.http = await initH3WithWss(this.tradebot)
     this.http.listen(config.api.port, () => {
       logger.ready('TradeBot is online')
       if (config.api.host === '0.0.0.0') {

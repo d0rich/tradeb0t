@@ -2,7 +2,7 @@ import { ITradeBot } from 'src/bot'
 import { createApp, eventHandler, getMethod, createError, createRouter } from 'h3'
 import { getRequestMeta } from './utils'
 
-export function initH3(tradeBot: ITradeBot) {
+export function initH3(tradebot: ITradeBot) {
   const app = createApp()
 
   // Log all requests
@@ -12,7 +12,7 @@ export function initH3(tradeBot: ITradeBot) {
       return !url.startsWith('/trpc-playground')
     },
     handler: eventHandler(async (event) => {
-      tradeBot.logger.debug(`Incoming HTTP request: ${getMethod(event)} ${event.path}: `, await getRequestMeta(event))
+      tradebot.logger.debug(`Incoming HTTP request: ${getMethod(event)} ${event.path}: `, await getRequestMeta(event))
     })
   })
 
@@ -22,7 +22,7 @@ export function initH3(tradeBot: ITradeBot) {
   apiRouter.get(
     '/api/auth/check',
     eventHandler((event) => {
-      if (tradeBot.auth.authByRequest(event.node.req)) {
+      if (tradebot.auth.authByRequest(event.node.req)) {
         return {
           status: 'Authorized',
           auth: true
@@ -38,10 +38,10 @@ export function initH3(tradeBot: ITradeBot) {
   app.use({
     match: (url) => url.startsWith('/api/trpc'),
     handler: eventHandler(async (event) => {
-      if (tradeBot.auth.authByRequest(event.node.req)) {
+      if (tradebot.auth.authByRequest(event.node.req)) {
         return
       } else {
-        tradeBot.logger.warn(
+        tradebot.logger.warn(
           `Unauthorized HTTP request: ${getMethod(event)} ${event.path}: `,
           await getRequestMeta(event)
         )

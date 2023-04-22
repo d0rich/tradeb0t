@@ -2,19 +2,19 @@ import { publicProcedure, router } from './trpc'
 import { z } from 'zod'
 import { ITradeBot } from 'src/bot'
 
-export default (tradeBot: ITradeBot) => {
+export default (tradebot: ITradeBot) => {
   return router({
     list: publicProcedure.query(async () => {
-      return await tradeBot.analyzer.storage.securities.find()
+      return await tradebot.analyzer.storage.securities.find()
     }),
     update: publicProcedure.mutation(async () => {
-      return await tradeBot.analyzer.updateSecurities()
+      return await tradebot.analyzer.updateSecurities()
     }),
     listFollowed: publicProcedure.query(async () => {
-      return await tradeBot.analyzer.storage.securities.findAllFollowed()
+      return await tradebot.analyzer.storage.securities.findAllFollowed()
     }),
     updateFollowed: publicProcedure.mutation(async () => {
-      return await tradeBot.analyzer.updateFollowedSecurities()
+      return await tradebot.analyzer.updateFollowedSecurities()
     }),
     follow: publicProcedure
       .input(
@@ -23,7 +23,7 @@ export default (tradeBot: ITradeBot) => {
         })
       )
       .mutation(async ({ input }) => {
-        return await tradeBot.analyzer.storage.securities.follow(input.securityTicker)
+        return await tradebot.analyzer.storage.securities.follow(input.securityTicker)
       }),
     unfollow: publicProcedure
       .input(
@@ -32,7 +32,7 @@ export default (tradeBot: ITradeBot) => {
         })
       )
       .mutation(async ({ input }) => {
-        return await tradeBot.analyzer.storage.securities.unfollow(input.securityTicker)
+        return await tradebot.analyzer.storage.securities.unfollow(input.securityTicker)
       })
   })
 }

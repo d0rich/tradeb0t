@@ -4,16 +4,16 @@ import { ITradeBot } from 'src/bot'
 import { router, createContext } from './trpc'
 import { initLogRouter } from './log'
 
-const initWSRouter = (tradeBot: ITradeBot) => {
+const initWSRouter = (tradebot: ITradeBot) => {
   return router({
-    log: initLogRouter(tradeBot)
+    log: initLogRouter(tradebot)
   })
 }
 
-export const registerWSSHandler = ({ wss, tradeBot }: { wss: WebSocketServer; tradeBot: ITradeBot }) => {
+export const registerWSSHandler = ({ wss, tradebot }: { wss: WebSocketServer; tradebot: ITradeBot }) => {
   const handler = applyWSSHandler({
     wss,
-    router: initWSRouter(tradeBot),
+    router: initWSRouter(tradebot),
     createContext
   })
   return handler

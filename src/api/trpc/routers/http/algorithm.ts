@@ -2,10 +2,10 @@ import { publicProcedure, router } from './trpc'
 import { z } from 'zod'
 import { ITradeBot } from 'src/bot'
 
-export default (tradeBot: ITradeBot) => {
+export default (tradebot: ITradeBot) => {
   return router({
     list: publicProcedure.query(() => {
-      return tradeBot.analyzer.tradeAlgos.description
+      return tradebot.analyzer.tradeAlgos.description
     }),
     listRuns: publicProcedure
       .input(
@@ -14,7 +14,7 @@ export default (tradeBot: ITradeBot) => {
         })
       )
       .query(async ({ input }) => {
-        return await tradeBot.analyzer.storage.algorithmRuns.findManyByAlgorithm(input.algorithmName)
+        return await tradebot.analyzer.storage.algorithmRuns.findManyByAlgorithm(input.algorithmName)
       }),
     run: publicProcedure
       .input(
@@ -24,7 +24,7 @@ export default (tradeBot: ITradeBot) => {
         })
       )
       .mutation(async ({ input }) => {
-        return await tradeBot.analyzer.tradeAlgos.runAlgorithm(input.algorithmName, input.inputs)
+        return await tradebot.analyzer.tradeAlgos.runAlgorithm(input.algorithmName, input.inputs)
       }),
     stop: publicProcedure
       .input(
@@ -34,7 +34,7 @@ export default (tradeBot: ITradeBot) => {
         })
       )
       .mutation(async ({ input }) => {
-        return await tradeBot.analyzer.tradeAlgos.stopAlgorithm(input.algorithmName, input.runId)
+        return await tradebot.analyzer.tradeAlgos.stopAlgorithm(input.algorithmName, input.runId)
       }),
     resume: publicProcedure
       .input(
@@ -44,7 +44,7 @@ export default (tradeBot: ITradeBot) => {
         })
       )
       .mutation(async ({ input }) => {
-        return await tradeBot.analyzer.tradeAlgos.continueAlgorithm(input.algorithmName, input.runId)
+        return await tradebot.analyzer.tradeAlgos.continueAlgorithm(input.algorithmName, input.runId)
       })
   })
 }
