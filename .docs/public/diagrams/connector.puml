@@ -26,7 +26,7 @@ interface IExchangeConnector<Domain extends DomainTemplate, TExchangeApi> {
 }
 abstract class AbstractInfoModule<Domain extends DomainTemplate, TExchangeApi> implements IInfoModule {
     #exchangeConnector: IExchangeConnector<Domain, TExchangeApi>
-    +setExchangeClient(exchangeConnector: IExchangeConnector<Domain, TExchangeApi>): void
+    +setExchangeConnector(exchangeConnector: IExchangeConnector<Domain, TExchangeApi>): void
     +{abstract} getCurrencies(): Promise<GetCurrencyType<Domain>[]>
     +{abstract} getSecurityLastPrice(ticker: string): Promise<number>
     +{abstract} getSecurityCurrency(ticker: string): Promise<GetCurrencyType<Domain>>
@@ -36,7 +36,7 @@ abstract class AbstractInfoModule<Domain extends DomainTemplate, TExchangeApi> i
 }
 abstract class AbstractTradeModule<Domain extends DomainTemplate, TExchangeApi> implements ITradeModule {
     #exchangeConnector: IExchangeConnector<Domain, TExchangeApi>
-    +setExchangeClient(exchangeConnector: IExchangeConnector<Domain, TExchangeApi>): void
+    +setExchangeConnector(exchangeConnector: IExchangeConnector<Domain, TExchangeApi>): void
     +{abstract} sell(__0: CreateOrderOptions): Promise<GetOrderType<Domain>>
     +{abstract} buy(__0: CreateOrderOptions): Promise<GetOrderType<Domain>>
     +{abstract} marketSell(__0: CreateOrderOptions): Promise<GetOrderType<Domain>>
@@ -45,9 +45,6 @@ abstract class AbstractTradeModule<Domain extends DomainTemplate, TExchangeApi> 
     +{abstract} buyOrCancel(): Promise<GetOrderType<Domain>>
 }
 abstract class AbstractExchangeConnector<Domain extends DomainTemplate, TExchangeApi> implements IExchangeConnector {
-    -_isAccountInitialized: boolean
-    +isAccountInitialized: boolean
-    #isAccountInitialized: boolean
     +api: TExchangeApi
     +tradeModule: ITradeModule<Domain>
     +infoModule: IInfoModule<Domain>
@@ -55,6 +52,9 @@ abstract class AbstractExchangeConnector<Domain extends DomainTemplate, TExchang
     +{abstract} initAccount(): void | Promise<void>
     +{abstract} getPortfolio(): Promise<GetSecurityBalanceType<Domain>[]>
     +{abstract} getCurrenciesBalance(): Promise<GetCurrencyBalanceType<Domain>[]>
+    -_isAccountInitialized: boolean
+    +isAccountInitialized: boolean
+    #isAccountInitialized: boolean
 }
 IExchangeConnector --> "1" ITradeModule
 IExchangeConnector --> "1" IInfoModule

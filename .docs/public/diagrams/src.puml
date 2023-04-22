@@ -5,35 +5,35 @@ interface ITradeAlgorithm<InputsType, StateType> {
     +description: string
     +inputs: InputTypes
     +main(inputs: InputsType): Promise<AlgorithmRun<InputsType, StateType>>
-    +continue(id: number): Promise<AlgorithmRun<InputsType, StateType>>
+    +resume(id: number): Promise<AlgorithmRun<InputsType, StateType>>
     +stop(id: number): Promise<AlgorithmRun<InputsType, StateType>>
 }
-abstract class AbstractTradeAlgorithm<Domain extends DomainTemplate, TExchangeApi, InputsType, StateType, StopDataType> implements ITradeAlgorithm {
-    #analyzer: IExchangeAnalyzer<Domain, TExchangeApi>
-    #watcher: IExchangeWatcher
-    #trader: IExchangeTrader<Domain>
-    #stopData: Map<number, StopDataType>
-    -logger: LoggerService
-    +details: Algorithm
-    #fixStart(inputs: InputsType, state: StateType): Promise<AlgorithmRun>
-    #fixStop(id: number): Promise<AlgorithmRun>
-    #fixContinue(id: number): Promise<AlgorithmRun>
-    #fixFinish(id: number): Promise<AlgorithmRun>
-    #fixError(id: number, error: Error): Promise<AlgorithmRun>
-    #saveProgress(id: number, progress: StateType): Promise<AlgorithmRun>
-    #loadProgress(id: number): Promise<AlgorithmRun>
+abstract class AbstractTradeAlgorithm<Domain extends DomainTemplate, TExchangeApi, InputsType, StateType, StopStateType> implements ITradeAlgorithm {
     +{abstract} name: string
     +{abstract} description: string
     +{abstract} inputs: InputTypes
     +{abstract} main(inputs: InputsType): Promise<AlgorithmRun<InputsType, StateType>>
-    +{abstract} continue(id: number): Promise<AlgorithmRun<InputsType, StateType>>
+    +{abstract} resume(id: number): Promise<AlgorithmRun<InputsType, StateType>>
     +{abstract} stop(id: number): Promise<AlgorithmRun<InputsType, StateType>>
+    #stopState: Map<number, StopStateType>
+    +details: Algorithm
+    #watcher: IExchangeWatcher
+    #trader: IExchangeTrader<Domain>
+    -logger: LoggerService
+    #analyzer: IExchangeAnalyzer<Domain, TExchangeApi>
+    #commitStart(inputs: InputsType, state: StateType): Promise<AlgorithmRun>
+    #commitStop(id: number): Promise<AlgorithmRun>
+    #commitContinue(id: number): Promise<AlgorithmRun>
+    #commitFinish(id: number): Promise<AlgorithmRun>
+    #commitError(id: number, error: Error): Promise<AlgorithmRun>
+    #saveProgress(id: number, progress: StateType): Promise<AlgorithmRun>
+    #loadProgress(id: number): Promise<AlgorithmRun>
 }
 interface ITradeAlgorithmsEngine {
     +description: Algorithm[]
     +runAlgorithm(name: string, inputs: unknown): Promise<AlgorithmRun>
     +resumeAlgorithms(): Promise<void>
-    +continueAlgorithm(name: string, run_id: number): Promise<AlgorithmRun>
+    +resumeAlgorithm(name: string, run_id: number): Promise<AlgorithmRun>
     +stopAlgorithm(name: string, run_id: number): Promise<AlgorithmRun>
 }
 interface IExchangeTraderHooks<Domain extends DomainTemplate> {
@@ -112,7 +112,7 @@ interface IExchangeConnector<Domain extends DomainTemplate, TExchangeApi> {
 }
 abstract class AbstractTradeModule<Domain extends DomainTemplate, TExchangeApi> implements ITradeModule {
     #exchangeConnector: IExchangeConnector<Domain, TExchangeApi>
-    +setExchangeClient(exchangeConnector: IExchangeConnector<Domain, TExchangeApi>): void
+    +setExchangeConnector(exchangeConnector: IExchangeConnector<Domain, TExchangeApi>): void
     +{abstract} sell(__0: CreateOrderOptions): Promise<GetOrderType<Domain>>
     +{abstract} buy(__0: CreateOrderOptions): Promise<GetOrderType<Domain>>
     +{abstract} marketSell(__0: CreateOrderOptions): Promise<GetOrderType<Domain>>
@@ -122,7 +122,7 @@ abstract class AbstractTradeModule<Domain extends DomainTemplate, TExchangeApi> 
 }
 abstract class AbstractInfoModule<Domain extends DomainTemplate, TExchangeApi> implements IInfoModule {
     #exchangeConnector: IExchangeConnector<Domain, TExchangeApi>
-    +setExchangeClient(exchangeConnector: IExchangeConnector<Domain, TExchangeApi>): void
+    +setExchangeConnector(exchangeConnector: IExchangeConnector<Domain, TExchangeApi>): void
     +{abstract} getCurrencies(): Promise<GetCurrencyType<Domain>[]>
     +{abstract} getSecurityLastPrice(ticker: string): Promise<number>
     +{abstract} getSecurityCurrency(ticker: string): Promise<GetCurrencyType<Domain>>
@@ -131,9 +131,6 @@ abstract class AbstractInfoModule<Domain extends DomainTemplate, TExchangeApi> i
     +{abstract} getSecurityByExchangeId(id: string, ignoreCache?: boolean): Promise<any>
 }
 abstract class AbstractExchangeConnector<Domain extends DomainTemplate, TExchangeApi> implements IExchangeConnector {
-    -_isAccountInitialized: boolean
-    +isAccountInitialized: boolean
-    #isAccountInitialized: boolean
     +api: TExchangeApi
     +tradeModule: ITradeModule<Domain>
     +infoModule: IInfoModule<Domain>
@@ -141,6 +138,9 @@ abstract class AbstractExchangeConnector<Domain extends DomainTemplate, TExchang
     +{abstract} initAccount(): void | Promise<void>
     +{abstract} getPortfolio(): Promise<GetSecurityBalanceType<Domain>[]>
     +{abstract} getCurrenciesBalance(): Promise<GetCurrencyBalanceType<Domain>[]>
+    -_isAccountInitialized: boolean
+    +isAccountInitialized: boolean
+    #isAccountInitialized: boolean
 }
 class Algorithm {
     +name: string
@@ -202,7 +202,7 @@ class Currency extends Asset {
 }
 abstract class AbstractDomainMapper<Domain extends DomainTemplate<unknown, unknown, unknown, unknown, unknown>, TExchangeApi> implements IDomainMapper {
     #exchangeConnector: IExchangeConnector<Domain, TExchangeApi>
-    +setExchangeClient(exchangeConnector: IExchangeConnector<Domain, TExchangeApi>): void
+    +setExchangeConnector(exchangeConnector: IExchangeConnector<Domain, TExchangeApi>): void
     +{abstract} currency(currency: GetCurrencyType<Domain>): Promise<Currency>
     +{abstract} currencyBalance(currency: GetCurrencyBalanceType<Domain>): Promise<CurrencyBalance>
     +{abstract} security(security: GetSecurityType<Domain>): Promise<Security>
@@ -304,14 +304,10 @@ class ExchangeWatcher<Domain extends DomainTemplate, TExchangeApi> implements IE
     +getSecurityLastPrice(ticker: string): Promise<number>
     +getSecurityCurrency(ticker: string): Promise<GetCurrencyType<CommonDomain>>
 }
-interface TradeBotProductionInitOptions<Domain extends DomainTemplate<unknown, unknown, unknown, unknown, unknown>, TExchangeApi> {
-    +mode: "production"
+interface TradeBotInitOptions<Domain extends DomainTemplate<unknown, unknown, unknown, unknown, unknown>, TExchangeApi> {
     +exchangeConnector: IExchangeConnector<Domain, TExchangeApi>
     +config?: DeepPartial<ITradeBotConfig>
     +initAlgorithmsCallback?: (analyzer: IExchangeAnalyzer<Domain, TExchangeApi>) => ITradeAlgorithm[]
-}
-interface TradeBotNoSetupInitOptions {
-    +mode: "no_setup"
 }
 interface TradeBotSetupOptions<Domain extends DomainTemplate<unknown, unknown, unknown, unknown, unknown>, TExchangeApi> {
     +exchangeConnector: IExchangeConnector<Domain, TExchangeApi>
@@ -344,7 +340,7 @@ class TradeAlgorithmsEngine<Domain extends DomainTemplate, TExchangeApi> impleme
     +description: Algorithm[]
     +runAlgorithm(name: string, inputs: unknown): Promise<AlgorithmRun>
     +resumeAlgorithms(): Promise<void>
-    +continueAlgorithm(name: string, id: number): Promise<AlgorithmRun>
+    +resumeAlgorithm(name: string, id: number): Promise<AlgorithmRun>
     +stopAlgorithm(name: string, id: number): Promise<AlgorithmRun>
 }
 interface GetOrdersOptions extends ZGetOrdersOptions
@@ -493,12 +489,12 @@ class InfoModule extends AbstractInfoModule {
 }
 ITradeAlgorithm --> "1" Algorithm
 ITradeAlgorithm --> "1" AlgorithmRun
-AbstractTradeAlgorithm --> "1" IExchangeAnalyzer
+AbstractTradeAlgorithm --> "1" AlgorithmRun
+AbstractTradeAlgorithm --> "1" Algorithm
 AbstractTradeAlgorithm --> "1" IExchangeWatcher
 AbstractTradeAlgorithm --> "1" IExchangeTrader
 AbstractTradeAlgorithm --> "1" LoggerService
-AbstractTradeAlgorithm --> "1" Algorithm
-AbstractTradeAlgorithm --> "1" AlgorithmRun
+AbstractTradeAlgorithm --> "1" IExchangeAnalyzer
 ITradeAlgorithmsEngine --> "*" Algorithm
 ITradeAlgorithmsEngine --> "1" AlgorithmRun
 IExchangeTrader --> "1" IExchangeTraderHooks
@@ -561,10 +557,10 @@ ExchangeWatcher --> "1" IDomainMapper
 ExchangeWatcher --> "1" IExchangeAnalyzer
 ExchangeWatcher --> "1" IExchangeTrader
 ExchangeWatcher --> "1" IExchangeConnector
-TradeBotProductionInitOptions --> "1" IExchangeConnector
-TradeBotProductionInitOptions --> "1" ITradeBotConfig
-TradeBotProductionInitOptions --> "1" IExchangeAnalyzer
-TradeBotProductionInitOptions --> "*" ITradeAlgorithm
+TradeBotInitOptions --> "1" IExchangeConnector
+TradeBotInitOptions --> "1" ITradeBotConfig
+TradeBotInitOptions --> "1" IExchangeAnalyzer
+TradeBotInitOptions --> "*" ITradeAlgorithm
 TradeBotSetupOptions --> "1" IExchangeConnector
 TradeBotSetupOptions --> "1" IExchangeAnalyzer
 TradeBotSetupOptions --> "*" ITradeAlgorithm
