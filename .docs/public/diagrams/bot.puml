@@ -31,7 +31,7 @@ interface IExchangeAnalyzer<Domain extends DomainTemplate, TExchangeApi> {
     +updatePortfolio(): Promise<GetPortfolioPositionType<CommonDomain>[]>
 }
 class ExchangeAnalyzer<Domain extends DomainTemplate, TExchangeApi> implements IExchangeAnalyzer {
-    +storage: any
+    +storage: UnitedStorage
     +tradebot: ITradeBot<Domain, TExchangeApi>
     +tradeAlgos: ITradeAlgorithmsEngine
     +trader: IExchangeTrader<Domain>
@@ -184,6 +184,7 @@ interface IDomainMapper<Domain extends DomainTemplate> {
     +orderOperation(order: GetOrderType<Domain>): OperationType
 }
 interface ITradeBotConfig {
+    +meta: { id: string; }
     +auth: { token: string; required: boolean; }
     +api: { port: number | string; host: string; }
     +logs: { directory: string; }
@@ -211,16 +212,6 @@ class AuthService {
     +authByToken(token?: string): boolean
     +authByRequest(request: IHttpHeadersCarrier): boolean
 }
-interface LogToStringOptions {
-    +useColors?: boolean
-    +showRobotId?: boolean
-    +showType?: boolean
-    +showTimestamp?: boolean
-    +showAlgorithmName?: boolean
-    +showAlgorithmRunId?: boolean
-    +showAlgorithmState?: boolean
-    +showAttachment?: boolean
-}
 interface SocketLogs {
     +robot_id: string
     +type: "error" | "info" | "warning"
@@ -230,21 +221,35 @@ interface SocketLogs {
     +timestamp: string
 }
 class LoggerService {
-    -tradebot: ITradeBot<any, any>
-    -logger: Logger
-    -lastLogs: SocketLogs[]
+    +internalTypes: LogType[]
+    +consoleLogger: ConsolaInstance
+    -fileLogger: Logger
+    -lastLogs: LogObject[]
     -eventEmitter: EventEmitter
-    +getLastLogs(): SocketLogs[]
-    +log(body: Omit<Omit<SocketLogs, "robot_id">, "timestamp">, __1?: { internal?: boolean; }): void
-    +subscribe(callback: (logs: SocketLogs) => void): void
-    +unsubscribe(callback: (logs: SocketLogs) => void): void
+    -tradebot: ITradeBot<any, any>
+    +getLastLogs(): LogObject[]
+    +log(message: unknown, args: unknown[]): void
+    +info(message: unknown, args: unknown[]): void
+    +warn(message: unknown, args: unknown[]): void
+    +error(message: unknown, args: unknown[]): void
+    +debug(message: unknown, args: unknown[]): void
+    +fail(message: unknown, args: unknown[]): void
+    +fatal(message: unknown, args: unknown[]): void
+    +ready(message: unknown, args: unknown[]): void
+    +silent(message: unknown, args: unknown[]): void
+    +start(message: unknown, args: unknown[]): void
+    +success(message: unknown, args: unknown[]): void
+    +trace(message: unknown, args: unknown[]): void
+    +verbose(message: unknown, args: unknown[]): void
+    +subscribe(callback: (logs: LogObject) => void): void
+    +unsubscribe(callback: (logs: LogObject) => void): void
     +createErrorHandlingProxy(object: T): T
     -createLogsDirIfNotExist(): void
-    -logToString(log: SocketLogs, __1?: LogToStringOptions): string
-    -logToFile(log: SocketLogs): void
-    -logToConsole(log: SocketLogs): void
-    -logToSocket(log: SocketLogs): void
-    -updateLastLogs(log: SocketLogs): void
+    -logWithSpecificType(type: LogType, message: unknown, args: unknown[]): void
+    -logToFile(type: LogType, message: unknown, args: unknown[]): void
+    -logToConsole(type: LogType, message: unknown, args: unknown[]): void
+    -logToSocket(log: LogObject): void
+    -updateLastLogs(log: LogObject): void
 }
 class ExchangeTrader<Domain extends DomainTemplate, TExchangeApi> implements IExchangeTrader {
     +hooks: Hookable<IExchangeTraderHooks<Domain>, "orderSent">
@@ -347,9 +352,6 @@ ApiService --> "1" ITradeBot
 AuthService --> "1" ITradeBot
 AuthService --> "1" IHttpHeadersCarrier
 LoggerService --> "1" ITradeBot
-LoggerService --> "*" SocketLogs
-LoggerService --> "1" SocketLogs
-LoggerService --> "1" LogToStringOptions
 ExchangeTrader --> "1" IExchangeTraderHooks
 ExchangeTrader --> "1" ITradeBot
 ExchangeTrader --> "1" IExchangeWatcher
