@@ -212,14 +212,6 @@ class AuthService {
     +authByToken(token?: string): boolean
     +authByRequest(request: IHttpHeadersCarrier): boolean
 }
-interface SocketLogs {
-    +robot_id: string
-    +type: "error" | "info" | "warning"
-    +message: string
-    +attachment?: unknown
-    +algorithm?: { name: string; run_id?: number; inputs?: unknown; state?: unknown; }
-    +timestamp: string
-}
 class LoggerService {
     +internalTypes: LogType[]
     +consoleLogger: ConsolaInstance
