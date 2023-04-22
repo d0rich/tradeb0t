@@ -1,9 +1,9 @@
 @startuml
 interface ITradeAlgorithm<InputsType, StateType> {
-    +details: Algorithm
     +name: string
     +description: string
     +inputs: InputTypes
+    +details: Algorithm
     +main(inputs: InputsType): Promise<AlgorithmRun<InputsType, StateType>>
     +resume(id: number): Promise<AlgorithmRun<InputsType, StateType>>
     +stop(id: number): Promise<AlgorithmRun<InputsType, StateType>>
@@ -15,8 +15,8 @@ abstract class AbstractTradeAlgorithm<Domain extends DomainTemplate, TExchangeAp
     +{abstract} main(inputs: InputsType): Promise<AlgorithmRun<InputsType, StateType>>
     +{abstract} resume(id: number): Promise<AlgorithmRun<InputsType, StateType>>
     +{abstract} stop(id: number): Promise<AlgorithmRun<InputsType, StateType>>
-    #stopState: Map<number, StopStateType>
     +details: Algorithm
+    #stopState: Map<number, StopStateType>
     #watcher: IExchangeWatcher
     #trader: IExchangeTrader<Domain>
     -logger: LoggerService
@@ -60,7 +60,7 @@ interface IExchangeAnalyzer<Domain extends DomainTemplate, TExchangeApi> {
     +tradebot: ITradeBot<Domain, TExchangeApi>
     +trader: IExchangeTrader<Domain>
     +watcher: IExchangeWatcher
-    +start(): Promise<void>
+    +initialize(): Promise<void>
     +updateCurrencies(): Promise<GetCurrencyType<CommonDomain>[]>
     +updateCurrenciesBalance(): Promise<GetCurrencyBalanceType<CommonDomain>[]>
     +updateSecurities(): Promise<GetSecurityType<CommonDomain>[]>
@@ -74,13 +74,13 @@ class ExchangeAnalyzer<Domain extends DomainTemplate, TExchangeApi> implements I
     +trader: IExchangeTrader<Domain>
     +watcher: IExchangeWatcher
     -_tradeAlgos: ITradeAlgorithmsEngine
-    -_initAlgorithmsCallback: (analyzer: IExchangeAnalyzer<Domain, TExchangeApi>) => ITradeAlgorithm[]
-    +start(): Promise<void>
+    +initialize(): Promise<void>
     +updateCurrencies(): Promise<GetCurrencyType<CommonDomain>[]>
     +updateCurrenciesBalance(): Promise<GetCurrencyBalanceType<CommonDomain>[]>
     +updateSecurities(): Promise<GetSecurityType<CommonDomain>[]>
     +updateFollowedSecurities(): Promise<GetSecurityType<CommonDomain>[]>
     +updatePortfolio(): Promise<GetPortfolioPositionType<CommonDomain>[]>
+    -_initAlgorithmsCallback: (analyzer: IExchangeAnalyzer<Domain, TExchangeApi>) => ITradeAlgorithm[]
     -loadSecurityIfNotExist(ticker: string): Promise<any>
     -loadSecuritiesIfNotExist(tickers: string[]): Promise<GetSecurityType<CommonDomain>[]>
     -updateSecuritiesList(securitiesToUpdate: GetSecurityType<CommonDomain>[]): Promise<any>
@@ -138,9 +138,9 @@ abstract class AbstractExchangeConnector<Domain extends DomainTemplate, TExchang
     +{abstract} initAccount(): void | Promise<void>
     +{abstract} getPortfolio(): Promise<GetSecurityBalanceType<Domain>[]>
     +{abstract} getCurrenciesBalance(): Promise<GetCurrencyBalanceType<Domain>[]>
-    -_isAccountInitialized: boolean
     +isAccountInitialized: boolean
     #isAccountInitialized: boolean
+    -_isAccountInitialized: boolean
 }
 class Algorithm {
     +name: string
@@ -332,12 +332,12 @@ class TradeBot<Domain extends DomainTemplate<unknown, unknown, unknown, unknown,
     -setup(__0: TradeBotSetupOptions<Domain, TExchangeApi>): Promise<void>
 }
 class TradeAlgorithmsEngine<Domain extends DomainTemplate, TExchangeApi> implements ITradeAlgorithmsEngine {
+    +description: Algorithm[]
     #analyzer: IExchangeAnalyzer<Domain, TExchangeApi>
     #trader: IExchangeTrader<Domain>
     #watcher: IExchangeWatcher
     #tradebot: ITradeBot<Domain, TExchangeApi>
     #algorithms: ITradeAlgorithm[]
-    +description: Algorithm[]
     +runAlgorithm(name: string, inputs: unknown): Promise<AlgorithmRun>
     +resumeAlgorithms(): Promise<void>
     +resumeAlgorithm(name: string, id: number): Promise<AlgorithmRun>
@@ -428,11 +428,11 @@ TradeBot --> "1" ApiService
 TradeBot --> "1" LoggerService
 TradeBot --> "1" AuthService
 TradeBot --> "1" TradeBotSetupOptions
+TradeAlgorithmsEngine --> "*" Algorithm
 TradeAlgorithmsEngine --> "1" IExchangeAnalyzer
 TradeAlgorithmsEngine --> "1" IExchangeTrader
 TradeAlgorithmsEngine --> "1" IExchangeWatcher
 TradeAlgorithmsEngine --> "1" ITradeBot
 TradeAlgorithmsEngine --> "*" ITradeAlgorithm
-TradeAlgorithmsEngine --> "*" Algorithm
 TradeAlgorithmsEngine --> "1" AlgorithmRun
 @enduml

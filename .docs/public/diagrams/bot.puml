@@ -23,7 +23,7 @@ interface IExchangeAnalyzer<Domain extends DomainTemplate, TExchangeApi> {
     +tradebot: ITradeBot<Domain, TExchangeApi>
     +trader: IExchangeTrader<Domain>
     +watcher: IExchangeWatcher
-    +start(): Promise<void>
+    +initialize(): Promise<void>
     +updateCurrencies(): Promise<GetCurrencyType<CommonDomain>[]>
     +updateCurrenciesBalance(): Promise<GetCurrencyBalanceType<CommonDomain>[]>
     +updateSecurities(): Promise<GetSecurityType<CommonDomain>[]>
@@ -37,13 +37,13 @@ class ExchangeAnalyzer<Domain extends DomainTemplate, TExchangeApi> implements I
     +trader: IExchangeTrader<Domain>
     +watcher: IExchangeWatcher
     -_tradeAlgos: ITradeAlgorithmsEngine
-    -_initAlgorithmsCallback: (analyzer: IExchangeAnalyzer<Domain, TExchangeApi>) => ITradeAlgorithm[]
-    +start(): Promise<void>
+    +initialize(): Promise<void>
     +updateCurrencies(): Promise<GetCurrencyType<CommonDomain>[]>
     +updateCurrenciesBalance(): Promise<GetCurrencyBalanceType<CommonDomain>[]>
     +updateSecurities(): Promise<GetSecurityType<CommonDomain>[]>
     +updateFollowedSecurities(): Promise<GetSecurityType<CommonDomain>[]>
     +updatePortfolio(): Promise<GetPortfolioPositionType<CommonDomain>[]>
+    -_initAlgorithmsCallback: (analyzer: IExchangeAnalyzer<Domain, TExchangeApi>) => ITradeAlgorithm[]
     -loadSecurityIfNotExist(ticker: string): Promise<any>
     -loadSecuritiesIfNotExist(tickers: string[]): Promise<GetSecurityType<CommonDomain>[]>
     -updateSecuritiesList(securitiesToUpdate: GetSecurityType<CommonDomain>[]): Promise<any>
@@ -101,9 +101,9 @@ abstract class AbstractExchangeConnector<Domain extends DomainTemplate, TExchang
     +{abstract} initAccount(): void | Promise<void>
     +{abstract} getPortfolio(): Promise<GetSecurityBalanceType<Domain>[]>
     +{abstract} getCurrenciesBalance(): Promise<GetCurrencyBalanceType<Domain>[]>
-    -_isAccountInitialized: boolean
     +isAccountInitialized: boolean
     #isAccountInitialized: boolean
+    -_isAccountInitialized: boolean
 }
 class Algorithm {
     +name: string

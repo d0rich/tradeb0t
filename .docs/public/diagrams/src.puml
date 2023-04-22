@@ -1,9 +1,9 @@
 @startuml
 interface ITradeAlgorithm<InputsType, StateType> {
-    +details: Algorithm
     +name: string
     +description: string
     +inputs: InputTypes
+    +details: Algorithm
     +main(inputs: InputsType): Promise<AlgorithmRun<InputsType, StateType>>
     +resume(id: number): Promise<AlgorithmRun<InputsType, StateType>>
     +stop(id: number): Promise<AlgorithmRun<InputsType, StateType>>
@@ -39,7 +39,7 @@ interface IExchangeAnalyzer<Domain extends DomainTemplate, TExchangeApi> {
     +tradebot: ITradeBot<Domain, TExchangeApi>
     +trader: IExchangeTrader<Domain>
     +watcher: IExchangeWatcher
-    +start(): Promise<void>
+    +initialize(): Promise<void>
     +updateCurrencies(): Promise<GetCurrencyType<CommonDomain>[]>
     +updateCurrenciesBalance(): Promise<GetCurrencyBalanceType<CommonDomain>[]>
     +updateSecurities(): Promise<GetSecurityType<CommonDomain>[]>
