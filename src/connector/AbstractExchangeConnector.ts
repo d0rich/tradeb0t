@@ -36,13 +36,13 @@ export abstract class AbstractExchangeConnector<
 
   abstract getCurrenciesBalance(): Promise<GetCurrencyBalanceType<Domain>[]>
 
-  private _isAccountInitialized = false
   public get isAccountInitialized(): boolean {
     return this._isAccountInitialized
   }
   protected set isAccountInitialized(value: boolean) {
     this._isAccountInitialized = value
   }
+  private _isAccountInitialized = false
 
   constructor(options: AbstractExchangeConnectorConstructorParams<Domain, TExchangeApi>) {
     options.modules.tradeModule.setExchangeConnector(this)
