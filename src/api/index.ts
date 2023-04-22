@@ -8,10 +8,10 @@ import { ITradeBot } from 'src/bot'
 export * from './trpc'
 export * from './h3'
 
-export async function initH3WithWss(tradeBot: ITradeBot) {
-  const h3 = initH3(tradeBot)
+export async function initH3WithWss(tradebot: ITradeBot) {
+  const h3 = initH3(tradebot)
   await registerH3Routes({
-    tradeBot: tradeBot,
+    tradebot: tradebot,
     h3App: h3
   })
   const httpServer = http.createServer(toNodeListener(h3))
@@ -20,7 +20,7 @@ export async function initH3WithWss(tradeBot: ITradeBot) {
   })
   registerWSSHandler({
     wss: wss,
-    tradeBot: tradeBot
+    tradebot: tradebot
   })
   return httpServer
 }

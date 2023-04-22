@@ -37,7 +37,7 @@ It also includes two submodules for splitting logic:
 - `TradeModule` - send requests to place orders to exchange;
 - `Translator` - for translation exchange types to tradebot types.
 
-You can access `ExchangeClient` instance with `this.exchangeClient` from these modules.
+You can access `ExchangeClient` instance with `this.exchangeConnector` from these modules.
 
 Note, that you can provide object containing API methods to exchange (`API` in example). It will be available in `ExchangeClient` instance as `api`.
 

@@ -5,10 +5,10 @@ import { IExchangeConnector } from './IExchangeConnector'
 export abstract class AbstractInfoModule<Domain extends DomainTemplate, TExchangeApi = unknown>
   implements IInfoModule<Domain>
 {
-  protected exchangeClient: IExchangeConnector<Domain, TExchangeApi>
+  protected exchangeConnector: IExchangeConnector<Domain, TExchangeApi>
 
-  setExchangeClient(exchangeClient: IExchangeConnector<Domain, TExchangeApi>) {
-    this.exchangeClient = exchangeClient
+  setExchangeConnector(exchangeConnector: IExchangeConnector<Domain, TExchangeApi>) {
+    this.exchangeConnector = exchangeConnector
   }
 
   abstract getCurrencies(): Promise<GetCurrencyType<Domain>[]>

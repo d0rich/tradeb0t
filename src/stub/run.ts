@@ -6,14 +6,12 @@ async function main() {
   const stubApi = new StubExchangeApi()
   await stubApi.initialize()
   runTradeBot({
-    mode: 'production',
-    exchangeClient: new ExchangeConnector({
+    exchangeConnector: new ExchangeConnector({
       modules: {
         domainMapper: new DomainMapper(),
         infoModule: new InfoModule(),
         tradeModule: new TradeModule()
       },
-      // TODO: make api optional
       api: stubApi
     })
   })

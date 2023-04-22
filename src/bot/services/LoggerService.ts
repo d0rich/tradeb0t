@@ -3,19 +3,6 @@ import { createRollingFileLogger, Logger } from 'simple-node-logger'
 import { createConsola, ConsolaInstance, LogObject, LogType } from 'consola'
 import { EventEmitter } from 'events'
 import { ITradeBot } from '../ITradeBot'
-export interface SocketLogs {
-  robot_id: string
-  type: 'info' | 'error' | 'warning'
-  message: string
-  attachment?: unknown
-  algorithm?: {
-    name: string
-    run_id?: number
-    inputs?: unknown
-    state?: unknown
-  }
-  timestamp: string
-}
 
 export class LoggerService {
   readonly internalTypes: LogType[] = ['debug', 'silent']

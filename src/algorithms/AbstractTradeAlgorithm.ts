@@ -2,26 +2,22 @@ import { DomainTemplate, AlgorithmRun, Algorithm, InputTypes } from 'src/domain'
 import { ITradeAlgorithm } from './ITradeAlgorithm'
 import { IExchangeWatcher, IExchangeAnalyzer, LoggerService, IExchangeTrader } from 'src/bot'
 
-// TODO: fix types when interfaces for tradebot will be implemented
 export abstract class AbstractTradeAlgorithm<
   Domain extends DomainTemplate,
   TExchangeApi = unknown,
   InputsType = unknown,
   StateType = unknown,
-  StopDataType = unknown
+  StopStateType = unknown
 > implements ITradeAlgorithm<InputsType, StateType>
 {
-  protected readonly analyzer: IExchangeAnalyzer<Domain, TExchangeApi>
-  protected get watcher(): IExchangeWatcher {
-    return this.analyzer.watcher
-  }
-  protected get trader(): IExchangeTrader<Domain> {
-    return this.analyzer.trader
-  }
-  protected stopData: Map<number, StopDataType> = new Map<number, StopDataType>()
-  private get logger(): LoggerService {
-    return this.analyzer.tradebot.logger
-  }
+  abstract get name(): string
+  abstract get description(): string
+  abstract get inputs(): InputTypes
+  abstract main(inputs: InputsType): Promise<AlgorithmRun<InputsType, StateType>>
+  abstract resume(id: number): Promise<AlgorithmRun<InputsType, StateType>>
+  abstract stop(id: number): Promise<AlgorithmRun<InputsType, StateType>>
+
+  protected stopState: Map<number, StopStateType> = new Map<number, StopStateType>()
   get details(): Algorithm {
     return {
       name: this.name,
@@ -29,12 +25,19 @@ export abstract class AbstractTradeAlgorithm<
       inputTypes: this.inputs
     }
   }
-
-  protected constructor(analyzer: IExchangeAnalyzer<Domain, TExchangeApi>) {
-    this.analyzer = analyzer
+  protected get watcher(): IExchangeWatcher {
+    return this.analyzer.watcher
+  }
+  protected get trader(): IExchangeTrader<Domain> {
+    return this.analyzer.trader
+  }
+  private get logger(): LoggerService {
+    return this.analyzer.tradebot.logger
   }
 
-  protected async fixStart(inputs: InputsType, state: StateType): Promise<AlgorithmRun> {
+  protected constructor(protected readonly analyzer: IExchangeAnalyzer<Domain, TExchangeApi>) {}
+
+  protected async commitStart(inputs: InputsType, state: StateType): Promise<AlgorithmRun> {
     const { name, analyzer, logger } = this
     const algoRun: AlgorithmRun = await analyzer.storage.algorithmRuns.runOne(name, inputs, state)
     logger.start(`Starting algorithm "${name}": `, {
@@ -46,17 +49,17 @@ export abstract class AbstractTradeAlgorithm<
     return algoRun
   }
 
-  protected async fixStop(id: number): Promise<AlgorithmRun> {
+  protected async commitStop(id: number): Promise<AlgorithmRun> {
     const { name, analyzer, logger } = this
     logger.success(`Stopping algorithm "${name}": `, {
       name,
       run_id: id
     })
-    this.stopData.delete(id)
+    this.stopState.delete(id)
     return await analyzer.storage.algorithmRuns.stopOne(id)
   }
 
-  protected async fixContinue(id: number): Promise<AlgorithmRun> {
+  protected async commitContinue(id: number): Promise<AlgorithmRun> {
     const { name, analyzer, logger } = this
     logger.start(`Resuming algorithm "${name}": `, {
       name,
@@ -65,7 +68,7 @@ export abstract class AbstractTradeAlgorithm<
     return await analyzer.storage.algorithmRuns.resumeOne(id)
   }
 
-  protected async fixFinish(id: number): Promise<AlgorithmRun> {
+  protected async commitFinish(id: number): Promise<AlgorithmRun> {
     const { name, analyzer, logger } = this
     logger.success(`Finishing algorithm "${name}": `, {
       name,
@@ -74,7 +77,7 @@ export abstract class AbstractTradeAlgorithm<
     return await analyzer.storage.algorithmRuns.finishOne(id)
   }
 
-  protected async fixError(id: number, error: Error): Promise<AlgorithmRun> {
+  protected async commitError(id: number, error: Error): Promise<AlgorithmRun> {
     const { name, analyzer, logger } = this
     await this.stop(id)
     const run = await analyzer.storage.algorithmRuns.storeError(id, error)
@@ -107,11 +110,4 @@ export abstract class AbstractTradeAlgorithm<
     })
     return algoRun
   }
-
-  abstract get name(): string
-  abstract get description(): string
-  abstract get inputs(): InputTypes
-  abstract main(inputs: InputsType): Promise<AlgorithmRun<InputsType, StateType>>
-  abstract continue(id: number): Promise<AlgorithmRun<InputsType, StateType>>
-  abstract stop(id: number): Promise<AlgorithmRun<InputsType, StateType>>
 }

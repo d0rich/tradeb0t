@@ -7,7 +7,7 @@ import { ITradeBotConfig } from './ITradeBotConfig'
 export interface ITradeBot<Domain extends DomainTemplate = any, TExchangeApi = any> {
   readonly config: ITradeBotConfig
 
-  get exchangeClient(): IExchangeConnector<Domain, TExchangeApi>
+  get exchangeConnector(): IExchangeConnector<Domain, TExchangeApi>
   get analyzer(): IExchangeAnalyzer<Domain, TExchangeApi>
   get trader(): IExchangeTrader<Domain>
   get watcher(): IExchangeWatcher

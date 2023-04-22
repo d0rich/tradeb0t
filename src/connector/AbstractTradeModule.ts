@@ -5,10 +5,10 @@ import { ITradeModule } from './ITradeModule'
 export abstract class AbstractTradeModule<Domain extends DomainTemplate, TExchangeApi = unknown>
   implements ITradeModule<Domain>
 {
-  protected exchangeClient: IExchangeConnector<Domain, TExchangeApi>
+  protected exchangeConnector: IExchangeConnector<Domain, TExchangeApi>
 
-  setExchangeClient(exchangeClient: IExchangeConnector<Domain, TExchangeApi>) {
-    this.exchangeClient = exchangeClient
+  setExchangeConnector(exchangeConnector: IExchangeConnector<Domain, TExchangeApi>) {
+    this.exchangeConnector = exchangeConnector
   }
 
   abstract sell({ ticker, lots, price }: CreateOrderOptions): Promise<GetOrderType<Domain>>

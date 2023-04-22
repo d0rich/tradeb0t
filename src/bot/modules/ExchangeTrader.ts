@@ -16,8 +16,8 @@ export class ExchangeTrader<Domain extends DomainTemplate, TExchangeApi> impleme
   private get logger(): LoggerService {
     return this.tradebot.logger
   }
-  private get exchangeClient(): IExchangeConnector<Domain, TExchangeApi> {
-    return this.tradebot.exchangeClient
+  private get exchangeConnector(): IExchangeConnector<Domain, TExchangeApi> {
+    return this.tradebot.exchangeConnector
   }
 
   constructor(tradebot: ITradeBot<Domain, TExchangeApi>) {
@@ -56,23 +56,23 @@ export class ExchangeTrader<Domain extends DomainTemplate, TExchangeApi> impleme
     let order: GetOrderType<Domain>
     const { operation } = orderDetails
     if (operation === 'buy_or_cancel') {
-      order = await this.exchangeClient.tradeModule.buyOrCancel()
+      order = await this.exchangeConnector.tradeModule.buyOrCancel()
     } else if (operation === 'sell_or_cancel') {
-      order = await this.exchangeClient.tradeModule.sellOrCancel()
+      order = await this.exchangeConnector.tradeModule.sellOrCancel()
     } else if (operation === 'market_buy') {
-      order = await this.exchangeClient.tradeModule.marketBuy(orderDetails)
+      order = await this.exchangeConnector.tradeModule.marketBuy(orderDetails)
     } else if (operation === 'market_sell') {
-      order = await this.exchangeClient.tradeModule.marketSell(orderDetails)
+      order = await this.exchangeConnector.tradeModule.marketSell(orderDetails)
     } else if (operation === 'limit_buy') {
-      order = await this.exchangeClient.tradeModule.buy(orderDetails)
+      order = await this.exchangeConnector.tradeModule.buy(orderDetails)
     } else if (operation === 'limit_sell') {
-      order = await this.exchangeClient.tradeModule.sell(orderDetails)
+      order = await this.exchangeConnector.tradeModule.sell(orderDetails)
     } else {
       throw new Error(`Wrong operation defined in order: ${JSON.stringify(orderDetails)}`)
     }
 
     this.hooks.callHook('orderSent', order, operation, run_id)
 
-    return this.exchangeClient.domainMapper.orderStatus(order)
+    return this.exchangeConnector.domainMapper.orderStatus(order)
   }
 }

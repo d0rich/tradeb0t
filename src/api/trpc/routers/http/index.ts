@@ -8,18 +8,18 @@ import initCurrencyRouter from './currency'
 import initPortfolioRouter from './portfolio'
 import initOrderRouter from './order'
 
-const initHTTPRouter = (tradeBot: ITradeBot) => {
+const initHTTPRouter = (tradebot: ITradeBot) => {
   return router({
-    algorithms: initAlgorithmRouter(tradeBot),
-    securities: initSecurityRouter(tradeBot),
-    currencies: initCurrencyRouter(tradeBot),
-    portfolio: initPortfolioRouter(tradeBot),
-    orders: initOrderRouter(tradeBot)
+    algorithms: initAlgorithmRouter(tradebot),
+    securities: initSecurityRouter(tradebot),
+    currencies: initCurrencyRouter(tradebot),
+    portfolio: initPortfolioRouter(tradebot),
+    orders: initOrderRouter(tradebot)
   })
 }
 
-export const registerH3Routes = async ({ tradeBot, h3App }: { tradeBot: ITradeBot; h3App: App }) => {
-  const router = initHTTPRouter(tradeBot)
+export const registerH3Routes = async ({ tradebot, h3App }: { tradebot: ITradeBot; h3App: App }) => {
+  const router = initHTTPRouter(tradebot)
 
   h3App.use(
     '/api/trpc',
