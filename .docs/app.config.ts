@@ -16,7 +16,7 @@ export default defineAppConfig({
     },
     d0richIndex: {
       complexity: 4,
-      tags: ['back-end', 'robotics', 'fintech']
+      tags: ['fintech', 'robotics', 'trpc', 'back-end']
     },
   }
 })

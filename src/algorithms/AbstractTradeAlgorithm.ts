@@ -38,7 +38,7 @@ export abstract class AbstractTradeAlgorithm<
     return this.analyzer.tradebot.logger
   }
 
-  protected constructor(protected readonly analyzer: IExchangeAnalyzer<Domain, TExchangeApi>) {}
+  constructor(protected readonly analyzer: IExchangeAnalyzer<Domain, TExchangeApi>) {}
 
   protected async commitStart(inputs: InputsType, state: StateType): Promise<AlgorithmRun> {
     const { name, analyzer, logger } = this
