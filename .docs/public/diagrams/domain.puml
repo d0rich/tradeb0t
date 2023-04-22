@@ -25,8 +25,8 @@ interface IExchangeConnector<Domain extends DomainTemplate, TExchangeApi> {
     +getCurrenciesBalance(): Promise<GetCurrencyBalanceType<Domain>[]>
 }
 abstract class AbstractTradeModule<Domain extends DomainTemplate, TExchangeApi> implements ITradeModule {
-    #exchangeClient: IExchangeConnector<Domain, TExchangeApi>
-    +setExchangeClient(exchangeClient: IExchangeConnector<Domain, TExchangeApi>): void
+    #exchangeConnector: IExchangeConnector<Domain, TExchangeApi>
+    +setExchangeClient(exchangeConnector: IExchangeConnector<Domain, TExchangeApi>): void
     +{abstract} sell(__0: CreateOrderOptions): Promise<GetOrderType<Domain>>
     +{abstract} buy(__0: CreateOrderOptions): Promise<GetOrderType<Domain>>
     +{abstract} marketSell(__0: CreateOrderOptions): Promise<GetOrderType<Domain>>
@@ -35,8 +35,8 @@ abstract class AbstractTradeModule<Domain extends DomainTemplate, TExchangeApi> 
     +{abstract} buyOrCancel(): Promise<GetOrderType<Domain>>
 }
 abstract class AbstractInfoModule<Domain extends DomainTemplate, TExchangeApi> implements IInfoModule {
-    #exchangeClient: IExchangeConnector<Domain, TExchangeApi>
-    +setExchangeClient(exchangeClient: IExchangeConnector<Domain, TExchangeApi>): void
+    #exchangeConnector: IExchangeConnector<Domain, TExchangeApi>
+    +setExchangeClient(exchangeConnector: IExchangeConnector<Domain, TExchangeApi>): void
     +{abstract} getCurrencies(): Promise<GetCurrencyType<Domain>[]>
     +{abstract} getSecurityLastPrice(ticker: string): Promise<number>
     +{abstract} getSecurityCurrency(ticker: string): Promise<GetCurrencyType<Domain>>
@@ -115,8 +115,8 @@ class Currency extends Asset {
     +balance: CurrencyBalance
 }
 abstract class AbstractDomainMapper<Domain extends DomainTemplate<unknown, unknown, unknown, unknown, unknown>, TExchangeApi> implements IDomainMapper {
-    #exchangeClient: IExchangeConnector<Domain, TExchangeApi>
-    +setExchangeClient(exchangeClient: IExchangeConnector<Domain, TExchangeApi>): void
+    #exchangeConnector: IExchangeConnector<Domain, TExchangeApi>
+    +setExchangeClient(exchangeConnector: IExchangeConnector<Domain, TExchangeApi>): void
     +{abstract} currency(currency: GetCurrencyType<Domain>): Promise<Currency>
     +{abstract} currencyBalance(currency: GetCurrencyBalanceType<Domain>): Promise<CurrencyBalance>
     +{abstract} security(security: GetSecurityType<Domain>): Promise<Security>

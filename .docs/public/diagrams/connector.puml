@@ -25,8 +25,8 @@ interface IExchangeConnector<Domain extends DomainTemplate, TExchangeApi> {
     +getCurrenciesBalance(): Promise<GetCurrencyBalanceType<Domain>[]>
 }
 abstract class AbstractInfoModule<Domain extends DomainTemplate, TExchangeApi> implements IInfoModule {
-    #exchangeClient: IExchangeConnector<Domain, TExchangeApi>
-    +setExchangeClient(exchangeClient: IExchangeConnector<Domain, TExchangeApi>): void
+    #exchangeConnector: IExchangeConnector<Domain, TExchangeApi>
+    +setExchangeClient(exchangeConnector: IExchangeConnector<Domain, TExchangeApi>): void
     +{abstract} getCurrencies(): Promise<GetCurrencyType<Domain>[]>
     +{abstract} getSecurityLastPrice(ticker: string): Promise<number>
     +{abstract} getSecurityCurrency(ticker: string): Promise<GetCurrencyType<Domain>>
@@ -35,8 +35,8 @@ abstract class AbstractInfoModule<Domain extends DomainTemplate, TExchangeApi> i
     +{abstract} getSecurityByExchangeId(id: string, ignoreCache?: boolean): Promise<any>
 }
 abstract class AbstractTradeModule<Domain extends DomainTemplate, TExchangeApi> implements ITradeModule {
-    #exchangeClient: IExchangeConnector<Domain, TExchangeApi>
-    +setExchangeClient(exchangeClient: IExchangeConnector<Domain, TExchangeApi>): void
+    #exchangeConnector: IExchangeConnector<Domain, TExchangeApi>
+    +setExchangeClient(exchangeConnector: IExchangeConnector<Domain, TExchangeApi>): void
     +{abstract} sell(__0: CreateOrderOptions): Promise<GetOrderType<Domain>>
     +{abstract} buy(__0: CreateOrderOptions): Promise<GetOrderType<Domain>>
     +{abstract} marketSell(__0: CreateOrderOptions): Promise<GetOrderType<Domain>>
