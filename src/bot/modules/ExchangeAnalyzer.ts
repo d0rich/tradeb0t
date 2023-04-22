@@ -16,8 +16,7 @@ import { ITradeBot } from 'src/bot'
 export class ExchangeAnalyzer<Domain extends DomainTemplate, TExchangeApi>
   implements IExchangeAnalyzer<Domain, TExchangeApi>
 {
-  // FIXME: generate unique id
-  readonly storage = new UnitedStorage('id')
+  readonly storage: UnitedStorage
   readonly tradebot: ITradeBot<Domain, TExchangeApi>
 
   get tradeAlgos(): ITradeAlgorithmsEngine {
@@ -39,6 +38,7 @@ export class ExchangeAnalyzer<Domain extends DomainTemplate, TExchangeApi>
     initAlgorithmsCallback: (analyzer: IExchangeAnalyzer<Domain, TExchangeApi>) => ITradeAlgorithm[] = () => []
   ) {
     this.tradebot = tradebot
+    this.storage = new UnitedStorage(this.tradebot.config.meta.id)
     this._initAlgorithmsCallback = initAlgorithmsCallback
   }
 

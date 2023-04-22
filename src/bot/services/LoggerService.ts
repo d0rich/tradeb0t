@@ -1,20 +1,8 @@
 import fs from 'fs'
 import { createRollingFileLogger, Logger } from 'simple-node-logger'
+import { createConsola, ConsolaInstance, LogObject, LogType } from 'consola'
 import { EventEmitter } from 'events'
-import colors from 'colors/safe'
 import { ITradeBot } from '../ITradeBot'
-
-interface LogToStringOptions {
-  useColors?: boolean
-  showRobotId?: boolean
-  showType?: boolean
-  showTimestamp?: boolean
-  showAlgorithmName?: boolean
-  showAlgorithmRunId?: boolean
-  showAlgorithmState?: boolean
-  showAttachment?: boolean
-}
-
 export interface SocketLogs {
   robot_id: string
   type: 'info' | 'error' | 'warning'
@@ -30,15 +18,21 @@ export interface SocketLogs {
 }
 
 export class LoggerService {
-  private readonly tradebot: ITradeBot
-  private readonly logger: Logger
-  private readonly lastLogs: SocketLogs[]
+  readonly internalTypes: LogType[] = ['debug', 'silent']
+  readonly consoleLogger: ConsolaInstance
+
+  private readonly fileLogger: Logger
+  private readonly lastLogs: LogObject[]
   private readonly eventEmitter = new EventEmitter()
 
-  constructor(tradeBot: ITradeBot) {
+  constructor(private readonly tradebot: ITradeBot) {
+    this.consoleLogger = createConsola({
+      formatOptions: {
+        date: true
+      }
+    }).withTag(this.tradebot.config.meta.id)
     this.createLogsDirIfNotExist()
-    this.tradebot = tradeBot
-    this.logger = createRollingFileLogger({
+    this.fileLogger = createRollingFileLogger({
       logDirectory: this.tradebot.config.logs.directory,
       fileNamePattern: 'trade-bot-<DATE>.log'
     })
@@ -49,36 +43,74 @@ export class LoggerService {
     return this.lastLogs
   }
 
-  log(body: Omit<Omit<SocketLogs, 'robot_id'>, 'timestamp'>, { internal = false } = {}) {
-    const newLog: SocketLogs = {
-      robot_id: 'test',
-      timestamp: new Date().toISOString(),
-      ...body
-    }
-    this.logToFile(newLog)
-    this.logToConsole(newLog)
-    if (!internal) this.logToSocket(newLog)
-    this.updateLastLogs(newLog)
+  // Different log types
+
+  log(message: unknown, ...args: unknown[]) {
+    this.logWithSpecificType('log', message, ...args)
   }
 
-  subscribe(callback: (logs: SocketLogs) => void) {
+  info(message: unknown, ...args: unknown[]) {
+    this.logWithSpecificType('info', message, ...args)
+  }
+
+  warn(message: unknown, ...args: unknown[]) {
+    this.logWithSpecificType('warn', message, ...args)
+  }
+
+  error(message: unknown, ...args: unknown[]) {
+    this.logWithSpecificType('error', message, ...args)
+  }
+
+  debug(message: unknown, ...args: unknown[]) {
+    this.logWithSpecificType('debug', message, ...args)
+  }
+
+  fail(message: unknown, ...args: unknown[]) {
+    this.logWithSpecificType('fail', message, ...args)
+  }
+
+  fatal(message: unknown, ...args: unknown[]) {
+    this.logWithSpecificType('fatal', message, ...args)
+  }
+
+  ready(message: unknown, ...args: unknown[]) {
+    this.logWithSpecificType('ready', message, ...args)
+  }
+
+  silent(message: unknown, ...args: unknown[]) {
+    this.logWithSpecificType('silent', message, ...args)
+  }
+
+  start(message: unknown, ...args: unknown[]) {
+    this.logWithSpecificType('start', message, ...args)
+  }
+
+  success(message: unknown, ...args: unknown[]) {
+    this.logWithSpecificType('success', message, ...args)
+  }
+
+  trace(message: unknown, ...args: unknown[]) {
+    this.logWithSpecificType('trace', message, ...args)
+  }
+
+  verbose(message: unknown, ...args: unknown[]) {
+    this.logWithSpecificType('verbose', message, ...args)
+  }
+
+  // Subscriptions
+
+  subscribe(callback: (logs: LogObject) => void) {
     this.eventEmitter.on('log', callback)
   }
 
-  unsubscribe(callback: (logs: SocketLogs) => void) {
+  unsubscribe(callback: (logs: LogObject) => void) {
     this.eventEmitter.off('log', callback)
   }
 
-  createErrorHandlingProxy<T extends object>(object: T): T {
-    const logError = (className: string, methodName: string, error: Error) => {
-      this.log({
-        type: 'error',
-        message: `Error in ${className}.${methodName}: ${error.message}`,
-        attachment: error
-      })
-    }
+  // Error handling utils
 
-    return new Proxy(object, {
+  createErrorHandlingProxy<T extends object>(object: T): T {
+    const handler: ProxyHandler<T> = {
       get: (target, property) => {
         const value = target[property as keyof T]
         if (typeof value === 'function') {
@@ -86,17 +118,18 @@ export class LoggerService {
             try {
               const result = value.apply(target, args)
               if (result instanceof Promise) {
-                result.catch((error) => logError(target.constructor.name, property as string, error as Error))
+                result.catch((error) => this.error(error))
               }
               return result
             } catch (error) {
-              logError(target.constructor.name, property as string, error as Error)
+              this.error(error)
             }
           }
         }
         return value
       }
-    })
+    }
+    return new Proxy(object, handler)
   }
 
   private createLogsDirIfNotExist() {
@@ -104,91 +137,54 @@ export class LoggerService {
     if (!fs.existsSync(config.logs.directory)) fs.mkdirSync(config.logs.directory)
   }
 
-  private logToString(
-    log: SocketLogs,
-    {
-      useColors = false,
-      showRobotId = true,
-      showType = true,
-      showTimestamp = true,
-      showAlgorithmName = true,
-      showAlgorithmRunId = true,
-      showAlgorithmState = true,
-      showAttachment = true
-    }: LogToStringOptions = {}
-  ) {
-    // Show or hide
-    let robotId = showRobotId ? log.robot_id : ''
-    let type = showType ? log.type : ''
-    let timestamp = showTimestamp ? log.timestamp : ''
-    const algorithmName = showAlgorithmName ? log.algorithm?.name ?? '' : ''
-    const algorithmRunId = showAlgorithmRunId ? log.algorithm?.run_id ?? '' : ''
-    let algorithmState = showAlgorithmState ? (log.algorithm?.state ? JSON.stringify(log.algorithm.state) : '') : ''
-    let algorithmInputs = showAlgorithmState ? (log.algorithm?.inputs ? JSON.stringify(log.algorithm.inputs) : '') : ''
-    let attachment = showAttachment ? (log.attachment ? JSON.stringify(log.attachment) : '') : ''
-
-    // Apply layout
-    robotId = robotId ? `<${robotId}>` : ''
-    type = type ? `[${type.toUpperCase()}]` : ''
-    let algorithmRun =
-      algorithmName || algorithmRunId ? `<${algorithmName ?? 'algo'}${algorithmRunId ? ':' : ''}${algorithmRunId}>` : ''
-    algorithmState = algorithmState ? `${algorithmRun ? 'Algorithm state' : 'State'}: ${algorithmState}` : ''
-    algorithmInputs = algorithmInputs ? `${algorithmRun ? 'Algorithm inputs' : 'Inputs'}: ${algorithmInputs}` : ''
-    attachment = attachment ? `Attachment: ${attachment}` : ''
-
-    // Apply colors
-    if (useColors) {
-      timestamp = timestamp ? colors.grey(timestamp) : ''
-      robotId = robotId ? colors.green(robotId) : ''
-      if (type)
-        switch (log.type) {
-          case 'info':
-            type = colors.blue(type)
-            break
-          case 'error':
-            type = colors.red(type)
-            break
-          case 'warning':
-            type = colors.yellow(type)
-            break
-        }
-      algorithmRun = algorithmRun ? colors.cyan(algorithmRun) : ''
-      algorithmState = algorithmState ? colors.bgMagenta(algorithmRun) : ''
-      algorithmInputs = algorithmInputs ? colors.bgBlue(algorithmInputs) : ''
-      attachment = attachment ? colors.bgGreen(attachment) : ''
+  private logWithSpecificType(type: LogType, message: unknown, ...args: unknown[]) {
+    this.logToFile(type, message, ...args)
+    this.logToConsole(type, message, ...args)
+    const logObj = this.consoleLogger._lastLog.object
+    if (!logObj) return
+    if (!this.internalTypes.includes(type)) {
+      this.logToSocket(logObj)
     }
-
-    const result =
-      `${timestamp} ${robotId} ${type} ${log.message}` +
-      `${algorithmRun || algorithmState ? ' | ' : ''} ${algorithmRun} ${algorithmState} ${algorithmInputs}` +
-      `${attachment ? ' | ' : ''} ${attachment}`
-    return result.trim()
+    this.updateLastLogs(logObj)
   }
 
-  private logToFile(log: SocketLogs) {
-    const output = this.logToString(log, {
-      showTimestamp: false,
-      showRobotId: false,
-      showType: false
-    })
-    if (log.type === 'info') this.logger.info(output)
-    else if (log.type === 'error') this.logger.error(output)
-    else if (log.type === 'warning') this.logger.warn(output)
+  private logToFile(type: LogType, message: unknown, ...args: unknown[]) {
+    if (type === 'log') this.fileLogger.debug(message, ...args)
+    else if (type === 'info') this.fileLogger.info(message, ...args)
+    else if (type === 'error') this.fileLogger.error(message, ...args)
+    else if (type === 'warn') this.fileLogger.warn(message, ...args)
+    else if (type === 'debug') this.fileLogger.debug(message, ...args)
+    else if (type === 'fail') this.fileLogger.error(message, ...args)
+    else if (type === 'fatal') this.fileLogger.fatal(message, ...args)
+    else if (type === 'ready') this.fileLogger.info(message, ...args)
+    else if (type === 'silent') this.fileLogger.debug(message, ...args)
+    else if (type === 'start') this.fileLogger.info(message, ...args)
+    else if (type === 'success') this.fileLogger.info(message, ...args)
+    else if (type === 'trace') this.fileLogger.trace(message, ...args)
+    else if (type === 'verbose') this.fileLogger.info(message, ...args)
   }
 
-  private logToConsole(log: SocketLogs) {
-    console.log(
-      this.logToString(log, {
-        useColors: true
-      })
-    )
+  private logToConsole(type: LogType, message: unknown, ...args: unknown[]) {
+    if (type === 'log') this.consoleLogger.log(message, ...args)
+    else if (type === 'info') this.consoleLogger.info(message, ...args)
+    else if (type === 'error') this.consoleLogger.error(message, ...args)
+    else if (type === 'warn') this.consoleLogger.warn(message, ...args)
+    else if (type === 'debug') this.consoleLogger.debug(message, ...args)
+    else if (type === 'fail') this.consoleLogger.fail(message, ...args)
+    else if (type === 'fatal') this.consoleLogger.fatal(message, ...args)
+    else if (type === 'ready') this.consoleLogger.ready(message, ...args)
+    else if (type === 'silent') this.consoleLogger.silent(message, ...args)
+    else if (type === 'start') this.consoleLogger.start(message, ...args)
+    else if (type === 'success') this.consoleLogger.success(message, ...args)
+    else if (type === 'trace') this.consoleLogger.trace(message, ...args)
+    else if (type === 'verbose') this.consoleLogger.verbose(message, ...args)
   }
 
-  private logToSocket(log: SocketLogs) {
+  private logToSocket(log: LogObject) {
     this.eventEmitter.emit('log', log)
   }
 
-  private updateLastLogs(log: SocketLogs) {
+  private updateLastLogs(log: LogObject) {
     this.lastLogs.push(log)
     if (this.lastLogs.length > 30) {
       this.lastLogs.shift()

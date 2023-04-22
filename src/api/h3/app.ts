@@ -12,14 +12,7 @@ export function initH3(tradeBot: ITradeBot) {
       return !url.startsWith('/trpc-playground')
     },
     handler: eventHandler(async (event) => {
-      tradeBot.logger.log(
-        {
-          type: 'info',
-          message: `Incoming HTTP request: ${getMethod(event)} ${event.path}`,
-          attachment: await getRequestMeta(event)
-        },
-        { internal: true }
-      )
+      tradeBot.logger.debug(`Incoming HTTP request: ${getMethod(event)} ${event.path}: `, await getRequestMeta(event))
     })
   })
 
@@ -48,13 +41,9 @@ export function initH3(tradeBot: ITradeBot) {
       if (tradeBot.auth.authByRequest(event.node.req)) {
         return
       } else {
-        tradeBot.logger.log(
-          {
-            type: 'warning',
-            message: `Unauthorized HTTP request: ${getMethod(event)} ${event.path}`,
-            attachment: await getRequestMeta(event)
-          },
-          { internal: true }
+        tradeBot.logger.warn(
+          `Unauthorized HTTP request: ${getMethod(event)} ${event.path}: `,
+          await getRequestMeta(event)
         )
         return createError({
           statusCode: 401,
