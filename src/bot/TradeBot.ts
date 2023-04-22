@@ -15,25 +15,11 @@ import { ITradeBot } from './ITradeBot'
 import { ITradeBotConfig, defaultConfig } from './ITradeBotConfig'
 import type { DeepPartial } from 'typeorm'
 
-interface TradeBotProductionInitOptions<Domain extends DomainTemplate, TExchangeApi> {
-  mode: 'production'
+export interface TradeBotInitOptions<Domain extends DomainTemplate = StubDomain, TExchangeApi = unknown> {
   exchangeConnector: IExchangeConnector<Domain, TExchangeApi>
   config?: DeepPartial<ITradeBotConfig>
   initAlgorithmsCallback?: (analyzer: IExchangeAnalyzer<Domain, TExchangeApi>) => ITradeAlgorithm[]
 }
-
-interface TradeBotNoSetupInitOptions {
-  /**
-   * Option for creation of `TradeBot` instance without running processes under hood.
-   * Used to extract types for api client.
-   */
-  mode: 'no_setup'
-}
-
-export type TradeBotInitOptions<Domain extends DomainTemplate = StubDomain, TExchangeApi = unknown> =
-  | TradeBotProductionInitOptions<Domain, TExchangeApi>
-  | TradeBotNoSetupInitOptions
-
 interface TradeBotSetupOptions<Domain extends DomainTemplate, TExchangeApi> {
   exchangeConnector: IExchangeConnector<Domain, TExchangeApi>
   initAlgorithmsCallback?: (analyzer: IExchangeAnalyzer<Domain, TExchangeApi>) => ITradeAlgorithm[]
@@ -73,11 +59,9 @@ export class TradeBot<Domain extends DomainTemplate, TExchangeApi> implements IT
   private _auth: AuthService
 
   constructor(options: TradeBotInitOptions<Domain, TExchangeApi>) {
-    if (options.mode === 'production') {
-      const { exchangeConnector, config, initAlgorithmsCallback } = options
-      this.config = defu(config, defaultConfig)
-      this.setup({ exchangeConnector, initAlgorithmsCallback })
-    }
+    const { exchangeConnector, config, initAlgorithmsCallback } = options
+    this.config = defu(config, defaultConfig)
+    this.setup({ exchangeConnector, initAlgorithmsCallback })
   }
 
   private async setup({ exchangeConnector, initAlgorithmsCallback }: TradeBotSetupOptions<Domain, TExchangeApi>) {
