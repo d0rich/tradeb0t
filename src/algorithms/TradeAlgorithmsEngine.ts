@@ -5,7 +5,12 @@ import { DomainTemplate, Algorithm, AlgorithmRun } from 'src/domain'
 import { ITradeBot } from 'src/bot/ITradeBot'
 
 export class TradeAlgorithmsEngine<Domain extends DomainTemplate, TExchangeApi> implements ITradeAlgorithmsEngine {
+  get description(): Algorithm[] {
+    return this.algorithms.map((algo) => algo.details)
+  }
+
   protected readonly analyzer: IExchangeAnalyzer<Domain, TExchangeApi>
+
   protected get trader(): IExchangeTrader<Domain> {
     return this.analyzer.trader
   }
@@ -25,10 +30,6 @@ export class TradeAlgorithmsEngine<Domain extends DomainTemplate, TExchangeApi> 
     this.analyzer = analyzer
     this.algorithms = initAlgorithmsCallback(analyzer)
     this.resumeAlgorithms()
-  }
-
-  get description(): Algorithm[] {
-    return this.algorithms.map((algo) => algo.details)
   }
 
   async runAlgorithm(name: string, inputs: unknown): Promise<AlgorithmRun> {
