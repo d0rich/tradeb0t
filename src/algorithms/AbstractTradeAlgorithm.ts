@@ -2,7 +2,6 @@ import { DomainTemplate, AlgorithmRun, Algorithm, InputTypes } from 'src/domain'
 import { ITradeAlgorithm } from './ITradeAlgorithm'
 import { IExchangeWatcher, IExchangeAnalyzer, LoggerService, IExchangeTrader } from 'src/bot'
 
-// TODO: fix types when interfaces for tradebot will be implemented
 export abstract class AbstractTradeAlgorithm<
   Domain extends DomainTemplate,
   TExchangeApi = unknown,
