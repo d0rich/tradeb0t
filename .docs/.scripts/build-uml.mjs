@@ -12,9 +12,9 @@ function buildUml(srcFiles, diagramName, args = '') {
   console.log(`Generated ${diagramName}.svg`)
 }
 
-buildUml('../src/**/*.ts', 'src', '-I')
-buildUml('../src/domain/**/*.ts', 'domain')
-buildUml('../src/bot/**/*.ts', 'bot')
-buildUml('../src/connector/**/*.ts', 'connector')
-buildUml('../src/storage/**/*.ts', 'storage')
-buildUml('../src/algorithms/**/*.ts', 'algorithms')
+buildUml('../core/src/**/*.ts', 'src', '-I')
+buildUml('../core/src/domain/**/*.ts', 'domain')
+buildUml('../core/src/bot/**/*.ts', 'bot')
+buildUml('../core/src/connector/**/*.ts', 'connector')
+buildUml('../core/src/storage/**/*.ts', 'storage')
+buildUml('../core/src/algorithms/**/*.ts', 'algorithms')
