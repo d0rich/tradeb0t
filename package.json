@@ -1,5 +1,5 @@
 {
-  "name": "tradeb0t-core",
+  "name": "tradeb0t/core",
   "version": "0.2.0",
   "description": "🤖 Core library for trading software with high integration possibilities",
   "main": "dist/index.js",
@@ -15,11 +15,11 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/d0rich/tradeb0t-core.git"
+    "url": "https://github.com/d0rich/tradeb0t.git"
   },
   "homepage": "https://tradeb0t.d0rich.me",
   "bugs": {
-    "url": "https://github.com/d0rich/tradeb0t-core/issues"
+    "url": "https://github.com/d0rich/tradeb0t/issues"
   },
   "keywords": [
     "robotics",

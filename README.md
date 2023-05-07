@@ -1,6 +1,4 @@
-# tradeb0t-core
-
-# tradeb0t-core 🤖
+# tradeb0t/core 🤖
 
 Tradebot is the library for creating trading bots for exchanges. 
 
@@ -24,7 +22,7 @@ This project is used to be my diploma project, and you can check its orginal rep
 Install core: 
 
 ```sh
-npm install tradeb0t-core
+npm install tradeb0t/core
 ```
 
 ### Describe your domain
@@ -34,7 +32,7 @@ Domain includes types of entities in the integrated exchange.
 Technically, you can provide `any` types for `DomainTemplate`. But it is not recommended, as these types will be helpful in process of creating other modules.
 
 ```ts
-import {DomainTemplate} from 'tradeb0t-core'
+import {DomainTemplate} from 'tradeb0t/core'
 import {
     CurrencyType,
     CurrencyBalanceType,
@@ -73,7 +71,7 @@ import {OperationType, OrderStatus, CommonDomain,
     GetCurrencyType,
     GetOrderType,
     GetSecurityBalanceType,
-    GetSecurityType} from 'tradeb0t-core'
+    GetSecurityType} from 'tradeb0t/core'
 import type API from '@exchange/sdk'
 
 import {Domain} from "../Domain";
@@ -95,7 +93,7 @@ Note, that you can extract specific domains types from `Domain` or `ExchangeConn
 #### InfoModule
 
 ```ts
-import {AbstractInfoModule} from 'tradeb0t-core'
+import {AbstractInfoModule} from 'tradeb0t/core'
 import type API from '@exchange/sdk'
 
 import {Domain} from '../Domain'
@@ -106,7 +104,7 @@ export class InfoModule extends AbstractInfoModule<Domain, API>{/*...*/}
 #### TradeModule
 
 ```ts
-import {AbstractTradeModule} from 'tradeb0t-core'
+import {AbstractTradeModule} from 'tradeb0t/core'
 import type API from '@exchange/sdk'
 
 import {Domain} from '../Domain'
@@ -117,7 +115,7 @@ export class TradeModule extends AbstractTradeModule<Domain, API>{/*...*/}
 #### ExchangeConnector
 
 ```ts
-import {AbstractExchangeConnector} from 'tradeb0t-core'
+import {AbstractExchangeConnector} from 'tradeb0t/core'
 import API from '@exchange/sdk'
 
 import {Domain} from '../Domain'
@@ -144,7 +142,7 @@ export class ExchangeConnector extends AbstractExchangeConnector<Domain, API>{
 Finally, start tradebot with `runTradeBot` function:
 
 ```typescript
-import {runTradeBot} from 'tradeb0t-core'
+import {runTradeBot} from 'tradeb0t/core'
 import API from '@exchange/sdk'
 
 import { DomainMapper, ExchangeConnector, InfoModule, TradeModule } from './bot'
