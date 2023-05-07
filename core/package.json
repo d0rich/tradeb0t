@@ -1,14 +1,14 @@
 {
-  "name": "tradeb0t/core",
+  "name": "@tradeb0t/core",
   "version": "0.2.0",
   "description": "🤖 Core library for trading software with high integration possibilities",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "lint:js": "eslint --ext \".ts\" --ignore-path .gitignore ./src",
+    "lint:js": "eslint --ext \".ts\" --ignore-path ../.gitignore ./src",
     "lint:prettier": "prettier --check ./src",
     "lint": "npm run lint:js && npm run lint:prettier",
-    "lintfix": "prettier --write --list-different ./src && eslint --fix --ext \".ts\" --ignore-path .gitignore ./src",
+    "lintfix": "prettier --write --list-different ./src && eslint --fix --ext \".ts\" --ignore-path ../.gitignore ./src",
     "dev": "cross-env NODE_ENV=development nodemon ./src/stub/run.ts",
     "build": "tsc",
     "clean": "tsc --build --clean && delete-empty ./dist"
