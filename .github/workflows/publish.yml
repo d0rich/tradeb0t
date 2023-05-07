@@ -42,7 +42,7 @@ jobs:
       - uses: JS-DevTools/npm-publish@v1
         id: publish
         with:
-          package: ./core
+          package: core
           access: public
           token: ${{ secrets.NPM_PUBLISH_TOKEN }}
 
