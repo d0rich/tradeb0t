@@ -39,7 +39,7 @@ jobs:
       - run: npm run build
         working-directory: ./core
 
-      - uses: JS-DevTools/npm-publish@v1
+      - uses: JS-DevTools/npm-publish@v2
         id: publish
         with:
           package: ./core/
