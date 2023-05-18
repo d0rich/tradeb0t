@@ -2,19 +2,19 @@ import { DomainTemplate, AlgorithmRun, Algorithm, InputTypes } from 'src/domain'
 import { ITradeAlgorithm } from './ITradeAlgorithm'
 import { IExchangeWatcher, IExchangeAnalyzer, LoggerService, IExchangeTrader } from 'src/bot'
 export abstract class AbstractTradeAlgorithm<
-  InputsType = unknown,
-  StateType = unknown,
-  StopStateType = unknown,
+  TInputs = unknown,
+  TState = unknown,
+  TStopState = unknown,
   TExchangeApi = unknown,
   Domain extends DomainTemplate = DomainTemplate
-> implements ITradeAlgorithm<InputsType, StateType>
+> implements ITradeAlgorithm<TInputs, TState>
 {
   abstract get name(): string
   abstract get description(): string
   abstract get inputs(): InputTypes
-  abstract main(inputs: InputsType): Promise<AlgorithmRun<InputsType, StateType>>
-  abstract resume(id: number): Promise<AlgorithmRun<InputsType, StateType>>
-  abstract stop(id: number): Promise<AlgorithmRun<InputsType, StateType>>
+  abstract main(inputs: TInputs): Promise<AlgorithmRun<TInputs, TState>>
+  abstract resume(id: number): Promise<AlgorithmRun<TInputs, TState>>
+  abstract stop(id: number): Promise<AlgorithmRun<TInputs, TState>>
 
   get details(): Algorithm {
     return {
@@ -24,7 +24,7 @@ export abstract class AbstractTradeAlgorithm<
     }
   }
 
-  protected stopState: Map<number, StopStateType> = new Map<number, StopStateType>()
+  protected stopState: Map<number, TStopState> = new Map<number, TStopState>()
 
   protected get watcher(): IExchangeWatcher {
     return this.analyzer.watcher
@@ -39,7 +39,7 @@ export abstract class AbstractTradeAlgorithm<
 
   constructor(protected readonly analyzer: IExchangeAnalyzer<Domain, TExchangeApi>) {}
 
-  protected async commitStart(inputs: InputsType, state: StateType): Promise<AlgorithmRun> {
+  protected async commitStart(inputs: TInputs, state: TState): Promise<AlgorithmRun> {
     const { name, analyzer, logger } = this
     const algoRun: AlgorithmRun = await analyzer.storage.algorithmRuns.runOne(name, inputs, state)
     logger.start(`Starting algorithm "${name}": `, {
@@ -91,7 +91,7 @@ export abstract class AbstractTradeAlgorithm<
     return run
   }
 
-  protected async saveProgress(id: number, progress: StateType): Promise<AlgorithmRun> {
+  protected async saveProgress(id: number, progress: TState): Promise<AlgorithmRun> {
     const { name, analyzer, logger } = this
     logger.info(`Saving process of algorithm "${name}": `, {
       name,
