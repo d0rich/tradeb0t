@@ -15,11 +15,10 @@ export interface HammerStopData {
 }
 
 export class HammerAlgorithm extends AbstractTradeAlgorithm<
-  CommonDomain,
-  StubExchangeApi,
   HammerInput,
   HammerState,
-  HammerStopData
+  HammerStopData,
+  StubExchangeApi
 > {
   get name(): string {
     return 'hammer'

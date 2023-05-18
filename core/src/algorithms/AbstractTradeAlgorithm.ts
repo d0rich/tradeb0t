@@ -1,13 +1,12 @@
 import { DomainTemplate, AlgorithmRun, Algorithm, InputTypes } from 'src/domain'
 import { ITradeAlgorithm } from './ITradeAlgorithm'
 import { IExchangeWatcher, IExchangeAnalyzer, LoggerService, IExchangeTrader } from 'src/bot'
-
 export abstract class AbstractTradeAlgorithm<
-  Domain extends DomainTemplate,
-  TExchangeApi = unknown,
   InputsType = unknown,
   StateType = unknown,
-  StopStateType = unknown
+  StopStateType = unknown,
+  TExchangeApi = unknown,
+  Domain extends DomainTemplate = DomainTemplate
 > implements ITradeAlgorithm<InputsType, StateType>
 {
   abstract get name(): string

@@ -16,11 +16,10 @@ export interface SlicingStopData {
 }
 
 export class SlicingAlgorithm extends AbstractTradeAlgorithm<
-  CommonDomain,
-  StubExchangeApi,
   SlicingInput,
   SlicingState,
-  SlicingStopData
+  SlicingStopData,
+  StubExchangeApi
 > {
   get name(): string {
     return 'slicing'
