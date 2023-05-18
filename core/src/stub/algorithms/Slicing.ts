@@ -1,4 +1,4 @@
-import { AbstractTradeAlgorithm, CommonDomain, CreateOrderOptions } from 'src'
+import { AbstractTradeAlgorithm, CreateOrderOptions } from 'src'
 import { Job } from 'node-schedule'
 import type { StubExchangeApi } from '../exchange'
 
