@@ -11,7 +11,7 @@ export class TradeAlgorithmsEngine<Domain extends DomainTemplate, TExchangeApi> 
 
   protected readonly analyzer: IExchangeAnalyzer<Domain, TExchangeApi>
 
-  protected get trader(): IExchangeTrader<Domain> {
+  protected get trader(): IExchangeTrader {
     return this.analyzer.trader
   }
   protected get watcher(): IExchangeWatcher {

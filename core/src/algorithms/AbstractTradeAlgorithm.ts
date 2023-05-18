@@ -1,21 +1,34 @@
 import { DomainTemplate, AlgorithmRun, Algorithm, InputTypes } from 'src/domain'
 import { ITradeAlgorithm } from './ITradeAlgorithm'
 import { IExchangeWatcher, IExchangeAnalyzer, LoggerService, IExchangeTrader } from 'src/bot'
+import { AbstractExchangeConnector } from 'src/connector'
 
+/**
+ * Abstract class for trade algorithms. It contains all basic methods to interact with tradebot store.
+ *
+ * @template TInputs Inputs type
+ * @template TState State type
+ * @template TStopState Stop state type
+ *
+ * @template TExchangeApi Exchange API type. Use it only in case of direct API usage.
+ * @template {DomainTemplate} Domain Domain template. Use it only in case of direct ExchangeConnector usage.
+ *
+ * @see {@linkcode AbstractExchangeConnector}
+ */
 export abstract class AbstractTradeAlgorithm<
-  Domain extends DomainTemplate,
+  TInputs = unknown,
+  TState = unknown,
+  TStopState = unknown,
   TExchangeApi = unknown,
-  InputsType = unknown,
-  StateType = unknown,
-  StopStateType = unknown
-> implements ITradeAlgorithm<InputsType, StateType>
+  Domain extends DomainTemplate = DomainTemplate
+> implements ITradeAlgorithm<TInputs, TState>
 {
   abstract get name(): string
   abstract get description(): string
   abstract get inputs(): InputTypes
-  abstract main(inputs: InputsType): Promise<AlgorithmRun<InputsType, StateType>>
-  abstract resume(id: number): Promise<AlgorithmRun<InputsType, StateType>>
-  abstract stop(id: number): Promise<AlgorithmRun<InputsType, StateType>>
+  abstract main(inputs: TInputs): Promise<AlgorithmRun<TInputs, TState>>
+  abstract resume(id: number): Promise<AlgorithmRun<TInputs, TState>>
+  abstract stop(id: number): Promise<AlgorithmRun<TInputs, TState>>
 
   get details(): Algorithm {
     return {
@@ -25,12 +38,12 @@ export abstract class AbstractTradeAlgorithm<
     }
   }
 
-  protected stopState: Map<number, StopStateType> = new Map<number, StopStateType>()
+  protected stopState: Map<number, TStopState> = new Map<number, TStopState>()
 
   protected get watcher(): IExchangeWatcher {
     return this.analyzer.watcher
   }
-  protected get trader(): IExchangeTrader<Domain> {
+  protected get trader(): IExchangeTrader {
     return this.analyzer.trader
   }
 
@@ -40,7 +53,7 @@ export abstract class AbstractTradeAlgorithm<
 
   constructor(protected readonly analyzer: IExchangeAnalyzer<Domain, TExchangeApi>) {}
 
-  protected async commitStart(inputs: InputsType, state: StateType): Promise<AlgorithmRun> {
+  protected async commitStart(inputs: TInputs, state: TState): Promise<AlgorithmRun> {
     const { name, analyzer, logger } = this
     const algoRun: AlgorithmRun = await analyzer.storage.algorithmRuns.runOne(name, inputs, state)
     logger.start(`Starting algorithm "${name}": `, {
@@ -92,7 +105,7 @@ export abstract class AbstractTradeAlgorithm<
     return run
   }
 
-  protected async saveProgress(id: number, progress: StateType): Promise<AlgorithmRun> {
+  protected async saveProgress(id: number, progress: TState): Promise<AlgorithmRun> {
     const { name, analyzer, logger } = this
     logger.info(`Saving process of algorithm "${name}": `, {
       name,

@@ -23,7 +23,7 @@ export class ExchangeAnalyzer<Domain extends DomainTemplate, TExchangeApi>
     return this._tradeAlgos
   }
 
-  get trader(): IExchangeTrader<Domain> {
+  get trader(): IExchangeTrader {
     return this.tradebot.trader
   }
   get watcher(): IExchangeWatcher {
@@ -44,10 +44,7 @@ export class ExchangeAnalyzer<Domain extends DomainTemplate, TExchangeApi>
   async initialize() {
     await this.storage.initialize()
     this.trader.hooks.hook('orderSent', async (order, operation_type, runId) => {
-      const domainMapper = this.tradebot.exchangeConnector.domainMapper
-      const status = domainMapper.orderStatus(order)
-      const commonOrder = await domainMapper.order(order)
-      await this.storage.orders.saveOne({ ...commonOrder, status: status }, operation_type, runId)
+      await this.storage.orders.saveOne(order, operation_type, runId)
     })
     // Create hooks for repositories
     this.storage.orders.hooks.hook('beforeSaveOne', async (ticker) => {

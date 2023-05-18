@@ -1,5 +1,5 @@
 import { Job } from 'node-schedule'
-import { AbstractTradeAlgorithm, CommonDomain, CreateOrderOptions } from 'src'
+import { AbstractTradeAlgorithm, CreateOrderOptions } from 'src'
 import type { StubExchangeApi } from '../exchange'
 
 export interface HammerInput {
@@ -14,13 +14,7 @@ export interface HammerStopData {
   job: Job
 }
 
-export class HammerAlgorithm extends AbstractTradeAlgorithm<
-  CommonDomain,
-  StubExchangeApi,
-  HammerInput,
-  HammerState,
-  HammerStopData
-> {
+export class HammerAlgorithm extends AbstractTradeAlgorithm<HammerInput, HammerState, HammerStopData, StubExchangeApi> {
   get name(): string {
     return 'hammer'
   }

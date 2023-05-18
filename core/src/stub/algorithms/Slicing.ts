@@ -1,4 +1,4 @@
-import { AbstractTradeAlgorithm, CommonDomain, CreateOrderOptions } from 'src'
+import { AbstractTradeAlgorithm, CreateOrderOptions } from 'src'
 import { Job } from 'node-schedule'
 import type { StubExchangeApi } from '../exchange'
 
@@ -16,11 +16,10 @@ export interface SlicingStopData {
 }
 
 export class SlicingAlgorithm extends AbstractTradeAlgorithm<
-  CommonDomain,
-  StubExchangeApi,
   SlicingInput,
   SlicingState,
-  SlicingStopData
+  SlicingStopData,
+  StubExchangeApi
 > {
   get name(): string {
     return 'slicing'
