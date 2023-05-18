@@ -1,6 +1,20 @@
 import { DomainTemplate, AlgorithmRun, Algorithm, InputTypes } from 'src/domain'
 import { ITradeAlgorithm } from './ITradeAlgorithm'
 import { IExchangeWatcher, IExchangeAnalyzer, LoggerService, IExchangeTrader } from 'src/bot'
+import { AbstractExchangeConnector } from 'src/connector'
+
+/**
+ * Abstract class for trade algorithms. It contains all basic methods to interact with tradebot store.
+ *
+ * @template TInputs Inputs type
+ * @template TState State type
+ * @template TStopState Stop state type
+ *
+ * @template TExchangeApi Exchange API type. Use it only in case of direct API usage.
+ * @template {DomainTemplate} Domain Domain template. Use it only in case of direct ExchangeConnector usage.
+ *
+ * @see {@linkcode AbstractExchangeConnector}
+ */
 export abstract class AbstractTradeAlgorithm<
   TInputs = unknown,
   TState = unknown,
