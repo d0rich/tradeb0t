@@ -14,11 +14,11 @@ jobs:
         with:
           node-version: 16
       - run: npm ci
-        working-directory: ./core
+        working-directory: ./packages/core
       - run: npm run lint
-        working-directory: ./core
+        working-directory: ./packages/core
       - run: npm run build
-        working-directory: ./core
+        working-directory: ./packages/core
 
   publish-core-package:
     name: Publish to NPM
@@ -35,14 +35,14 @@ jobs:
           node-version: 16
 
       - run: npm ci
-        working-directory: ./core
+        working-directory: ./packages/core
       - run: npm run build
-        working-directory: ./core
+        working-directory: ./packages/core
 
       - uses: JS-DevTools/npm-publish@v2
         id: publish
         with:
-          package: ./core/
+          package: ./packages/core/
           access: public
           token: ${{ secrets.NPM_PUBLISH_TOKEN }}
 
