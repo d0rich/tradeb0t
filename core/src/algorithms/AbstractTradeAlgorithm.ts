@@ -30,7 +30,7 @@ export abstract class AbstractTradeAlgorithm<
   protected get watcher(): IExchangeWatcher {
     return this.analyzer.watcher
   }
-  protected get trader(): IExchangeTrader<Domain> {
+  protected get trader(): IExchangeTrader {
     return this.analyzer.trader
   }
 

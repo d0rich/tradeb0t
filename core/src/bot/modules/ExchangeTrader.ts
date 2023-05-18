@@ -5,19 +5,26 @@ import { IExchangeTrader, IExchangeTraderHooks } from './IExchangeTrader'
 import { IExchangeWatcher } from './IExchangeWatcher'
 import { IExchangeConnector } from 'src/connector'
 import { ITradeBot } from 'src/bot/ITradeBot'
-import { CreateOrderOptions, GetOrderType, DomainTemplate, OrderStatus } from 'src/domain'
+import { CreateOrderOptions, GetOrderType, DomainTemplate, OrderStatus, IDomainMapper } from 'src/domain'
 
-export class ExchangeTrader<Domain extends DomainTemplate, TExchangeApi> implements IExchangeTrader<Domain> {
-  readonly hooks = createHooks<IExchangeTraderHooks<Domain>>()
+export class ExchangeTrader<Domain extends DomainTemplate, TExchangeApi> implements IExchangeTrader {
+  readonly hooks = createHooks<IExchangeTraderHooks>()
   private readonly tradebot: ITradeBot<Domain, TExchangeApi>
+
   private get watcher(): IExchangeWatcher {
     return this.tradebot.watcher
   }
+
   private get logger(): LoggerService {
     return this.tradebot.logger
   }
+
   private get exchangeConnector(): IExchangeConnector<Domain, TExchangeApi> {
     return this.tradebot.exchangeConnector
+  }
+
+  private get domainMapper(): IDomainMapper<Domain> {
+    return this.exchangeConnector.domainMapper
   }
 
   constructor(tradebot: ITradeBot<Domain, TExchangeApi>) {
@@ -71,8 +78,10 @@ export class ExchangeTrader<Domain extends DomainTemplate, TExchangeApi> impleme
       throw new Error(`Wrong operation defined in order: ${JSON.stringify(orderDetails)}`)
     }
 
-    this.hooks.callHook('orderSent', order, operation, run_id)
+    const commonOrder = await this.domainMapper.order(order)
 
-    return this.exchangeConnector.domainMapper.orderStatus(order)
+    this.hooks.callHook('orderSent', commonOrder, operation, run_id)
+
+    return commonOrder.status
   }
 }

@@ -22,7 +22,7 @@ export class ExchangeWatcher<Domain extends DomainTemplate, TExchangeApi> implem
   private get analyzer(): IExchangeAnalyzer<Domain, TExchangeApi> {
     return this.tradebot.analyzer
   }
-  private get trader(): IExchangeTrader<Domain> {
+  private get trader(): IExchangeTrader {
     return this.tradebot.trader
   }
   private get exchangeConnector(): IExchangeConnector<Domain, TExchangeApi> {

@@ -9,7 +9,7 @@ export interface ITradeBot<Domain extends DomainTemplate = any, TExchangeApi = a
 
   get exchangeConnector(): IExchangeConnector<Domain, TExchangeApi>
   get analyzer(): IExchangeAnalyzer<Domain, TExchangeApi>
-  get trader(): IExchangeTrader<Domain>
+  get trader(): IExchangeTrader
   get watcher(): IExchangeWatcher
   get api(): ApiService
   get logger(): LoggerService

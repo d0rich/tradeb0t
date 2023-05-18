@@ -52,7 +52,7 @@ export class TradeBot<Domain extends DomainTemplate, TExchangeApi> implements IT
 
   private _exchangeConnector: IExchangeConnector<Domain, TExchangeApi>
   private _analyzer: IExchangeAnalyzer<Domain, TExchangeApi>
-  private _trader: IExchangeTrader<Domain>
+  private _trader: IExchangeTrader
   private _watcher: IExchangeWatcher
   private _api: ApiService
   private _logger: LoggerService
