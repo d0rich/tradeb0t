@@ -10,7 +10,7 @@
     "lint": "npm run lint:js && npm run lint:prettier",
     "lintfix": "prettier --write --list-different ./src && eslint --fix --ext \".ts\" --ignore-path ../../.gitignore ./src",
     "dev": "npm run build -- --watch",
-    "build": "tsc",
+    "build": "tsc && tsc-alias",
     "clean": "tsc --build --clean && delete-empty ./dist"
   },
   "repository": {
