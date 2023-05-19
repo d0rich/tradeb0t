@@ -16,7 +16,8 @@ export class Asset {
 
   @UpdateDateColumn({
     type: 'int',
-    transformer: dateTransformer
+    transformer: dateTransformer,
+    default: () => 'CURRENT_TIMESTAMP'
   })
   updatedAt: Date
 }
