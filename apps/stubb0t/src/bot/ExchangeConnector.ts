@@ -1,4 +1,4 @@
-import { AbstractExchangeConnector, CommonDomain, CurrencyBalance, SecurityBalance } from 'src'
+import { AbstractExchangeConnector, CommonDomain, CurrencyBalance, SecurityBalance } from '@tradeb0t/core'
 import { StubExchangeApi } from '../exchange'
 
 export class ExchangeConnector extends AbstractExchangeConnector<CommonDomain, StubExchangeApi> {

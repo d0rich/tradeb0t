@@ -1,5 +1,5 @@
 import { DomainMapper, ExchangeConnector, InfoModule, TradeModule } from './bot'
-import { runTradeBot } from 'src'
+import { runTradeBot } from '@tradeb0t/core'
 import { StubExchangeApi } from './exchange'
 
 async function main() {

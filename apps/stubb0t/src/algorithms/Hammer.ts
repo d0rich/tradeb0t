@@ -1,5 +1,5 @@
 import { Job } from 'node-schedule'
-import { AbstractTradeAlgorithm, CreateOrderOptions } from 'src'
+import { AbstractTradeAlgorithm, CreateOrderOptions } from '@tradeb0t/core'
 import type { StubExchangeApi } from '../exchange'
 
 export interface HammerInput {

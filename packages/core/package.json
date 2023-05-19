@@ -9,7 +9,7 @@
     "lint:prettier": "prettier --check ./src",
     "lint": "npm run lint:js && npm run lint:prettier",
     "lintfix": "prettier --write --list-different ./src && eslint --fix --ext \".ts\" --ignore-path ../../.gitignore ./src",
-    "dev": "cross-env NODE_ENV=development nodemon ./src/stub/run.ts",
+    "dev": "npm run build -- --watch",
     "build": "tsc",
     "clean": "tsc --build --clean && delete-empty ./dist"
   },
@@ -42,7 +42,6 @@
     "logs": "./logs"
   },
   "devDependencies": {
-    "@faker-js/faker": "^7.6.0",
     "@types/colors": "^1.2.1",
     "@types/cors": "^2.8.13",
     "@types/deepmerge": "^2.2.0",
@@ -52,7 +51,6 @@
     "@types/ws": "^8.5.3",
     "@typescript-eslint/eslint-plugin": "^5.46.1",
     "@typescript-eslint/parser": "^5.46.1",
-    "cross-env": "^7.0.3",
     "delete-empty": "^3.0.0",
     "dotenv": "^16.0.3",
     "eslint": "^8.30.0",

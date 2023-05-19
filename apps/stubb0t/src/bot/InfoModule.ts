@@ -1,4 +1,4 @@
-import { AbstractInfoModule, CommonDomain, Currency, Security } from 'src'
+import { AbstractInfoModule, CommonDomain, Currency, Security } from '@tradeb0t/core'
 import { StubExchangeApi } from '../exchange'
 
 export class InfoModule extends AbstractInfoModule<CommonDomain, StubExchangeApi> {

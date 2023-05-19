@@ -1,5 +1,5 @@
 import { StubExchangeState } from './State'
-import { Currency, CurrencyBalance, Security, SecurityBalance, Order, CreateOrderOptions } from 'src/domain'
+import { Currency, CurrencyBalance, Security, SecurityBalance, Order, CreateOrderOptions } from '@tradeb0t/core'
 import { faker } from '@faker-js/faker'
 
 export class StubExchangeApi {

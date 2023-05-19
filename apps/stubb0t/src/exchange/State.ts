@@ -8,7 +8,7 @@ import {
   AssetBalance,
   Algorithm,
   AlgorithmRun
-} from 'src/domain'
+} from '@tradeb0t/core'
 import { DataSource } from 'typeorm'
 import { faker } from '@faker-js/faker'
 

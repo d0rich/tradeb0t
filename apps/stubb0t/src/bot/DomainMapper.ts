@@ -7,7 +7,7 @@ import {
   OrderStatus,
   Security,
   SecurityBalance
-} from 'src'
+} from '@tradeb0t/core'
 import { StubExchangeApi } from '../exchange'
 
 export class DomainMapper extends AbstractDomainMapper<CommonDomain, StubExchangeApi> {
