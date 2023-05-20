@@ -3,6 +3,10 @@
     "packages/*",
     "apps/*"
   ],
+  "scripts": {
+    "lint": "npx turbo lint",
+    "lintfix": "npx turbo lint"
+  },
   "devDependencies": {
     "@types/node": "^14.14.31",
     "@typescript-eslint/eslint-plugin": "^5.46.1",

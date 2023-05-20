@@ -13,6 +13,7 @@
       "inputs": ["src/**/*.tsx", "src/**/*.ts", "test/**/*.ts", "test/**/*.tsx"]
     },
     "lint": {},
+    "lintfix": {},
     "deploy": {
       "dependsOn": ["build", "test", "lint"]
     }
