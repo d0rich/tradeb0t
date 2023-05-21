@@ -1,3 +1,5 @@
+import { initWSClient, initHTTPClient } from '@tradeb0t/core'
+
 export type BotInitOptions = {
   name: string
   host: string
@@ -6,29 +8,26 @@ export type BotInitOptions = {
 }
 
 export class Bot {
+  name: string
+  status: 'Disconnected' | 'Active' | 'Not Authorized' = 'Disconnected'
+
   readonly host: string
   readonly port: number
   readonly token?: string
-
-  name: string
-  status: 'Disconnected' | 'Active' | 'Not Authorized' = 'Disconnected'
+  readonly httpClient: ReturnType<typeof initHTTPClient>
+  readonly wsClient: ReturnType<typeof initWSClient>
 
   constructor({ name, host, port, token }: BotInitOptions){
     this.name = name
     this.host = host
     this.port = port
     this.token = token
+
+    this.httpClient = initHTTPClient({ host, port, token })
+    this.wsClient = initWSClient({ host, port })
   }
 
-  get url(){
-    return `http://${this.host}:${this.port}`
-  }
-
-  get authHeader(){
-    return { Authorization: `Bearer ${this.token}` }
-  }
-
-  toExport(): BotInitOptions{
+  toExport(): BotInitOptions {
     return {
       name: this.name,
       host: this.host,
