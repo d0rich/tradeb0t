@@ -1,65 +1,35 @@
-name: Test & Publish Package
+name: Release
 
 on:
   push:
-  workflow_dispatch:
+    branches:
+      - master
+
+concurrency: ${{ github.workflow }}-${{ github.ref }}
 
 jobs:
-  test:
-    name: Test
-    runs-on: ubuntu-20.04
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 16
-      - run: npm ci
-        working-directory: ./packages/core
-      - run: npm run lint
-        working-directory: ./packages/core
-      - run: npm run build
-        working-directory: ./packages/core
-
-  publish-core-package:
-    name: Publish to NPM
-    needs: [test]
-    runs-on: ubuntu-20.04
-    if: github.ref == 'refs/heads/master'
-    outputs:
-      version: ${{ steps.publish.outputs.version }}
-      type: ${{ steps.publish.outputs.type }}
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 16
-
-      - run: npm ci
-        working-directory: ./packages/core
-      - run: npm run build
-        working-directory: ./packages/core
-
-      - uses: JS-DevTools/npm-publish@v2
-        id: publish
-        with:
-          package: ./packages/core/
-          access: public
-          token: ${{ secrets.NPM_PUBLISH_TOKEN }}
-
   release:
-    runs-on: ubuntu-20.04
-    needs: [publish-core-package]
-    if: needs.publish-core-package.outputs.type != 'none'
+    name: Release
+    runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout Repo
+        uses: actions/checkout@v3
 
-      - uses: rickstaa/action-create-tag@v1
+      - name: Setup Node.js 16.x
+        uses: actions/setup-node@v3
         with:
-          tag: 'v${{ needs.publish-core-package.outputs.version }}'
+          node-version: 16.x
 
-      - name: Create Release
-        uses: ncipollo/release-action@v1
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Create Release Pull Request or Publish to npm
+        id: changesets
+        uses: changesets/action@v1
         with:
-          tag: 'v${{ needs.publish-core-package.outputs.version }}'
-          generateReleaseNotes: true
-          draft: false
+          # This expects you to have a script called release which does a build for your packages and calls changeset publish
+          publish: npm run release && changeset publish
+          createGithubReleases: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}

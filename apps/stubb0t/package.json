@@ -1,4 +1,6 @@
 {
+  "name": "stubb0t",
+  "private": true,
   "scripts": {
     "lint:js": "eslint --ext \".ts\" --ignore-path ../../.gitignore ./src",
     "lint:prettier": "prettier --check ./src",
