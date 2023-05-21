@@ -1,7 +1,7 @@
 import { Bot, BotInitOptions } from '../models/Bot'
 
 export class BotsRepository {
-  private bots: Bot[] = []
+  readonly bots: Bot[] = []
 
   constructor(){}
 
