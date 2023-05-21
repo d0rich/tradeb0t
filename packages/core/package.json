@@ -1,6 +1,6 @@
 {
   "name": "@tradeb0t/core",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "🤖 Core library for trading software with high integration possibilities",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
