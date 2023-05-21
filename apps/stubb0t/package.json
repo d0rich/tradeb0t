@@ -1,0 +1,23 @@
+{
+  "name": "stubb0t",
+  "private": true,
+  "scripts": {
+    "lint:js": "eslint --ext \".ts\" --ignore-path ../../.gitignore ./src",
+    "lint:prettier": "prettier --check ./src",
+    "lint": "npm run lint:js && npm run lint:prettier",
+    "lintfix": "prettier --write --list-different ./src && eslint --fix --ext \".ts\" --ignore-path ../../.gitignore ./src",
+    "dev": "cross-env NODE_ENV=development nodemon ./src/run.ts",
+    "build": "tsc"
+  },
+  "devDependencies": {
+    "@faker-js/faker": "^7.6.0",
+    "@types/node-schedule": "^1.3.2",
+    "reflect-metadata": "^0.1.13"
+  },
+  "dependencies": {
+    "@tradeb0t/core": "*",
+    "better-sqlite3": "^8.3.0",
+    "sqlite3": "^5.1.6",
+    "typeorm": "^0.3.10"
+  }
+}

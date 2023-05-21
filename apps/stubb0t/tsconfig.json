@@ -1,0 +1,44 @@
+{
+  "compilerOptions": {
+    // project options
+    "lib": [
+      "es2021"
+    ],
+    "outDir": "dist",
+    "removeComments": false,
+    "target": "ES6",
+    "declaration": true,
+    // Module resolution
+    "baseUrl": "./",
+    "moduleResolution": "node",
+
+    /* Modules */
+    "module": "commonjs",
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+
+    /* Type Checking */
+    "strict": true,
+    "strictPropertyInitialization": false,
+    "skipLibCheck": true,
+
+    // Strict Checks
+    "alwaysStrict": true,
+    "allowUnreachableCode": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+
+    // Linter Checks
+    "noImplicitReturns": true,
+    "noUncheckedIndexedAccess": false,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+
+    // Decorators
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true
+  },
+  "exclude": [
+    "node_modules/**/*"
+  ]
+}

@@ -142,3 +142,5 @@ lib
 bin
 /storage.db-shm
 /storage.db-wal
+
+.turbo
