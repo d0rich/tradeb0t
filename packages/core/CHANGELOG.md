@@ -1,5 +1,11 @@
 # @tradeb0t/core
 
+## 0.3.2
+
+### Patch Changes
+
+- 773cf39: Fix publish script
+
 ## 0.3.1
 
 ### Patch Changes
