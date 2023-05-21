@@ -1,6 +1,6 @@
 import { initWSClient, initHTTPClient } from '@tradeb0t/core'
 
-export type BotInitOptions = {
+export interface BotInitOptions {
   name: string
   host: string
   port: number
