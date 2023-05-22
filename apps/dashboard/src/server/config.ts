@@ -1,4 +1,4 @@
-import type { BotInitOptions } from "./models/Bot"
+import type { BotInitOptions } from './models/Bot'
 
 export const config = {
   bots: [

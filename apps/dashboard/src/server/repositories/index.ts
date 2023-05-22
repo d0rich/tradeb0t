@@ -1,5 +1,5 @@
-import { BotsRepository as BotsRepositoryClass } from "./BotsRepository"
-import { config } from "../config"
+import { BotsRepository as BotsRepositoryClass } from './BotsRepository'
+import { config } from '../config'
 
 const BotsRepository = new BotsRepositoryClass()
 BotsRepository.loadFromConfig(config.bots)

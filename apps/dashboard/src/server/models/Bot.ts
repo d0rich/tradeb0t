@@ -19,7 +19,7 @@ export class Bot {
   readonly httpClient: ReturnType<typeof createTRPCProxyClient<TRPCRouterHTTP>>
   //readonly wsClient: ReturnType<typeof initWSClient>
 
-  constructor({ name, host, port, token }: BotInitOptions){
+  constructor({ name, host, port, token }: BotInitOptions) {
     this.name = name
     this.host = host
     this.port = port
@@ -28,7 +28,7 @@ export class Bot {
     this.httpClient = createTRPCProxyClient<TRPCRouterHTTP>({
       links: [
         createOFetchLink({
-          url: `http://${host}:${port}/api/trpc`,
+          url: `http://${host}:${port}/api/trpc`
         })
       ]
     })
