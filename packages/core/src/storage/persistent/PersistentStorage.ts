@@ -4,6 +4,7 @@ import { AlgorithmsRepository } from './AlgorithmsRepository'
 import { AlgorithmRunsRepository } from './AlgorithmRunsRepository'
 import { OrdersRepository } from './OrdersRepository'
 import { IPersistentStorage } from './IPersistentStorage'
+import type { LoggerService } from 'src/bot'
 
 export class PersistentStorage implements IPersistentStorage {
   isInitialized = false
@@ -34,11 +35,20 @@ export class PersistentStorage implements IPersistentStorage {
     })
   }
 
-  async initialize() {
+  async initialize(loggerService?: LoggerService) {
     await this.datasource.initialize()
-    this._orders = new OrdersRepository(Order, this.datasource.manager)
-    this._algorithms = new AlgorithmsRepository(AlgorithmRun, this.datasource.manager)
-    this._algorithmRuns = new AlgorithmRunsRepository(AlgorithmRun, this.datasource.manager)
+    const algorithmsRepository = new AlgorithmsRepository(Algorithm, this.datasource.manager)
+    const algorithmRunsRepository = new AlgorithmRunsRepository(AlgorithmRun, this.datasource.manager)
+    const ordersRepository = new OrdersRepository(Order, this.datasource.manager)
+    if (loggerService) {
+      this._algorithms = loggerService.createErrorHandlingProxy(algorithmsRepository)
+      this._algorithmRuns = loggerService.createErrorHandlingProxy(algorithmRunsRepository)
+      this._orders = loggerService.createErrorHandlingProxy(ordersRepository)
+    } else {
+      this._algorithms = algorithmsRepository
+      this._algorithmRuns = algorithmRunsRepository
+      this._orders = ordersRepository
+    }
     this.isInitialized = true
   }
 

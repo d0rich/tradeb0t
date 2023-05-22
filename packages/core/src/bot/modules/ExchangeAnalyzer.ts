@@ -42,7 +42,7 @@ export class ExchangeAnalyzer<Domain extends DomainTemplate, TExchangeApi>
   }
 
   async initialize() {
-    await this.storage.initialize()
+    await this.storage.initialize(this.tradebot.logger)
     this.trader.hooks.hook('orderSent', async (order, operation_type, runId) => {
       await this.storage.orders.saveOne(order, operation_type, runId)
     })

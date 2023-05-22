@@ -1,6 +1,7 @@
-import { SecuritiesRepository } from './SecuritiesRepository'
-import { PortfolioRepository } from './PortfolioRepository'
-import { CurrenciesRepository } from './CurrenciesRepository'
+import type { SecuritiesRepository } from './SecuritiesRepository'
+import type { PortfolioRepository } from './PortfolioRepository'
+import type { CurrenciesRepository } from './CurrenciesRepository'
+import type { LoggerService } from 'src/bot'
 
 export interface IInMemoryStorage {
   readonly securities: SecuritiesRepository
@@ -8,5 +9,5 @@ export interface IInMemoryStorage {
   readonly currencies: CurrenciesRepository
 
   isInitialized: boolean
-  initialize(): Promise<void>
+  initialize(loggerService?: LoggerService): Promise<void>
 }
