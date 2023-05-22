@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next'
-import { BotsRepository } from '@/server/repositories'
+import { BotsRepository } from '@/src/server/repositories'
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const getInfoPromises = BotsRepository.bots.map(bot => bot.httpClient.algorithms.list.query())
