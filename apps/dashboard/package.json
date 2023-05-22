@@ -5,8 +5,10 @@
     "dev": "nodemon --exec \"next dev\"",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
-    "lintfix": "next lint --fix"
+    "lint:js": "next lint",
+    "lint:prettier": "prettier --check ./src",
+    "lint": "npm run lint:js && npm run lint:prettier",
+    "lintfix": "prettier --write --list-different ./src && next lint --fix"
   },
   "dependencies": {
     "@tradeb0t/core": "*",
