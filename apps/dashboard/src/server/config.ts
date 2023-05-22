@@ -1,6 +1,6 @@
 import type { BotInitOptions } from "./models/Bot"
 
-export default {
+export const config = {
   bots: [
     {
       host: 'localhost',

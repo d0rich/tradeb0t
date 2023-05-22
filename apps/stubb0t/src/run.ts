@@ -18,11 +18,8 @@ async function main() {
       api: stubApi
     }),
     initAlgorithmsCallback(analyzer) {
-      return [
-        new HammerAlgorithm(analyzer),
-        new SlicingAlgorithm(analyzer)
-      ]
-    },
+      return [new HammerAlgorithm(analyzer), new SlicingAlgorithm(analyzer)]
+    }
   })
 }
 
