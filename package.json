@@ -5,6 +5,8 @@
     "apps/*"
   ],
   "scripts": {
+    "dev:core": "turbo run dev:core",
+    "dev:dashboard": "turbo run dev:dashboard",
     "lint": "turbo lint",
     "lintfix": "turbo lintfix",
     "changes": "changeset",

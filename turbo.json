@@ -1,12 +1,15 @@
 {
   "$schema": "https://turbo.build/schema.json",
   "pipeline": {
-    "dev": {
-      "dependsOn": ["^dev"]
+    "dev:core": {
+      "dependsOn": ["@tradeb0t/core#dev", "stubb0t#dev"]
+    },
+    "dev:dashboard": {
+      "dependsOn": ["@tradeb0t/core#dev", "stubb0t#dev", "@tradeb0t/dashboard#dev"]
     },
     "build": {
       "dependsOn": ["^build"],
-      "outputs": ["dist/**", "!dist/cache/**"]
+      "outputs": ["dist/**"]
     },
     "test": {
       "dependsOn": ["build"],
@@ -16,6 +19,9 @@
     "lintfix": {},
     "deploy": {
       "dependsOn": ["build", "test", "lint"]
-    }
+    },
+    "@tradeb0t/core#dev": {},
+    "stubb0t#dev": {},
+    "@tradeb0t/dashboard#dev": {}
   }
 }
