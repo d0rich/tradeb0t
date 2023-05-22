@@ -9,7 +9,7 @@
     "lint:prettier": "prettier --check ./src",
     "lint": "npm run lint:js && npm run lint:prettier",
     "lintfix": "prettier --write --list-different ./src && eslint --fix --ext \".ts\" --ignore-path ../../.gitignore ./src",
-    "dev": "nodemon --exec \"npm run build\" --watch \"src/**/*\" --ext \"ts,json\"",
+    "dev": "nodemon --exec \"npm run build\" --ext \"ts,json\"",
     "build": "tsc && tsc-alias",
     "clean": "tsc --build --clean && delete-empty ./dist"
   },
