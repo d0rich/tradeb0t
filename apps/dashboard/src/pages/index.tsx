@@ -1,4 +1,4 @@
-import { trpc } from '../utils/trpc'
+import { trpc } from '../app/trpc'
 export default function IndexPage() {
   const hello = trpc.hello.useQuery({ text: 'client' })
   if (!hello.data) {
