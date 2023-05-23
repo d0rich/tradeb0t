@@ -18,6 +18,7 @@
     "@trpc/next": "^10.27.1",
     "@trpc/react-query": "^10.27.1",
     "@trpc/server": "^10.27.1",
+    "daisyui": "^2.51.6",
     "next": "^13.4.3",
     "ofetch": "^1.0.1",
     "react": "^18.2.0",

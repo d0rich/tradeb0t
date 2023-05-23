@@ -7,7 +7,7 @@ const inter = Inter({ subsets: ['latin'] })
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <div lang="en">
       <Head>
         <title>tradeb0t dashboard</title>
       </Head>
@@ -15,6 +15,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Header />
         <main>{children}</main>
       </body>
-    </html>
+    </div>
   )
 }
