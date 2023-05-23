@@ -1,5 +1,6 @@
 import './globals.css'
-import Header from '../widgets/layout/header/Header'
+import Header from '../widgets/layout/Header'
+import Navbar from '../widgets/layout/Navbar'
 import Head from 'next/head'
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -9,6 +10,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <title>tradeb0t dashboard</title>
       </Head>
       <Header />
+      <Navbar />
       <main>{children}</main>
     </>
   )
