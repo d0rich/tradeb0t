@@ -1,5 +1,5 @@
-import { BotsRepository } from '../../repositories'
-import { procedure, router } from '../../trpc'
+import { BotsRepository } from '../repositories'
+import { procedure, router } from '../trpc'
 import { z } from 'zod'
 
 export const botsRepositoryRouter = router({

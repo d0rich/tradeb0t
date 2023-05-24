@@ -1,7 +1,8 @@
 import { z } from 'zod'
 import { procedure, router } from '../trpc'
 
-import { botsRepositoryRouter } from './bots/repository'
+import { botsRepositoryRouter } from './repository'
+import { botRouter } from './bot'
 
 export const appRouter = router({
   hello: procedure
@@ -15,7 +16,8 @@ export const appRouter = router({
         greeting: `hello ${opts.input.text}`
       }
     }),
-  repository: botsRepositoryRouter
+  repository: botsRepositoryRouter,
+  control: botRouter
 })
 // export type definition of API
 export type AppRouter = typeof appRouter
