@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { trpc } from '../app/trpc'
+import { trpc } from '../shared/api/trpc'
 
 export default function BotsPage() {
   const bots = trpc.control.getBots.useQuery()

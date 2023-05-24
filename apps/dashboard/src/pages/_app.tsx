@@ -1,5 +1,5 @@
 import type { AppType } from 'next/app'
-import { trpc } from '../app/trpc'
+import { trpc } from '../shared/api/trpc'
 import RootLayout from '../app/layout'
 
 const MyApp: AppType = ({ Component, pageProps }) => {
