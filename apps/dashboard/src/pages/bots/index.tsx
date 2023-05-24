@@ -2,7 +2,7 @@ import BotsList from '@/src/widgets/bot/BotsList'
 import { trpc } from '../../shared/api/trpc'
 
 export default function BotsPage() {
-  const { data: bots } = trpc.control.getBots.useQuery()
+  const { data: bots } = trpc.repository.getBots.useQuery()
 
   return (
     <>
