@@ -1,11 +1,11 @@
 import { z } from 'zod'
-import { operationType } from './OperationType'
+import { EOperationType } from 'src/domain'
 
 export const getOrdersOptions = z.object({
   from: z.date().optional(),
   to: z.date().optional(),
   securityTicker: z.string().optional(),
-  operation: operationType.optional(),
+  operation: z.nativeEnum(EOperationType).optional(),
   runId: z.number().int().min(0).optional()
 })
 

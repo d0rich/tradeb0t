@@ -1,8 +1,6 @@
 import { Entity, Column, ManyToOne, UpdateDateColumn, PrimaryColumn } from 'typeorm'
 import { AlgorithmRun } from './AlgorithmRun'
 import { dateTransformer } from 'src/storage'
-import { z } from 'zod'
-import { operationType } from 'src/api/trpc/schemas'
 
 /**
  * @see {@link https://support.tradeplusonline.com/support/solutions/articles/1000254592-what-are-the-different-order-status-possible-of-an-order- | What are the different order status possible of an order?}
@@ -23,7 +21,18 @@ export enum EOrderStatus {
  * @see {@link EOrderStatus}
  */
 export type OrderStatus = EOrderStatus | `${EOrderStatus}`
-export type OperationType = z.infer<typeof operationType>
+
+export enum EOperationType {
+  LIMIT_BUY = 'limit_buy',
+  LIMIT_SELL = 'limit_sell',
+  MARKET_BUY = 'market_buy',
+  MARKET_SELL = 'market_sell',
+  BUY_OR_CANCEL = 'buy_or_cancel',
+  SELL_OR_CANCEL = 'sell_or_cancel',
+  UNDEFINED = 'undefined'
+}
+
+export type OperationType = EOperationType | `${EOperationType}`
 
 @Entity()
 export class Order {
