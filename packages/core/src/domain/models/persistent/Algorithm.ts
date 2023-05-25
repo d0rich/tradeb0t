@@ -1,14 +1,6 @@
 import { Entity, Column, PrimaryColumn, OneToMany } from 'typeorm'
 import { AlgorithmRun } from './AlgorithmRun'
-
-export enum EInputType {
-  STRING = 'string',
-  NUMBER = 'number',
-  ORDER_DETAILS = 'OrderDetails',
-  DATE = 'Date'
-}
-
-export type InputTypes = Record<string, EInputType | `${EInputType}`>
+import { InputTypes } from './InputTypes'
 
 @Entity()
 export class Algorithm {

@@ -10,16 +10,7 @@ import {
 import { Algorithm } from './Algorithm'
 import { Order } from './Order'
 import { dateTransformer } from 'src/storage'
-
-export enum EAlgorithmRunStatus {
-  RUNNING = 'running',
-  STOPPED = 'stopped',
-  RESUMED = 'resumed',
-  FINISHED = 'finished',
-  ERROR = 'error'
-}
-
-export type AlgorithmRunStatus = EAlgorithmRunStatus | `${EAlgorithmRunStatus}`
+import { AlgorithmRunStatus } from './AlgorithmRunStatus'
 
 @Entity()
 // FIXME: remove any (requires adding type checks in dependencies)
