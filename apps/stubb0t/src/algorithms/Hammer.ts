@@ -1,5 +1,5 @@
 import { Job } from 'node-schedule'
-import { AbstractTradeAlgorithm, CreateOrderOptions } from '@tradeb0t/core'
+import { AbstractTradeAlgorithm, CreateOrderOptions, InputTypes } from '@tradeb0t/core'
 import type { StubExchangeApi } from '../exchange'
 
 export interface HammerInput {
@@ -21,7 +21,7 @@ export class HammerAlgorithm extends AbstractTradeAlgorithm<HammerInput, HammerS
   get description(): string {
     return 'hammer'
   }
-  get inputs(): any {
+  get inputs(): InputTypes {
     return {
       order: 'OrderDetails',
       date: 'Date',

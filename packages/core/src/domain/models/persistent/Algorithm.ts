@@ -1,9 +1,14 @@
 import { Entity, Column, PrimaryColumn, OneToMany } from 'typeorm'
 import { AlgorithmRun } from './AlgorithmRun'
 
-export type InputTypes = {
-  [key: string]: 'string' | 'number' | 'OrderDetails' | 'Date'
+export enum InputType {
+  STRING = 'string',
+  NUMBER = 'number',
+  ORDER_DETAILS = 'OrderDetails',
+  DATE = 'Date'
 }
+
+export type InputTypes = Record<string, InputType | `${InputType}`>
 
 @Entity()
 export class Algorithm {
