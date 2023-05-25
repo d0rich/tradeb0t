@@ -1,23 +1,7 @@
-import { EInputType, CreateOrderOptions, EOperationType, OperationType } from '@tradeb0t/core'
+import type { OperationType } from '@tradeb0t/core'
+import {EInputType, EOperationType} from '@tradeb0t/core/dist/domain/models/persistent'
 import { InputHTMLAttributes, useState, useEffect } from 'react'
-
-type TypeFromInputType<T extends `${EInputType}`> = T extends EInputType.NUMBER
-  ? number
-  : T extends `${EInputType.NUMBER}`
-  ? number
-  : T extends EInputType.STRING
-  ? string
-  : T extends `${EInputType.STRING}`
-  ? string
-  : T extends EInputType.DATE
-  ? Date
-  : T extends `${EInputType.DATE}`
-  ? Date
-  : T extends EInputType.ORDER_DETAILS
-  ? CreateOrderOptions
-  : T extends `${EInputType.ORDER_DETAILS}`
-  ? CreateOrderOptions
-  : never
+import { TypeFromInputType } from '../model/TypeFromInputType'
 
 export type InputFieldProps<T extends `${EInputType}`> = {
   name: string
@@ -36,6 +20,8 @@ export default function InputField<T extends `${EInputType}`>({ name, type, valu
       )
     case EInputType.DATE:
       return <InputFieldGeneric<T> inputAttrs={{ type: 'datetime-local' }} {...{ type, name, value, onUpdate }} />
+    case EInputType.ORDER_DETAILS:
+      return <InputFieldOrderDetails {...{ name, value, onUpdate } as InputFieldOrderDetailsProps} />
     default:
       return (
         <InputFieldGeneric<T>
@@ -47,7 +33,9 @@ export default function InputField<T extends `${EInputType}`>({ name, type, valu
   }
 }
 
-function InputFieldOrderDetails({ name, value, onUpdate }: InputFieldProps<EInputType.ORDER_DETAILS>) {
+type InputFieldOrderDetailsProps = Omit<InputFieldProps<EInputType.ORDER_DETAILS>, 'type'>
+
+function InputFieldOrderDetails({ name, value, onUpdate }: InputFieldOrderDetailsProps) {
   const [operationType, setOperationType] = useState<OperationType>(value.operation)
   const [price, setPrice] = useState<number>(value.price)
   const [lots, setLots] = useState<number>(value.lots)
