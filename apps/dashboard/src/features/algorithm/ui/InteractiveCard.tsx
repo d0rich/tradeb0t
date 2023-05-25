@@ -1,4 +1,4 @@
-import { Algorithm } from '@tradeb0t/core'
+import type { Algorithm } from '@tradeb0t/core'
 import Link from 'next/link'
 import Card from '@/src/entities/algorithm/ui/Card'
 import RunCard from '@/src/entities/algorithm/ui/RunCard'

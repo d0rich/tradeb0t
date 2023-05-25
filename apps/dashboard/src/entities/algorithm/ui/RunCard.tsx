@@ -1,5 +1,5 @@
 import type { Algorithm, InputTypes } from '@tradeb0t/core'
-import { EInputType } from '@tradeb0t/core/dist/domain/models/persistent/Algorithm'
+import { EInputType } from '@tradeb0t/core/dist/enums'
 import InputField from './InputField'
 import { TypeFromInputType } from '../model/TypeFromInputType'
 import { useState } from 'react'

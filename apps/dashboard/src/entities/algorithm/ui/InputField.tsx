@@ -1,5 +1,5 @@
 import type { OperationType } from '@tradeb0t/core'
-import {EInputType, EOperationType} from '@tradeb0t/core/dist/domain/models/persistent'
+import { EInputType, EOperationType } from '@tradeb0t/core/dist/enums'
 import { InputHTMLAttributes, useState, useEffect } from 'react'
 import { TypeFromInputType } from '../model/TypeFromInputType'
 
