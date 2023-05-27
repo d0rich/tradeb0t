@@ -1,7 +1,7 @@
 import type { Algorithm } from '@tradeb0t/core'
 import Link from 'next/link'
 import Card from '@/src/entities/algorithm/ui/Card'
-import RunCard from '@/src/entities/algorithm/ui/RunCard'
+import RunAlgorithmModal from '@/src/entities/algorithm/ui/RunAlgorithmModal'
 import { BotDesciption } from '@/src/entities/bot/model/BotDesciption'
 
 export interface InteractiveCardProps {
@@ -21,9 +21,8 @@ export default function InteractiveCard({ bot, algorithm, className }: Interacti
             Runs
           </Link>
         }
-        runAlgorithmComponent={<button className="btn btn-primary btn-sm">Run</button>}
+        runAlgorithmComponent={<RunAlgorithmModal algorithm={algorithm} />}
       />
-      <RunCard algorithm={algorithm} closeComponent={<button/>} runComponent={<button/>} />
     </>
 
   )

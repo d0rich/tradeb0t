@@ -4,38 +4,37 @@ import InputField from './InputField'
 import { TypeFromInputType } from '../model/TypeFromInputType'
 import { useState } from 'react'
 
-export interface RunCardProps {
+export interface RunAlgorithmFormProps {
   algorithm: Algorithm
   closeComponent: JSX.Element
-  runComponent: JSX.Element
+  actionsComponent: JSX.Element
+  onSubmit: (model: Record<string, TypeFromInputType<EInputType>>) => void
   className?: string
 }
 
-export default function RunCard({ algorithm, closeComponent, runComponent, className }: RunCardProps) {
+export default function RunAlgorithmForm({ algorithm, closeComponent, actionsComponent, className, onSubmit }: RunAlgorithmFormProps) {
   const [model, setModel] = useState(getDefaultModel(algorithm.inputTypes))
+  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault()
+    onSubmit(model)
+  }
   return (
-    <div className={`card card-compact bg-base-300 ${className}`}>
-      <div className="card-body">
-        <div className="card-actions justify-end">
-          {closeComponent}
-        </div>
-        <h2 className="card-title">Run {algorithm.name}</h2>
-        <div>
-          {Object.keys(algorithm.inputTypes).map((inputName) => (
-            <InputField
-              key={inputName}
-              name={inputName}
-              value={model[inputName]}
-              type={algorithm.inputTypes[inputName]}
-              onUpdate={(value) => setModel((prevModel) => ({ ...prevModel, [inputName]: value }))}
-            />
-          ))}
-        </div>
-        <div className="card-actions justify-end">
-          {runComponent}
-        </div>
+    <form onSubmit={handleSubmit} className={`card card-compact bg-base-300 ${className}`}>
+      {closeComponent}
+      <h2 className="card-title">Run {algorithm.name}</h2>
+      <div>
+        {Object.keys(algorithm.inputTypes).map((inputName) => (
+          <InputField
+            key={inputName}
+            name={inputName}
+            value={model[inputName]}
+            type={algorithm.inputTypes[inputName]}
+            onUpdate={(value) => setModel((prevModel) => ({ ...prevModel, [inputName]: value }))}
+          />
+        ))}
       </div>
-    </div>
+      {actionsComponent}
+    </form>
   )
 }
 
