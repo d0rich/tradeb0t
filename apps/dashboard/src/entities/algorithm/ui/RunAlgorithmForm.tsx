@@ -22,7 +22,7 @@ export default function RunAlgorithmForm({ algorithm, closeComponent, actionsCom
     <form onSubmit={handleSubmit} className={`card card-compact bg-base-300 ${className}`}>
       {closeComponent}
       <h2 className="card-title">Run {algorithm.name}</h2>
-      <div>
+      <div className='form-control gap-y-2'>
         {Object.keys(algorithm.inputTypes).map((inputName) => (
           <InputField
             key={inputName}

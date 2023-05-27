@@ -48,19 +48,19 @@ function InputFieldOrderDetails({ name, value, onUpdate }: InputFieldOrderDetail
   return (
     <label className="input-group input-group-vertical">
       <span>{name}</span>
-      <InputFieldGeneric<EInputType.STRING>
-        inputAttrs={{ type: 'text' }}
-        name="Ticker"
-        type={EInputType.STRING}
-        value={ticker}
-        onUpdate={setTicker}
-      />
-      <div className="form-control">
-        <div className="input-group">
+      <div className='bg-base-100 form-control gap-y-1 p-2'>
+        <InputFieldGeneric<EInputType.STRING>
+          inputAttrs={{ type: 'text' }}
+          name="Ticker"
+          type={EInputType.STRING}
+          value={ticker}
+          onUpdate={setTicker}
+        />
+        <label className="!input-group">
           <span className="label-text">Operation</span>
           <select
             defaultValue={operationType}
-            className="select select-bordered w-full max-w-xs"
+            className="select select-bordered"
             onChange={(e) => setOperationType(e.target.value as OperationType)}
           >
             {Object.values(EOperationType).map((operation) => (
@@ -69,22 +69,22 @@ function InputFieldOrderDetails({ name, value, onUpdate }: InputFieldOrderDetail
               </option>
             ))}
           </select>
-        </div>
+        </label>
+        <InputFieldGeneric<EInputType.NUMBER>
+          inputAttrs={{ type: 'number' }}
+          name="Price"
+          type={EInputType.NUMBER}
+          value={price}
+          onUpdate={setPrice}
+        />
+        <InputFieldGeneric<EInputType.NUMBER>
+          inputAttrs={{ type: 'number' }}
+          name="Lots"
+          type={EInputType.NUMBER}
+          value={lots}
+          onUpdate={setLots}
+        />
       </div>
-      <InputFieldGeneric<EInputType.NUMBER>
-        inputAttrs={{ type: 'number' }}
-        name="Price"
-        type={EInputType.NUMBER}
-        value={price}
-        onUpdate={setPrice}
-      />
-      <InputFieldGeneric<EInputType.NUMBER>
-        inputAttrs={{ type: 'number' }}
-        name="Lots"
-        type={EInputType.NUMBER}
-        value={lots}
-        onUpdate={setLots}
-      />
     </label>
   )
 }
@@ -110,17 +110,15 @@ function InputFieldGeneric<T extends `${EInputType}`>({
   }
 
   return (
-    <div className="form-control">
-      <label className="input-group">
-        <span className="label-text">{name}</span>
-        <input
-          className="input input-bordered"
-          placeholder={name}
-          value={valueToString(value)}
-          onChange={onChange}
-          {...inputAttrs}
-        />
-      </label>
-    </div>
+    <label className="!input-group">
+      <span className="label-text">{name}</span>
+      <input
+        className="input input-bordered"
+        placeholder={name}
+        value={valueToString(value)}
+        onChange={onChange}
+        {...inputAttrs}
+      />
+    </label>
   )
 }
