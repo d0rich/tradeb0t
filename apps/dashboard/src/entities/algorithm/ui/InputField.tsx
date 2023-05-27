@@ -45,12 +45,14 @@ function InputFieldOrderDetails({ name, value, onUpdate }: InputFieldOrderDetail
     onUpdate({ operation: operationType, price, lots, ticker })
   }, [operationType, price, lots, ticker])
 
+  const inputClass = 'input input-bordered input-sm'
+
   return (
-    <label className="input-group input-group-vertical">
+    <label className="input-group input-group-sm input-group-vertical">
       <span>{name}</span>
       <div className="bg-base-100 form-control gap-y-1 p-2">
         <InputFieldGeneric<EInputType.STRING>
-          inputAttrs={{ type: 'text' }}
+          inputAttrs={{ type: 'text', className: inputClass }}
           name="Ticker"
           type={EInputType.STRING}
           value={ticker}
@@ -60,7 +62,7 @@ function InputFieldOrderDetails({ name, value, onUpdate }: InputFieldOrderDetail
           <span className="label-text">Operation</span>
           <select
             defaultValue={operationType}
-            className="select select-bordered"
+            className="select select-sm select-bordered"
             onChange={(e) => setOperationType(e.target.value as OperationType)}
           >
             {Object.values(EOperationType).map((operation) => (
@@ -71,14 +73,14 @@ function InputFieldOrderDetails({ name, value, onUpdate }: InputFieldOrderDetail
           </select>
         </label>
         <InputFieldGeneric<EInputType.NUMBER>
-          inputAttrs={{ type: 'number' }}
+          inputAttrs={{ type: 'number', className: inputClass }}
           name="Price"
           type={EInputType.NUMBER}
           value={price}
           onUpdate={setPrice}
         />
         <InputFieldGeneric<EInputType.NUMBER>
-          inputAttrs={{ type: 'number' }}
+          inputAttrs={{ type: 'number', className: inputClass }}
           name="Lots"
           type={EInputType.NUMBER}
           value={lots}
