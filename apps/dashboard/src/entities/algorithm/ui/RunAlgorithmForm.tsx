@@ -25,7 +25,7 @@ export default function RunAlgorithmForm({
     onSubmit(model)
   }
   return (
-    <form onSubmit={handleSubmit} className={`card card-compact bg-base-300 ${className}`}>
+    <form onSubmit={handleSubmit} className={`card card-compact bg-base-200 ${className}`}>
       {closeComponent}
       <h2 className="card-title">Run {algorithm.name}</h2>
       <div className="form-control gap-y-2">

@@ -1,4 +1,5 @@
 import type { Algorithm } from '@tradeb0t/core'
+import InputsDescriptor from './InputsDescriptor'
 
 export interface CardProps {
   algorithm: Algorithm
@@ -9,10 +10,11 @@ export interface CardProps {
 
 export default function Card({ algorithm, goToRunsComponent, runAlgorithmComponent, className }: CardProps) {
   return (
-    <div className={`card card-compact bg-base-300 ${className}`}>
+    <div className={`card card-compact bg-base-200 ${className}`}>
       <div className="card-body">
         <h2 className="card-title">{algorithm.name}</h2>
-        <p>{algorithm.description}</p>
+        <p className="my-2">{algorithm.description}</p>
+        <InputsDescriptor inputs={algorithm.inputTypes} />
         <div className="card-actions justify-end">
           {goToRunsComponent}
           {runAlgorithmComponent}
