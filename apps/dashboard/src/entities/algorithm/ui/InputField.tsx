@@ -59,11 +59,12 @@ function InputFieldOrderDetails({ name, value, onUpdate }: InputFieldOrderDetail
         <div className="input-group">
           <span className="label-text">Operation</span>
           <select
+            defaultValue={operationType}
             className="select select-bordered w-full max-w-xs"
             onChange={(e) => setOperationType(e.target.value as OperationType)}
           >
             {Object.values(EOperationType).map((operation) => (
-              <option key={operation} value={operation} selected={operation === operationType}>
+              <option key={operation} value={operation}>
                 {operation}
               </option>
             ))}
@@ -95,6 +96,12 @@ function InputFieldGeneric<T extends `${EInputType}`>({
   onUpdate,
   inputAttrs
 }: InputFieldProps<T> & { inputAttrs?: InputHTMLAttributes<HTMLInputElement> }) {
+
+  function valueToString(value: TypeFromInputType<T>) {
+    if (type === EInputType.DATE) return (value as Date).toISOString().slice(0, -1)
+    return String(value)
+  }
+
   function onChange(e: React.ChangeEvent<HTMLInputElement>) {
     if (type === EInputType.STRING) return onUpdate(e.target.value as TypeFromInputType<T>)
     if (type === EInputType.NUMBER) return onUpdate(Number(e.target.value) as TypeFromInputType<T>)
@@ -109,7 +116,7 @@ function InputFieldGeneric<T extends `${EInputType}`>({
         <input
           className="input input-bordered"
           placeholder={name}
-          value={String(value)}
+          value={valueToString(value)}
           onChange={onChange}
           {...inputAttrs}
         />
