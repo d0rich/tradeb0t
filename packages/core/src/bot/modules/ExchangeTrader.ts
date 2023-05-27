@@ -39,28 +39,23 @@ export class ExchangeTrader<Domain extends DomainTemplate, TExchangeApi> impleme
   scheduleOrder(
     date: Date,
     order: CreateOrderOptions,
-    algorithm_name: string | undefined = undefined,
-    run_id: number | undefined = undefined
+    algorithm_name: string,
+    run_id: number
   ): Job {
     return scheduleJob(date, async () => {
       await this.sendOrder(order, algorithm_name, run_id)
     })
   }
 
-  async sendOrder(orderDetails: CreateOrderOptions, algorithm_name?: string, run_id?: number): Promise<OrderStatus> {
-    this.logger.log({
-      type: 'info',
-      message: 'Sending order',
-      attachment: {
-        order: orderDetails
-      },
-      algorithm: algorithm_name
+  async sendOrder(orderDetails: CreateOrderOptions, algorithm_name: string, run_id: number): Promise<OrderStatus> {
+    this.logger.info('Sending order: ', orderDetails,
+      algorithm_name
         ? {
             name: algorithm_name,
             run_id: run_id
           }
-        : undefined
-    })
+          : undefined
+    )
     let order: GetOrderType<Domain>
     const { operation } = orderDetails
     if (operation === 'buy_or_cancel') {

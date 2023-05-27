@@ -3,6 +3,7 @@ import Link from 'next/link'
 import Card from '@/src/entities/algorithm/ui/Card'
 import RunAlgorithmModal from '@/src/entities/algorithm/ui/RunAlgorithmModal'
 import { BotDesciption } from '@/src/entities/bot/model/BotDesciption'
+import { trpc } from '@/src/shared/api/trpc'
 
 export interface InteractiveCardProps {
   bot: BotDesciption
@@ -11,6 +12,12 @@ export interface InteractiveCardProps {
 }
 
 export default function InteractiveCard({ bot, algorithm, className }: InteractiveCardProps) {
+  const runAlgorithmMutation = trpc.control.algorithms.run.useMutation({
+    onSuccess: (result) => {
+      console.log(result)
+    }
+  })
+
   return (
     <>
       <Card
@@ -21,7 +28,15 @@ export default function InteractiveCard({ bot, algorithm, className }: Interacti
             Runs
           </Link>
         }
-        runAlgorithmComponent={<RunAlgorithmModal algorithm={algorithm} />}
+        runAlgorithmComponent={
+          <RunAlgorithmModal
+            algorithm={algorithm}
+            runAlgorithm={(inputs) => runAlgorithmMutation.mutate({
+              url: bot.url,
+              algorithmName: algorithm.name,
+              inputs,
+            })}
+          />}
       />
     </>
   )

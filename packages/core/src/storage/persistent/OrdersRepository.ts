@@ -13,7 +13,7 @@ export class OrdersRepository extends Repository<Order> {
   async saveOne(
     order: GetOrderType<CommonDomain>,
     operation: OperationType,
-    runId?: number
+    runId: number
   ): Promise<GetOrderType<CommonDomain>> {
     await this.hooks.callHook('beforeSaveOne', order.securityTicker)
     await this.upsert(

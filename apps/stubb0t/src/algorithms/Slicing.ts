@@ -59,6 +59,7 @@ export class SlicingAlgorithm extends AbstractTradeAlgorithm<
       const sendOrderTime: Date = this.addMinutesToDate(startPoint, (minutes / (parts - 1)) * i)
       const newJob = trader.scheduleAction(async () => {
         try {
+          console.log('Slicing', { ...order, lots }, this.name, algorithmRun.id)
           await trader.sendOrder({ ...order, lots }, this.name, algorithmRun.id)
           if (i < lotsInOrders.length - 1)
             await this.saveProgress(algorithmRun.id, { orders_sended: i + 1, lots_in_orders: lotsInOrders })

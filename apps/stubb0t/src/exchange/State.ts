@@ -45,6 +45,19 @@ export class StubExchangeState {
   }
 
   private async fillDatabase(ExchangeDataSource: DataSource) {
+    // It is required to create at least one algorithm run in order to save orders
+    const algorithm = new Algorithm()
+    algorithm.name = 'Stub algorithm'
+    algorithm.description = 'Stub algorithm description'
+    algorithm.inputTypes = { hello: 'string' }
+    await ExchangeDataSource.manager.save(algorithm)
+    const algorithmRun = new AlgorithmRun()
+    algorithmRun.id = 1
+    algorithmRun.algorithmName = algorithm.name
+    algorithmRun.inputs = { hello: 'world' }
+    algorithmRun.status = 'running'
+    algorithmRun.state = { hello: 'world' }
+    await ExchangeDataSource.manager.save(algorithmRun)
     for (let i = 0; i < 10; i++) {
       const currency = new Currency()
       currency.name = faker.finance.currencyName()

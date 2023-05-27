@@ -1,6 +1,7 @@
 {
   "watch": [
-    "../../packages/core/dist"
+    "../../packages/core/dist",
+    "./src"
   ],
   "delay": "2500",
   "env": {

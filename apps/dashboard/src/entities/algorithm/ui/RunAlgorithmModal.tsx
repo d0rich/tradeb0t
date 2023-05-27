@@ -1,12 +1,13 @@
 import { createPortal } from 'react-dom'
 import type { Algorithm } from '@tradeb0t/core'
-import RunAlgorithmForm from './RunAlgorithmForm'
+import RunAlgorithmForm, { RunAlgorithmFormProps } from './RunAlgorithmForm'
 
 export interface RunAlgorithmModalProps {
   algorithm: Algorithm
+  runAlgorithm: RunAlgorithmFormProps['onSubmit']
 }
 
-export default function RunAlgorithmModal({ algorithm }: RunAlgorithmModalProps) {
+export default function RunAlgorithmModal({ algorithm, runAlgorithm }: RunAlgorithmModalProps) {
   const modalId = `run-algorithm-modal-checkbox-${algorithm.name}`
   return (
     <>
@@ -23,9 +24,7 @@ export default function RunAlgorithmModal({ algorithm }: RunAlgorithmModalProps)
             <RunAlgorithmForm
               className="modal-box bg-base-200 relative"
               algorithm={algorithm}
-              onSubmit={(model) => {
-                console.log(model)
-              }}
+              onSubmit={runAlgorithm}
               closeComponent={
                 <label htmlFor={modalId} className="btn btn-sm btn-circle absolute right-2 top-2">
                   ✕

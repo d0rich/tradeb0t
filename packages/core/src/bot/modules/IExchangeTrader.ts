@@ -4,7 +4,7 @@ import { OrderStatus, GetOrderType, OperationType, CommonDomain } from 'src/doma
 import { CreateOrderOptions } from 'src/api/trpc/schemas'
 
 export interface IExchangeTraderHooks {
-  orderSent: (order: GetOrderType<CommonDomain>, operation_type: OperationType, runId?: number) => void
+  orderSent: (order: GetOrderType<CommonDomain>, operation_type: OperationType, runId: number) => void
 }
 
 export interface IExchangeTrader {
