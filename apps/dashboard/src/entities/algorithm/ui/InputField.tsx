@@ -21,7 +21,7 @@ export default function InputField<T extends `${EInputType}`>({ name, type, valu
     case EInputType.DATE:
       return <InputFieldGeneric<T> inputAttrs={{ type: 'datetime-local' }} {...{ type, name, value, onUpdate }} />
     case EInputType.ORDER_DETAILS:
-      return <InputFieldOrderDetails {...{ name, value, onUpdate } as InputFieldOrderDetailsProps} />
+      return <InputFieldOrderDetails {...({ name, value, onUpdate } as InputFieldOrderDetailsProps)} />
     default:
       return (
         <InputFieldGeneric<T>
@@ -48,7 +48,7 @@ function InputFieldOrderDetails({ name, value, onUpdate }: InputFieldOrderDetail
   return (
     <label className="input-group input-group-vertical">
       <span>{name}</span>
-      <div className='bg-base-100 form-control gap-y-1 p-2'>
+      <div className="bg-base-100 form-control gap-y-1 p-2">
         <InputFieldGeneric<EInputType.STRING>
           inputAttrs={{ type: 'text' }}
           name="Ticker"
@@ -96,7 +96,6 @@ function InputFieldGeneric<T extends `${EInputType}`>({
   onUpdate,
   inputAttrs
 }: InputFieldProps<T> & { inputAttrs?: InputHTMLAttributes<HTMLInputElement> }) {
-
   function valueToString(value: TypeFromInputType<T>) {
     if (type === EInputType.DATE) return (value as Date).toISOString().slice(0, -1)
     return String(value)

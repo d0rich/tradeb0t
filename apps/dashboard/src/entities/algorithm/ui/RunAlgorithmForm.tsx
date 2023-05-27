@@ -12,7 +12,13 @@ export interface RunAlgorithmFormProps {
   className?: string
 }
 
-export default function RunAlgorithmForm({ algorithm, closeComponent, actionsComponent, className, onSubmit }: RunAlgorithmFormProps) {
+export default function RunAlgorithmForm({
+  algorithm,
+  closeComponent,
+  actionsComponent,
+  className,
+  onSubmit
+}: RunAlgorithmFormProps) {
   const [model, setModel] = useState(getDefaultModel(algorithm.inputTypes))
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -22,7 +28,7 @@ export default function RunAlgorithmForm({ algorithm, closeComponent, actionsCom
     <form onSubmit={handleSubmit} className={`card card-compact bg-base-300 ${className}`}>
       {closeComponent}
       <h2 className="card-title">Run {algorithm.name}</h2>
-      <div className='form-control gap-y-2'>
+      <div className="form-control gap-y-2">
         {Object.keys(algorithm.inputTypes).map((inputName) => (
           <InputField
             key={inputName}
@@ -43,19 +49,16 @@ function getDefaultModel(inputs: InputTypes) {
     const inputType = inputs[inputName]
     if (inputType === EInputType.NUMBER) {
       acc[inputName] = 0
-    }
-    else if (inputType === EInputType.STRING) {
+    } else if (inputType === EInputType.STRING) {
       acc[inputName] = ''
-    }
-    else if (inputType === EInputType.DATE) {
+    } else if (inputType === EInputType.DATE) {
       acc[inputName] = new Date()
-    }
-    else if (inputType === EInputType.ORDER_DETAILS) {
+    } else if (inputType === EInputType.ORDER_DETAILS) {
       acc[inputName] = {
         operation: 'limit_buy',
         price: 0,
         lots: 0,
-        ticker: '',
+        ticker: ''
       }
     }
     return acc

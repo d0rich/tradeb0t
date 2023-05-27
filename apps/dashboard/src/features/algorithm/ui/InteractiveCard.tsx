@@ -24,6 +24,5 @@ export default function InteractiveCard({ bot, algorithm, className }: Interacti
         runAlgorithmComponent={<RunAlgorithmModal algorithm={algorithm} />}
       />
     </>
-
   )
 }
