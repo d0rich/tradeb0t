@@ -1,5 +1,6 @@
 import { IExchangeConnector } from './IExchangeConnector'
-import { GetOrderType, CreateOrderOptions, DomainTemplate } from 'src/domain'
+import { GetOrderType, DomainTemplate } from 'src/domain'
+import { CreateOrderOptions } from 'src/api/trpc/schemas'
 import { ITradeModule } from './ITradeModule'
 
 export abstract class AbstractTradeModule<Domain extends DomainTemplate, TExchangeApi = unknown>

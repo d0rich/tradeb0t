@@ -5,7 +5,8 @@ import { IExchangeTrader, IExchangeTraderHooks } from './IExchangeTrader'
 import { IExchangeWatcher } from './IExchangeWatcher'
 import { IExchangeConnector } from 'src/connector'
 import { ITradeBot } from 'src/bot/ITradeBot'
-import { CreateOrderOptions, GetOrderType, DomainTemplate, OrderStatus, IDomainMapper } from 'src/domain'
+import { GetOrderType, DomainTemplate, OrderStatus, IDomainMapper } from 'src/domain'
+import { CreateOrderOptions } from 'src/api/trpc/schemas'
 
 export class ExchangeTrader<Domain extends DomainTemplate, TExchangeApi> implements IExchangeTrader {
   readonly hooks = createHooks<IExchangeTraderHooks>()

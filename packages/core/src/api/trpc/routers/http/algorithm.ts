@@ -1,6 +1,7 @@
 import { publicProcedure, router } from './trpc'
 import { z } from 'zod'
 import { ITradeBot } from 'src/bot'
+import { ZAlgorithmName, ZInputs, ZRunId } from '../../schemas'
 
 export default (tradebot: ITradeBot) => {
   return router({
@@ -10,7 +11,7 @@ export default (tradebot: ITradeBot) => {
     listRuns: publicProcedure
       .input(
         z.object({
-          algorithmName: z.string()
+          algorithmName: ZAlgorithmName
         })
       )
       .query(async ({ input }) => {
@@ -19,8 +20,8 @@ export default (tradebot: ITradeBot) => {
     run: publicProcedure
       .input(
         z.object({
-          algorithmName: z.string(),
-          inputs: z.any()
+          algorithmName: ZAlgorithmName,
+          inputs: ZInputs
         })
       )
       .mutation(async ({ input }) => {
@@ -29,8 +30,8 @@ export default (tradebot: ITradeBot) => {
     stop: publicProcedure
       .input(
         z.object({
-          algorithmName: z.string(),
-          runId: z.number().int().min(0)
+          algorithmName: ZAlgorithmName,
+          runId: ZRunId
         })
       )
       .mutation(async ({ input }) => {
@@ -39,8 +40,8 @@ export default (tradebot: ITradeBot) => {
     resume: publicProcedure
       .input(
         z.object({
-          algorithmName: z.string(),
-          runId: z.number().int().min(0)
+          algorithmName: ZAlgorithmName,
+          runId: ZRunId
         })
       )
       .mutation(async ({ input }) => {
