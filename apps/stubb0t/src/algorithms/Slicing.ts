@@ -76,8 +76,8 @@ export class SlicingAlgorithm extends AbstractTradeAlgorithm<
   }
   async resume(id: number) {
     const algorithmRun = await this.loadProgress(id)
-    const { order, parts, minutes } = JSON.parse(algorithmRun.inputs)
-    const { orders_sended, lots_in_orders } = JSON.parse(algorithmRun.state)
+    const { order, parts, minutes } = algorithmRun.inputs
+    const { orders_sended, lots_in_orders } = algorithmRun.state
     const { trader } = this
     const stopData: SlicingStopData = { jobs: [] }
 
