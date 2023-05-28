@@ -4,6 +4,8 @@ import Card from '@/src/entities/algorithm/ui/Card'
 import RunAlgorithmModal from '@/src/entities/algorithm/ui/RunAlgorithmModal'
 import { BotDesciption } from '@/src/entities/bot/model/BotDesciption'
 import { trpc } from '@/src/shared/api/trpc'
+import { useAppDispatch } from '@/src/shared/model/hooks'
+import { pushNotification } from '@/src/entities/notifications/model/notificationsSlice'
 
 export interface InteractiveCardProps {
   bot: BotDesciption
@@ -12,9 +14,20 @@ export interface InteractiveCardProps {
 }
 
 export default function InteractiveCard({ bot, algorithm, className }: InteractiveCardProps) {
+  const dispatch = useAppDispatch()
   const runAlgorithmMutation = trpc.control.algorithms.run.useMutation({
     onSuccess: (result) => {
       console.log(result)
+      dispatch(
+        pushNotification({
+          type: 'success',
+          content: (
+            <>
+              Algorithm {algorithm.name} is running successfully with id: {result.id}!
+            </>
+          )
+        })
+      )
     }
   })
 

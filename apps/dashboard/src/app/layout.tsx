@@ -2,6 +2,7 @@ import './globals.css'
 import Header from '../widgets/layout/Header'
 import Navbar from '../widgets/layout/Navbar'
 import Head from 'next/head'
+import Notifications from '../widgets/layout/Notifications'
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -12,6 +13,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <Header />
       <Navbar />
       <main className="max-w-screen-xl mx-auto px-3">{children}</main>
+      <Notifications />
     </>
   )
 }

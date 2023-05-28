@@ -36,4 +36,5 @@ export const notificationsSlice = createSlice({
   }
 })
 
+export const { pushNotification } = notificationsSlice.actions
 export default notificationsSlice.reducer

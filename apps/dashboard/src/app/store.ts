@@ -1,12 +1,13 @@
 import { configureStore } from '@reduxjs/toolkit'
 import { createWrapper } from 'next-redux-wrapper'
-import notificationsReducer from '@/src/features/notifications/model/notificationsSlice'
+import notificationsReducer from '@/src/entities/notifications/model/notificationsSlice'
 
-const createStore = () => configureStore({
-  reducer: {
-    notifications: notificationsReducer
-  }
-})
+const createStore = () =>
+  configureStore({
+    reducer: {
+      notifications: notificationsReducer
+    }
+  })
 
 export type AppStore = ReturnType<typeof createStore>
 export type RootState = ReturnType<AppStore['getState']>

@@ -58,8 +58,8 @@ export class HammerAlgorithm extends AbstractTradeAlgorithm<HammerInput, HammerS
 
   async resume(id: number) {
     const algorithmRun = await this.loadProgress(id)
-    const { order } = JSON.parse(algorithmRun.inputs)
-    const { send_date } = JSON.parse(algorithmRun.state)
+    const { order } = algorithmRun.inputs
+    const { send_date } = algorithmRun.state
     const { trader } = this
 
     const job = trader.scheduleAction(async () => {
