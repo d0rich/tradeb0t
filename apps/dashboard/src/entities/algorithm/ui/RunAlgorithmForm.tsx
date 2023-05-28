@@ -2,7 +2,7 @@ import type { Algorithm, InputTypes } from '@tradeb0t/core'
 import { EInputType } from '@tradeb0t/core/dist/enums'
 import InputField from './InputField'
 import { TypeFromInputType } from '../model/TypeFromInputType'
-import { useState } from 'react'
+import { useRef } from 'react'
 
 export interface RunAlgorithmFormProps {
   algorithm: Algorithm
@@ -19,10 +19,10 @@ export default function RunAlgorithmForm({
   className,
   onSubmit
 }: RunAlgorithmFormProps) {
-  const [model, setModel] = useState(getDefaultModel(algorithm.inputTypes))
+  const model = useRef(getDefaultModel(algorithm.inputTypes))
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
-    onSubmit(model)
+    onSubmit(model.current)
   }
   return (
     <form onSubmit={handleSubmit} className={`card card-compact bg-base-200 ${className}`}>
@@ -33,9 +33,11 @@ export default function RunAlgorithmForm({
           <InputField
             key={inputName}
             name={inputName}
-            value={model[inputName]}
+            value={model.current[inputName]}
             type={algorithm.inputTypes[inputName]}
-            onUpdate={(value) => setModel((prevModel) => ({ ...prevModel, [inputName]: value }))}
+            onUpdate={(value) => {
+              model.current[inputName] = value
+            }}
           />
         ))}
       </div>

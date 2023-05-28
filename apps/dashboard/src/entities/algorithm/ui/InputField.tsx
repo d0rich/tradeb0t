@@ -1,6 +1,6 @@
 import type { OperationType } from '@tradeb0t/core'
 import { EInputType, EOperationType } from '@tradeb0t/core/dist/enums'
-import { InputHTMLAttributes, useState, useEffect } from 'react'
+import { InputHTMLAttributes, useRef } from 'react'
 import { TypeFromInputType } from '../model/TypeFromInputType'
 
 export type InputFieldProps<T extends `${EInputType}`> = {
@@ -36,14 +36,7 @@ export default function InputField<T extends `${EInputType}`>({ name, type, valu
 type InputFieldOrderDetailsProps = Omit<InputFieldProps<EInputType.ORDER_DETAILS>, 'type'>
 
 function InputFieldOrderDetails({ name, value, onUpdate }: InputFieldOrderDetailsProps) {
-  const [operationType, setOperationType] = useState<OperationType>(value.operation)
-  const [price, setPrice] = useState<number>(value.price)
-  const [lots, setLots] = useState<number>(value.lots)
-  const [ticker, setTicker] = useState<string>(value.ticker)
-
-  useEffect(() => {
-    onUpdate({ operation: operationType, price, lots, ticker })
-  }, [operationType, price, lots, ticker])
+  const orderDetails = useRef(value)
 
   const inputClass = 'input input-bordered input-sm'
 
@@ -55,15 +48,21 @@ function InputFieldOrderDetails({ name, value, onUpdate }: InputFieldOrderDetail
           inputAttrs={{ type: 'text', className: inputClass }}
           name="Ticker"
           type={EInputType.STRING}
-          value={ticker}
-          onUpdate={setTicker}
+          value={orderDetails.current.ticker}
+          onUpdate={(value) => {
+            orderDetails.current.ticker = value
+            onUpdate(orderDetails.current)
+          }}
         />
         <label className="!input-group">
           <span className="label-text">Operation</span>
           <select
-            defaultValue={operationType}
+            defaultValue={orderDetails.current.operation}
             className="select select-sm select-bordered"
-            onChange={(e) => setOperationType(e.target.value as OperationType)}
+            onChange={(e) => {
+              orderDetails.current.operation = e.target.value as OperationType
+              onUpdate(orderDetails.current)
+            }}
           >
             {Object.values(EOperationType).map((operation) => (
               <option key={operation} value={operation}>
@@ -76,15 +75,21 @@ function InputFieldOrderDetails({ name, value, onUpdate }: InputFieldOrderDetail
           inputAttrs={{ type: 'number', className: inputClass }}
           name="Price"
           type={EInputType.NUMBER}
-          value={price}
-          onUpdate={setPrice}
+          value={orderDetails.current.price}
+          onUpdate={(value) => {
+            orderDetails.current.price = value
+            onUpdate(orderDetails.current)
+          }}
         />
         <InputFieldGeneric<EInputType.NUMBER>
           inputAttrs={{ type: 'number', className: inputClass }}
           name="Lots"
           type={EInputType.NUMBER}
-          value={lots}
-          onUpdate={setLots}
+          value={orderDetails.current.lots}
+          onUpdate={(value) => {
+            orderDetails.current.lots = value
+            onUpdate(orderDetails.current)
+          }}
         />
       </div>
     </label>
@@ -116,7 +121,7 @@ function InputFieldGeneric<T extends `${EInputType}`>({
       <input
         className="input input-bordered"
         placeholder={name}
-        value={valueToString(value)}
+        defaultValue={valueToString(value)}
         onChange={onChange}
         {...inputAttrs}
       />
