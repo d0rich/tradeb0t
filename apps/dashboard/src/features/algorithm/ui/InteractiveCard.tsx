@@ -31,12 +31,15 @@ export default function InteractiveCard({ bot, algorithm, className }: Interacti
         runAlgorithmComponent={
           <RunAlgorithmModal
             algorithm={algorithm}
-            runAlgorithm={(inputs) => runAlgorithmMutation.mutate({
-              url: bot.url,
-              algorithmName: algorithm.name,
-              inputs,
-            })}
-          />}
+            runAlgorithm={(inputs) =>
+              runAlgorithmMutation.mutate({
+                url: bot.url,
+                algorithmName: algorithm.name,
+                inputs
+              })
+            }
+          />
+        }
       />
     </>
   )

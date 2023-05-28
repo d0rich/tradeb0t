@@ -48,10 +48,9 @@ export class ExchangeAnalyzer<Domain extends DomainTemplate, TExchangeApi>
     })
     // Create hooks for repositories
     this.storage.orders.hooks.hook('beforeSaveOne', (ticker) => {
-      this.loadSecurityIfNotExist(ticker)
-        .catch((e) => {
-          this.tradebot.logger.error(e)
-        })
+      this.loadSecurityIfNotExist(ticker).catch((e) => {
+        this.tradebot.logger.error(e)
+      })
     })
     this._tradeAlgos = new TradeAlgorithmsEngine<Domain, TExchangeApi>(this, this._initAlgorithmsCallback)
     await Promise.all([this.storage.algorithms.save(this.tradeAlgos.description)])
