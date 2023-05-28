@@ -10,8 +10,7 @@ import {
 import { Algorithm } from './Algorithm'
 import { Order } from './Order'
 import { dateTransformer } from 'src/storage'
-
-export type AlgorithmRunStatus = 'running' | 'stopped' | 'resumed' | 'finished' | 'error'
+import { AlgorithmRunStatus } from './AlgorithmRunStatus'
 
 @Entity()
 // FIXME: remove any (requires adding type checks in dependencies)

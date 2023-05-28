@@ -1,20 +1,8 @@
 import { Entity, Column, ManyToOne, UpdateDateColumn, PrimaryColumn } from 'typeorm'
 import { AlgorithmRun } from './AlgorithmRun'
 import { dateTransformer } from 'src/storage'
-import { z } from 'zod'
-import { operationType } from 'src/api/trpc/schemas'
-
-export type OrderStatus =
-  | 'not_processed'
-  | 'to_be_processed'
-  | 'placed'
-  | 'units_allocated'
-  | 'units_redeemed'
-  | 'rejected'
-  | 'cancelled'
-  | 'expired'
-  | 'undefined'
-export type OperationType = z.infer<typeof operationType>
+import { OrderStatus } from './OrderStatus'
+import { OperationType } from './OperationType'
 
 @Entity()
 export class Order {
@@ -24,9 +12,6 @@ export class Order {
   @Column()
   securityTicker: string
 
-  /**
-   * [Statuses details]{@link https://support.tradeplusonline.com/support/solutions/articles/1000254592-what-are-the-different-order-status-possible-of-an-order-}
-   */
   @Column()
   status: OrderStatus = 'undefined'
 

@@ -1,9 +1,10 @@
 import { Hookable } from 'hookable'
 import { Job, JobCallback } from 'node-schedule'
-import { CreateOrderOptions, OrderStatus, GetOrderType, OperationType, CommonDomain } from 'src/domain'
+import { OrderStatus, GetOrderType, OperationType, CommonDomain } from 'src/domain'
+import { CreateOrderOptions } from 'src/api/trpc/schemas'
 
 export interface IExchangeTraderHooks {
-  orderSent: (order: GetOrderType<CommonDomain>, operation_type: OperationType, runId?: number) => void
+  orderSent: (order: GetOrderType<CommonDomain>, operation_type: OperationType, runId: number) => void
 }
 
 export interface IExchangeTrader {

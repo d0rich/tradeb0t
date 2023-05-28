@@ -2,12 +2,12 @@
   "name": "stubb0t",
   "private": true,
   "scripts": {
+    "dev": "nodemon ./src/run.ts",
+    "build": "tsc",
     "lint:js": "eslint --ext \".ts\" --ignore-path ../../.gitignore ./src",
     "lint:prettier": "prettier --check ./src",
     "lint": "npm run lint:js && npm run lint:prettier",
-    "lintfix": "prettier --write --list-different ./src && eslint --fix --ext \".ts\" --ignore-path ../../.gitignore ./src",
-    "dev": "cross-env NODE_ENV=development nodemon ./src/run.ts",
-    "build": "tsc"
+    "lintfix": "prettier --write --list-different ./src && eslint --fix --ext \".ts\" --ignore-path ../../.gitignore ./src"
   },
   "devDependencies": {
     "@faker-js/faker": "^7.6.0",

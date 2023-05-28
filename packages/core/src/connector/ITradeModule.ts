@@ -1,4 +1,5 @@
-import { DomainTemplate, CreateOrderOptions, GetOrderType } from 'src/domain'
+import { DomainTemplate, GetOrderType } from 'src/domain'
+import { CreateOrderOptions } from 'src/api/trpc/schemas'
 
 export interface ITradeModule<Domain extends DomainTemplate> {
   sell(options: CreateOrderOptions): Promise<GetOrderType<Domain>>

@@ -4,6 +4,7 @@ import { CurrenciesRepository } from './CurrenciesRepository'
 import { IInMemoryStorage } from './IInMemoryStorage'
 import { DataSource } from 'typeorm'
 import { Currency, Security, CurrencyBalance, SecurityBalance, Asset, AssetBalance } from 'src/domain'
+import type { LoggerService } from 'src/bot'
 
 export class InMemoryStorage implements IInMemoryStorage {
   isInitialized = false
@@ -35,11 +36,20 @@ export class InMemoryStorage implements IInMemoryStorage {
     })
   }
 
-  async initialize() {
+  async initialize(loggerService?: LoggerService) {
     await this.datasource.initialize()
-    this._securities = new SecuritiesRepository(Security, this.datasource.manager)
-    this._currencies = new CurrenciesRepository(Currency, this.datasource.manager)
-    this._portfolio = new PortfolioRepository(this.datasource.manager)
+    const securitiesRepository = new SecuritiesRepository(Security, this.datasource.manager)
+    const currenciesRepository = new CurrenciesRepository(Currency, this.datasource.manager)
+    const portfolioRepository = new PortfolioRepository(this.datasource.manager)
+    if (loggerService) {
+      this._securities = loggerService.createErrorHandlingProxy(securitiesRepository)
+      this._currencies = loggerService.createErrorHandlingProxy(currenciesRepository)
+      this._portfolio = loggerService.createErrorHandlingProxy(portfolioRepository)
+    } else {
+      this._securities = securitiesRepository
+      this._currencies = currenciesRepository
+      this._portfolio = portfolioRepository
+    }
     this.isInitialized = true
   }
 }

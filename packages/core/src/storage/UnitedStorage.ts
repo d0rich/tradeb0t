@@ -1,5 +1,6 @@
 import { IPersistentStorage, PersistentStorage } from './persistent'
 import { IInMemoryStorage, InMemoryStorage } from './memory'
+import type { LoggerService } from 'src/bot'
 
 export class UnitedStorage implements IPersistentStorage, IInMemoryStorage {
   isInitialized = false
@@ -36,8 +37,8 @@ export class UnitedStorage implements IPersistentStorage, IInMemoryStorage {
     this._memory = new InMemoryStorage()
   }
 
-  async initialize() {
-    await Promise.all([this._persistent.initialize(), this._memory.initialize()])
+  async initialize(loggerService?: LoggerService) {
+    await Promise.all([this._persistent.initialize(loggerService), this._memory.initialize(loggerService)])
     this.isInitialized = true
   }
 }

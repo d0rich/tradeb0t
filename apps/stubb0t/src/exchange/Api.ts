@@ -64,6 +64,7 @@ export class StubExchangeApi {
     order.securityTicker = options.ticker
     order.exchangeId = faker.random.alphaNumeric(10)
     order.status = 'placed'
+    order.algorithmRunId = 1
     return this.state.db.manager.save(order)
   }
   buy(options: CreateOrderOptions): Promise<Order> {
@@ -74,6 +75,7 @@ export class StubExchangeApi {
     order.securityTicker = options.ticker
     order.exchangeId = faker.random.alphaNumeric(10)
     order.status = 'placed'
+    order.algorithmRunId = 1
     return this.state.db.manager.save(order)
   }
   marketSell(options: CreateOrderOptions): Promise<Order> {
@@ -84,6 +86,7 @@ export class StubExchangeApi {
     order.securityTicker = options.ticker
     order.exchangeId = faker.random.alphaNumeric(10)
     order.status = 'placed'
+    order.algorithmRunId = 1
     return this.state.db.manager.save(order)
   }
   marketBuy(options: CreateOrderOptions): Promise<Order> {
@@ -94,6 +97,7 @@ export class StubExchangeApi {
     order.securityTicker = options.ticker
     order.exchangeId = faker.random.alphaNumeric(10)
     order.status = 'placed'
+    order.algorithmRunId = 1
     return this.state.db.manager.save(order)
   }
 }

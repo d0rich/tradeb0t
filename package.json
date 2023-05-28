@@ -5,6 +5,8 @@
     "apps/*"
   ],
   "scripts": {
+    "dev:core": "turbo run @tradeb0t/core#dev stubb0t#dev",
+    "dev:dashboard": "turbo run @tradeb0t/core#dev stubb0t#dev @tradeb0t/dashboard#dev",
     "lint": "turbo lint",
     "lintfix": "turbo lintfix",
     "changes": "changeset",

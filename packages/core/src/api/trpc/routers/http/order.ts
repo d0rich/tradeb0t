@@ -1,10 +1,10 @@
 import { publicProcedure, router } from './trpc'
 import { ITradeBot } from 'src/bot'
-import { getOrdersOptions } from '../../schemas'
+import { ZGetOrdersOptions } from '../../schemas'
 
 export default (tradebot: ITradeBot) => {
   return router({
-    list: publicProcedure.input(getOrdersOptions).query(async ({ input }) => {
+    list: publicProcedure.input(ZGetOrdersOptions).query(async ({ input }) => {
       return await tradebot.analyzer.storage.orders.search(input)
     })
   })

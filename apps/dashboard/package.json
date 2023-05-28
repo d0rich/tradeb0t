@@ -1,0 +1,39 @@
+{
+  "name": "@tradeb0t/dashboard",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "dev": "nodemon --exec \"next dev\"",
+    "build": "next build",
+    "start": "next start",
+    "lint:js": "next lint",
+    "lint:prettier": "prettier --check ./src",
+    "lint": "npm run lint:js && npm run lint:prettier",
+    "lintfix": "prettier --write --list-different ./src && next lint --fix"
+  },
+  "dependencies": {
+    "@tanstack/react-query": "^4.29.7",
+    "@tradeb0t/core": "*",
+    "@trpc/client": "^10.27.1",
+    "@trpc/next": "^10.27.1",
+    "@trpc/react-query": "^10.27.1",
+    "@trpc/server": "^10.27.1",
+    "daisyui": "^2.51.6",
+    "next": "^13.4.3",
+    "ofetch": "^1.0.1",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "seedrandom": "^3.0.5",
+    "tailwindcss": "^3.3.2",
+    "trpc": "^0.11.3",
+    "zod": "^3.21.4"
+  },
+  "devDependencies": {
+    "@types/react": "18.2.6",
+    "@types/react-dom": "^18.2.4",
+    "@types/seedrandom": "^3.0.5",
+    "autoprefixer": "^10.4.14",
+    "eslint-config-next": "^13.4.3",
+    "postcss": "^8.4.23"
+  }
+}

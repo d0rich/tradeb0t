@@ -5,16 +5,17 @@ import { getRequestMeta } from './utils'
 export function initH3(tradebot: ITradeBot) {
   const app = createApp()
 
+  // FIXME: This middleware breaks all TRPC requests
   // Log all requests
-  app.use({
-    match: (url) => {
-      // This middleware breaks the playground, so we need to exclude it
-      return !url.startsWith('/trpc-playground')
-    },
-    handler: eventHandler(async (event) => {
-      tradebot.logger.debug(`Incoming HTTP request: ${getMethod(event)} ${event.path}: `, await getRequestMeta(event))
-    })
-  })
+  // app.use({
+  //   match: (url) => {
+  //     // This middleware breaks the playground, so we need to exclude it
+  //     return !url.startsWith('/trpc-playground')
+  //   },
+  //   handler: eventHandler(async (event) => {
+  //     tradebot.logger.debug(`Incoming HTTP request: ${getMethod(event)} ${event.path}: `, await getRequestMeta(event))
+  //   })
+  // })
 
   const apiRouter = createRouter()
 

@@ -5,7 +5,8 @@ import { IExchangeTrader, IExchangeTraderHooks } from './IExchangeTrader'
 import { IExchangeWatcher } from './IExchangeWatcher'
 import { IExchangeConnector } from 'src/connector'
 import { ITradeBot } from 'src/bot/ITradeBot'
-import { CreateOrderOptions, GetOrderType, DomainTemplate, OrderStatus, IDomainMapper } from 'src/domain'
+import { GetOrderType, DomainTemplate, OrderStatus, IDomainMapper } from 'src/domain'
+import { CreateOrderOptions } from 'src/api/trpc/schemas'
 
 export class ExchangeTrader<Domain extends DomainTemplate, TExchangeApi> implements IExchangeTrader {
   readonly hooks = createHooks<IExchangeTraderHooks>()
@@ -35,31 +36,23 @@ export class ExchangeTrader<Domain extends DomainTemplate, TExchangeApi> impleme
     return scheduleJob(date, action)
   }
 
-  scheduleOrder(
-    date: Date,
-    order: CreateOrderOptions,
-    algorithm_name: string | undefined = undefined,
-    run_id: number | undefined = undefined
-  ): Job {
+  scheduleOrder(date: Date, order: CreateOrderOptions, algorithm_name: string, run_id: number): Job {
     return scheduleJob(date, async () => {
       await this.sendOrder(order, algorithm_name, run_id)
     })
   }
 
-  async sendOrder(orderDetails: CreateOrderOptions, algorithm_name?: string, run_id?: number): Promise<OrderStatus> {
-    this.logger.log({
-      type: 'info',
-      message: 'Sending order',
-      attachment: {
-        order: orderDetails
-      },
-      algorithm: algorithm_name
+  async sendOrder(orderDetails: CreateOrderOptions, algorithm_name: string, run_id: number): Promise<OrderStatus> {
+    this.logger.info(
+      'Sending order: ',
+      orderDetails,
+      algorithm_name
         ? {
             name: algorithm_name,
             run_id: run_id
           }
         : undefined
-    })
+    )
     let order: GetOrderType<Domain>
     const { operation } = orderDetails
     if (operation === 'buy_or_cancel') {

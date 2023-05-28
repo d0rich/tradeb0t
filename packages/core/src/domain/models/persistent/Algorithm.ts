@@ -1,9 +1,6 @@
 import { Entity, Column, PrimaryColumn, OneToMany } from 'typeorm'
 import { AlgorithmRun } from './AlgorithmRun'
-
-export type InputTypes = {
-  [key: string]: 'string' | 'number' | 'OrderDetails' | 'Date'
-}
+import { InputTypes } from './InputTypes'
 
 @Entity()
 export class Algorithm {

@@ -1,0 +1,10 @@
+{
+  "watch": [
+    "../../packages/core/dist",
+    "./src"
+  ],
+  "delay": "2500",
+  "env": {
+    "NODE_ENV": "development"
+  }
+}

@@ -1,12 +1,9 @@
 {
   "$schema": "https://turbo.build/schema.json",
   "pipeline": {
-    "dev": {
-      "dependsOn": ["^dev"]
-    },
     "build": {
       "dependsOn": ["^build"],
-      "outputs": ["dist/**", "!dist/cache/**"]
+      "outputs": ["dist/**"]
     },
     "test": {
       "dependsOn": ["build"],
@@ -16,6 +13,18 @@
     "lintfix": {},
     "deploy": {
       "dependsOn": ["build", "test", "lint"]
+    },
+    "@tradeb0t/core#dev": {
+      "cache": false,
+      "persistent": true
+    },
+    "stubb0t#dev": {
+      "cache": false,
+      "persistent": true
+    },
+    "@tradeb0t/dashboard#dev": {
+      "cache": false,
+      "persistent": true
     }
   }
 }

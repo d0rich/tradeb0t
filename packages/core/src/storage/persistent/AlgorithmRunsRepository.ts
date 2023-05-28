@@ -3,7 +3,7 @@ import { AlgorithmRun, AlgorithmRunStatus } from 'src/domain'
 
 export class AlgorithmRunsRepository extends Repository<AlgorithmRun> {
   async runOne(algorithmName: string, inputs: unknown, state: unknown = inputs): Promise<AlgorithmRun> {
-    return this.create({
+    return this.save({
       algorithmName,
       inputs,
       state,
