@@ -43,13 +43,15 @@ export class ExchangeAnalyzer<Domain extends DomainTemplate, TExchangeApi>
 
   async initialize() {
     await this.storage.initialize(this.tradebot.logger)
-    this.trader.hooks.hook('orderSent', async (order, operation_type, runId) => {
-      console.log('orderSent', order, operation_type, runId)
-      await this.storage.orders.saveOne(order, operation_type, runId)
+    this.trader.hooks.hook('orderSent', (order, operation_type, runId) => {
+      this.storage.orders.saveOne(order, operation_type, runId)
     })
     // Create hooks for repositories
-    this.storage.orders.hooks.hook('beforeSaveOne', async (ticker) => {
+    this.storage.orders.hooks.hook('beforeSaveOne', (ticker) => {
       this.loadSecurityIfNotExist(ticker)
+        .catch((e) => {
+          this.tradebot.logger.error(e)
+        })
     })
     this._tradeAlgos = new TradeAlgorithmsEngine<Domain, TExchangeApi>(this, this._initAlgorithmsCallback)
     await Promise.all([this.storage.algorithms.save(this.tradeAlgos.description)])

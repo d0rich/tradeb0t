@@ -2,9 +2,10 @@ import { Repository } from 'typeorm'
 import { Order, CommonDomain, GetOrderType, OperationType } from 'src/domain'
 import { GetOrdersOptions } from 'src/api/trpc/schemas'
 import { createHooks } from 'hookable'
+import type { MaybePromise } from '@trpc/server'
 
 export interface IOrdersRepositoryHooks {
-  beforeSaveOne: (ticker: string) => Promise<void>
+  beforeSaveOne: (ticker: string) => MaybePromise<void>
 }
 
 export class OrdersRepository extends Repository<Order> {
