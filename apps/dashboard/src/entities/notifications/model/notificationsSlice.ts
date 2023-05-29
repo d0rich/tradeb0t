@@ -22,6 +22,14 @@ export const notificationsSlice = createSlice({
         createdAt: new Date()
       }
       state.notifications.push(newNotification)
+    },
+    clearNotifications(state) {
+      state.notifications = []
+    },
+    removeNotification(state, action: PayloadAction<Date>) {
+      const dateAsNumber = Number(action.payload)
+      const index = state.notifications.findIndex((n) => Number(n.createdAt) === dateAsNumber)
+      state.notifications.splice(index, 1)
     }
   },
 
@@ -36,5 +44,5 @@ export const notificationsSlice = createSlice({
   }
 })
 
-export const { pushNotification } = notificationsSlice.actions
+export const { pushNotification, clearNotifications, removeNotification } = notificationsSlice.actions
 export default notificationsSlice.reducer

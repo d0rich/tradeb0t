@@ -23,7 +23,8 @@ export default function InteractiveCard({ bot, algorithm, className }: Interacti
           type: 'success',
           content: (
             <>
-              Algorithm {algorithm.name} is running successfully with id: {result.id}!
+              Algorithm <code className="kbd kbd-sm text-white">{algorithm.name}</code> is running successfully with id:{' '}
+              <code className="kbd kbd-sm text-white">{result.id}</code>!
             </>
           )
         })
