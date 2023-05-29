@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import type { Notification } from '../model/Notification'
 
 export interface NotificationCardProps {
@@ -22,6 +22,16 @@ export default function NotificationCard({ notification, className = '', onClose
   const variantClass =
     notification.type === 'info' ? 'alert-info' : notification.type === 'success' ? 'alert-success' : 'alert-error'
 
+  const autoCloseTimeout = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  useEffect(() => {
+    resetAutoCloseTimeout()
+
+    return () => {
+      cancelAutoCloseTimeout()
+    }
+  }, [])
+
   return (
     <div className={`alert ${variantClass} flex-row ${className}`}>
       <div className="block">
@@ -31,7 +41,10 @@ export default function NotificationCard({ notification, className = '', onClose
       <div className="flex-none">
         <button
           onClick={() => {
-            if (onClose) onClose(notification)
+            if (onClose) {
+              onClose(notification)
+            }
+            cancelAutoCloseTimeout()
           }}
           className="btn btn-sm"
         >
@@ -40,4 +53,19 @@ export default function NotificationCard({ notification, className = '', onClose
       </div>
     </div>
   )
+
+  function resetAutoCloseTimeout() {
+    if (autoCloseTimeout.current) {
+      clearTimeout(autoCloseTimeout.current)
+    }
+    autoCloseTimeout.current = setTimeout(() => {
+      if (onClose) onClose(notification)
+    }, 10000)
+  }
+
+  function cancelAutoCloseTimeout() {
+    if (autoCloseTimeout.current) {
+      clearTimeout(autoCloseTimeout.current)
+    }
+  }
 }
