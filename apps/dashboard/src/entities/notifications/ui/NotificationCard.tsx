@@ -22,10 +22,6 @@ export default function NotificationCard({ notification, className = '', onClose
   const variantClass =
     notification.type === 'info' ? 'alert-info' : notification.type === 'success' ? 'alert-success' : 'alert-error'
 
-  useEffect(() => {
-    console.log('NotificationCard rendered')
-  })
-
   return (
     <div className={`alert ${variantClass} flex-row ${className}`}>
       <div className="block">
