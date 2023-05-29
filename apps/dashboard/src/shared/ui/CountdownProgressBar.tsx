@@ -1,4 +1,5 @@
 import { useEffect, useState, CSSProperties } from 'react'
+import { flushSync } from 'react-dom'
 
 import './CountdownProgressBar.css'
 
@@ -11,10 +12,10 @@ export default function CountdownProgressBar({ className = '', duration = 10000 
   const [progressValue, setProgressValue] = useState(0)
 
   useEffect(() => {
-    setTimeout(() => {
+    flushSync(() => {
       setProgressValue(100)
-    }, 10)
-  }, [duration])
+    })
+  }, [])
 
   return (
     <progress
