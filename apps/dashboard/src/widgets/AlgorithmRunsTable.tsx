@@ -29,8 +29,7 @@ export function AlgorithmRunsTable({ botUrl, algorithmName }: AlgorithmRunsTable
             <th>ID</th>
             <th>Status</th>
             <th>State</th>
-            <th>Created at</th>
-            <th>Updated at</th>
+            <th>Timestamps</th>
             <th>Actions</th>
           </tr>
         </thead>
