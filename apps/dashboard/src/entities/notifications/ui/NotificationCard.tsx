@@ -24,7 +24,7 @@ export default function NotificationCard({ notification, className = '', onClose
     <div className={`alert ${variantClass} flex-row ${className}`}>
       <div className="block">
         <time className="text-xs">{getTimeString(notification.createdAt)}</time>
-        <div>{notification.content}</div>
+        <div dangerouslySetInnerHTML={{ __html: notification.content }} />
       </div>
       <div className="flex-none">
         <button

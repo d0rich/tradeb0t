@@ -10,7 +10,7 @@ export default function NotificationsQueue() {
     <>
       {notifications.map((notification) => (
         <NotificationCard
-          key={notification.createdAt.toISOString()}
+          key={Number(notification.createdAt)}
           notification={notification}
           onClose={(notification) => dispatch(removeNotification(notification.createdAt))}
         />

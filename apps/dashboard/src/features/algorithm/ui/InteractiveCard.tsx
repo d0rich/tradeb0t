@@ -21,12 +21,7 @@ export default function InteractiveCard({ bot, algorithm, className }: Interacti
       dispatch(
         pushNotification({
           type: 'success',
-          content: (
-            <>
-              Algorithm <code className="kbd kbd-sm text-white">{algorithm.name}</code> is running successfully with id:{' '}
-              <code className="kbd kbd-sm text-white">{result.id}</code>!
-            </>
-          )
+          content: `Algorithm <code class="kbd kbd-sm text-white">${algorithm.name}</code> is running successfully with id: <code class="kbd kbd-sm text-white">${result.id}</code>!`
         })
       )
     }

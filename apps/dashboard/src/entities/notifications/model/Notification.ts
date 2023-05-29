@@ -1,5 +1,5 @@
 export interface Notification {
   type: 'error' | 'success' | 'info'
-  content: JSX.Element
+  content: string
   createdAt: Date
 }
