@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react'
 import type { Notification } from '../model/Notification'
+import CountdownProgressBar from '@/src/shared/ui/CountdownProgressBar'
 
 export interface NotificationCardProps {
   notification: Notification
@@ -24,6 +25,8 @@ export default function NotificationCard({ notification, className = '', onClose
 
   const autoCloseTimeout = useRef<ReturnType<typeof setTimeout> | null>(null)
 
+  const timeBeforeClose = 10_000
+
   useEffect(() => {
     resetAutoCloseTimeout()
 
@@ -37,6 +40,7 @@ export default function NotificationCard({ notification, className = '', onClose
       <div className="block">
         <time className="text-xs">{getTimeString(notification.createdAt)}</time>
         <div dangerouslySetInnerHTML={{ __html: notification.content }} />
+        <CountdownProgressBar className="mt-2" duration={timeBeforeClose} />
       </div>
       <div className="flex-none">
         <button
@@ -60,7 +64,7 @@ export default function NotificationCard({ notification, className = '', onClose
     }
     autoCloseTimeout.current = setTimeout(() => {
       if (onClose) onClose(notification)
-    }, 10000)
+    }, timeBeforeClose)
   }
 
   function cancelAutoCloseTimeout() {
