@@ -8,6 +8,7 @@ export interface InteractiveAlgorithmRunTableRowProps {
   botUrl: string
   algorithmRun: AlgorithmRun
   className?: string
+  onUpdate?: () => void
 }
 
 const stoppableStatuses: AlgorithmRunStatus[] = ['running', 'resumed']
@@ -16,7 +17,8 @@ const resumableStatuses: AlgorithmRunStatus[] = ['stopped']
 export default function InteractiveAlgorithmRunTableRow({
   algorithmRun,
   botUrl,
-  className = ''
+  className = '',
+  onUpdate
 }: InteractiveAlgorithmRunTableRowProps) {
   const dispatchRedux = useAppDispatch()
 
@@ -38,6 +40,9 @@ export default function InteractiveAlgorithmRunTableRow({
           with id <code class="kbd kbd-sm text-white">${algorithmRun.id}</code> failed to stop 😔`
         })
       )
+    },
+    onSettled: () => {
+      if (onUpdate) onUpdate()
     }
   })
   const dispatchResume = trpc.control.algorithms.resume.useMutation({
@@ -58,6 +63,9 @@ export default function InteractiveAlgorithmRunTableRow({
           with id <code class="kbd kbd-sm text-white">${algorithmRun.id}</code> failed to resume 😔`
         })
       )
+    },
+    onSettled: () => {
+      if (onUpdate) onUpdate()
     }
   })
 
