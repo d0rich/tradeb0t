@@ -17,7 +17,6 @@ export default function InteractiveCard({ bot, algorithm, className }: Interacti
   const dispatch = useAppDispatch()
   const runAlgorithmMutation = trpc.control.algorithms.run.useMutation({
     onSuccess: (result) => {
-      console.log(result)
       dispatch(
         pushNotification({
           type: 'success',

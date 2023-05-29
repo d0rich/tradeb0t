@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import type { Notification } from '../model/Notification'
 
 export interface NotificationCardProps {
@@ -10,7 +11,8 @@ function getTwoDigitString(number: number) {
   return number < 10 ? `0${number}` : `${number}`
 }
 
-function getTimeString(date: Date) {
+function getTimeString(dateAsNumber: number) {
+  const date = new Date(dateAsNumber)
   return `${getTwoDigitString(date.getHours())}:${getTwoDigitString(date.getMinutes())}:${getTwoDigitString(
     date.getSeconds()
   )}`
@@ -19,6 +21,10 @@ function getTimeString(date: Date) {
 export default function NotificationCard({ notification, className = '', onClose }: NotificationCardProps) {
   const variantClass =
     notification.type === 'info' ? 'alert-info' : notification.type === 'success' ? 'alert-success' : 'alert-error'
+
+  useEffect(() => {
+    console.log('NotificationCard rendered')
+  })
 
   return (
     <div className={`alert ${variantClass} flex-row ${className}`}>
