@@ -1,8 +1,7 @@
 import { useEffect, useState } from 'react'
-import type { AlgorithmRun } from '@tradeb0t/core'
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
 export interface AlgorithmRunStateViewProps {
-  state: AlgorithmRun['state']
+  state: object
   className?: string
 }
 
@@ -15,8 +14,10 @@ export default function AlgorithmRunStateView({ state, className = '' }: Algorit
   }, [])
 
   return (
-    <SyntaxHighlighter language="json" style={style}>
-      {jsonValue}
-    </SyntaxHighlighter>
+    <div className={`${className} max-w-full`}>
+      <SyntaxHighlighter language="json" style={style}>
+        {jsonValue}
+      </SyntaxHighlighter>
+    </div>
   )
 }

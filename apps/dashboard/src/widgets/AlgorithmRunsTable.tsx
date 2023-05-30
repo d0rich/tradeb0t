@@ -26,9 +26,9 @@ export function AlgorithmRunsTable({ botUrl, algorithmName }: AlgorithmRunsTable
       <table className="table w-full">
         <thead>
           <tr>
+            <th></th>
             <th>ID</th>
             <th>Status</th>
-            <th>State</th>
             <th>Timestamps</th>
             <th>Actions</th>
           </tr>
