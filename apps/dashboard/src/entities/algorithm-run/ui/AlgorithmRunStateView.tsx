@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react'
 import type { AlgorithmRun } from '@tradeb0t/core'
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
-const stylePromise = import('react-syntax-highlighter/dist/esm/styles/prism/one-dark')
 export interface AlgorithmRunStateViewProps {
   state: AlgorithmRun['state']
   className?: string
@@ -12,7 +11,7 @@ export default function AlgorithmRunStateView({ state, className = '' }: Algorit
 
   const [style, setStyle] = useState({})
   useEffect(() => {
-    stylePromise.then((mod) => setStyle(mod.default))
+    import('react-syntax-highlighter/dist/esm/styles/prism/one-dark').then((mod) => setStyle(mod.default))
   }, [])
 
   return (
