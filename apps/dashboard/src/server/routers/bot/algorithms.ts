@@ -1,7 +1,7 @@
 import { z } from 'zod'
 import { BotsRepository } from '../../repositories'
 import { procedure, router } from '../../trpc'
-import { ZAlgorithmName, ZInputs, ZRunId } from '@tradeb0t/core'
+import { ZAlgorithmName, ZInputs, ZRunId, ZPaginationOptions } from '@tradeb0t/core'
 
 const ZUrl = z.string()
 
@@ -20,13 +20,15 @@ export const botAlgorithmsRouter = router({
     .input(
       z.object({
         url: ZUrl,
-        algorithmName: ZAlgorithmName
+        algorithmName: ZAlgorithmName,
+        pagination: ZPaginationOptions
       })
     )
     .query((opts) => {
       const bot = BotsRepository.findBotByUrlOrThrow(opts.input.url)
       return bot.httpClient.algorithms.listRuns.query({
-        algorithmName: opts.input.algorithmName
+        algorithmName: opts.input.algorithmName,
+        pagination: opts.input.pagination
       })
     }),
   run: procedure

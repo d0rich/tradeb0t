@@ -14,7 +14,11 @@ export interface AlgorithmRunsTableProps {
 export function AlgorithmRunsTable({ botUrl, algorithmName }: AlgorithmRunsTableProps) {
   const { data: algorithmRuns, refetch } = trpc.control.algorithms.listRuns.useQuery({
     url: botUrl,
-    algorithmName: algorithmName
+    algorithmName: algorithmName,
+    pagination: {
+      page: 1,
+      perPage: 10
+    }
   })
 
   const onDataUpdate = useCallback(() => {
@@ -34,7 +38,7 @@ export function AlgorithmRunsTable({ botUrl, algorithmName }: AlgorithmRunsTable
           </tr>
         </thead>
         <tbody>
-          {algorithmRuns?.map((algorithmRun) => (
+          {algorithmRuns?.items.map((algorithmRun) => (
             <InteractiveAlgorithmRunTableRowMemo
               key={algorithmRun.id}
               onUpdate={onDataUpdate}
