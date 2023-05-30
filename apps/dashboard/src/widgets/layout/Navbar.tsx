@@ -2,6 +2,11 @@ import { useRouter } from 'next/router'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
 
+interface Breadcrumb {
+  href: string
+  label: string
+}
+
 export default function Navbar() {
   const router = useRouter()
 
@@ -13,28 +18,19 @@ export default function Navbar() {
     }
   }
 
-  function getBreadcrumbs() {
-    if (router.pathname === '/') {
-      return [
-        {
-          label: 'Home',
-          href: '/'
+  function getBreadcrumbs(): Breadcrumb[] {
+    return router.asPath.split('/').reduce(
+      (acc, curr, index, all) => {
+        if (index === 0) {
+          return acc
         }
-      ]
-    }
-    if (router.pathname === '/bots') {
-      return [
-        {
-          label: 'Home',
-          href: '/'
-        },
-        {
-          label: 'Bots',
-          href: '/bots'
-        }
-      ]
-    }
-    return []
+        const href = all.slice(0, index + 1).join('/')
+        const label = curr
+        acc.push({ href, label })
+        return acc
+      },
+      [{ href: '/', label: 'Home' }]
+    )
   }
 
   const [activeButtons, setActiveButtons] = useState(getActiveButtons())
