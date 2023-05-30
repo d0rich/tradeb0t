@@ -1,6 +1,7 @@
 import { useCallback, memo } from 'react'
 
 import InteractiveAlgorithmRunTableRow from '@/src/features/algorithm-runs/ui/InteractiveAlgorithmRunTableRow'
+import Pagination, { PaginationProps } from '../shared/ui/Pagination'
 import { trpc } from '@/src/shared/api/trpc'
 import type { AlgorithmRun } from '@tradeb0t/core'
 
@@ -9,15 +10,18 @@ const InteractiveAlgorithmRunTableRowMemo = memo(InteractiveAlgorithmRunTableRow
 export interface AlgorithmRunsTableProps {
   botUrl: string
   algorithmName: string
+  page?: number
+  pageLinkPattern: PaginationProps['pageLinkPattern']
 }
 
-export function AlgorithmRunsTable({ botUrl, algorithmName }: AlgorithmRunsTableProps) {
+export function AlgorithmRunsTable({ botUrl, algorithmName, page = 1, pageLinkPattern }: AlgorithmRunsTableProps) {
+  const perPage = 10
   const { data: algorithmRuns, refetch } = trpc.control.algorithms.listRuns.useQuery({
     url: botUrl,
     algorithmName: algorithmName,
     pagination: {
-      page: 1,
-      perPage: 10
+      page,
+      perPage
     }
   })
 
@@ -26,29 +30,49 @@ export function AlgorithmRunsTable({ botUrl, algorithmName }: AlgorithmRunsTable
   }, [])
 
   return (
-    <div className="overflow-x-auto">
-      <table className="table w-full">
-        <thead>
-          <tr>
-            <th></th>
-            <th>ID</th>
-            <th>Status</th>
-            <th>Timestamps</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {algorithmRuns?.items.map((algorithmRun) => (
-            <InteractiveAlgorithmRunTableRowMemo
-              key={algorithmRun.id}
-              onUpdate={onDataUpdate}
-              className="hover"
-              botUrl={botUrl}
-              algorithmRun={algorithmRun as unknown as AlgorithmRun}
-            />
-          ))}
-        </tbody>
-      </table>
-    </div>
+    <>
+      <div className="flex justify-center">
+        <Pagination
+          className="my-3 mx-auto"
+          allPages={algorithmRuns?.pagination.totalPages ?? 1}
+          currentPage={page}
+          pageLinkPattern={pageLinkPattern}
+        />
+      </div>
+
+      <div className="overflow-x-auto">
+        <table className="table w-full">
+          <thead>
+            <tr>
+              <th></th>
+              <th>ID</th>
+              <th>Status</th>
+              <th>Timestamps</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {algorithmRuns?.items.map((algorithmRun) => (
+              <InteractiveAlgorithmRunTableRowMemo
+                key={algorithmRun.id}
+                onUpdate={onDataUpdate}
+                className="hover"
+                botUrl={botUrl}
+                algorithmRun={algorithmRun as unknown as AlgorithmRun}
+              />
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      <div className="flex justify-center">
+        <Pagination
+          className="my-3 mx-auto"
+          allPages={algorithmRuns?.pagination.totalPages ?? 1}
+          currentPage={page}
+          pageLinkPattern={pageLinkPattern}
+        />
+      </div>
+    </>
   )
 }

@@ -13,6 +13,6 @@ export async function getTotalPages<Entity extends ObjectLiteral>(
   perPage: PaginationOptions['perPage'],
   filter: FindOptionsWhere<Entity> = {}
 ): Promise<number> {
-  const total = await repository.count(filter)
+  const total = await repository.count({ where: filter })
   return Math.ceil(total / perPage)
 }

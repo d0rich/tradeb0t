@@ -8,11 +8,15 @@ import { AlgorithmRunsTable } from '@/src/widgets/AlgorithmRunsTable'
 
 export default function AlgorithmRunsPage() {
   const {
-    query: { url: botUrl, algorithmName }
+    query: { url: botUrl, algorithmName, page }
   } = useRouter()
 
   const { data: bot } = trpc.repository.findBot.useQuery({ url: String(botUrl) })
   const { data: algorithms } = trpc.control.algorithms.list.useQuery({ url: String(botUrl) }) as { data: Algorithm[] }
+
+  function pageLinkPattern(page: number) {
+    return `/bots/${botUrl}/algorithms/${algorithmName}/runs?page=${page}`
+  }
 
   if (!bot) {
     return <h1 className="font-bold text-3xl m-5 text-error">Bot not found</h1>
@@ -28,7 +32,12 @@ export default function AlgorithmRunsPage() {
         <span className="badge badge-lg badge-primary">{bot.url}</span>
       </div>
       <InputsDescriptor inputs={algorithm?.inputTypes ?? {}} />
-      <AlgorithmRunsTable botUrl={String(botUrl)} algorithmName={String(algorithmName)} />
+      <AlgorithmRunsTable
+        pageLinkPattern={pageLinkPattern}
+        page={Number.isInteger(Number(page)) ? Number(page) : undefined}
+        botUrl={String(botUrl)}
+        algorithmName={String(algorithmName)}
+      />
     </>
   )
 }
