@@ -31,7 +31,7 @@ export default function AlgorithmRunTableRow({ algorithmRun, className = '', act
             Created: <code className="kbd kbd-sm">{algorithmRun.createdAt as unknown as string}</code>
           </div>
           <div>
-            Updated: <code className="kbd kbd-sm">{algorithmRun.createdAt as unknown as string}</code>
+            Updated: <code className="kbd kbd-sm">{algorithmRun.updatedAt as unknown as string}</code>
           </div>
         </td>
         <td>{actions}</td>
