@@ -12,9 +12,10 @@ export default function AlgorithmRunsPage() {
   } = useRouter()
 
   const { data: bot } = trpc.repository.findBot.useQuery({ url: String(botUrl) })
-  const { data: algorithms } = trpc.control.algorithms.list.useQuery({ url: String(botUrl) }) as { data: Algorithm[] }
+  // FIXME: Provide serialized type for Algorithm
+  const { data: algorithms } = trpc.control.algorithms.list.useQuery({ url: String(botUrl) }) as { data: Algorithm[] | undefined }
 
-  const algorithm = algorithms.find((algorithm) => algorithm.name === algorithmName)
+  const algorithm = algorithms?.find((algorithm) => algorithm.name === algorithmName)
 
   if (!bot || !algorithm) {
     return <h1 className="font-bold text-3xl m-5 text-error">Bot not found</h1>
