@@ -13,7 +13,9 @@ export default function AlgorithmRunsPage() {
 
   const { data: bot } = trpc.repository.findBot.useQuery({ url: String(botUrl) })
   // FIXME: Provide serialized type for Algorithm
-  const { data: algorithms } = trpc.control.algorithms.list.useQuery({ url: String(botUrl) }) as { data: Algorithm[] | undefined }
+  const { data: algorithms } = trpc.control.algorithms.list.useQuery({ url: String(botUrl) }) as {
+    data: Algorithm[] | undefined
+  }
 
   const algorithm = algorithms?.find((algorithm) => algorithm.name === algorithmName)
 
