@@ -1,7 +1,7 @@
 import { publicProcedure, router } from './trpc'
 import { z } from 'zod'
 import { ITradeBot } from 'src/bot'
-import { ZAlgorithmName, ZInputs, ZRunId } from '../../schemas'
+import { ZAlgorithmName, ZInputs, ZRunId, ZPaginationOptions } from '../../schemas'
 
 export default (tradebot: ITradeBot) => {
   return router({
@@ -11,11 +11,15 @@ export default (tradebot: ITradeBot) => {
     listRuns: publicProcedure
       .input(
         z.object({
-          algorithmName: ZAlgorithmName
+          algorithmName: ZAlgorithmName,
+          pagination: ZPaginationOptions
         })
       )
       .query(async ({ input }) => {
-        return await tradebot.analyzer.storage.algorithmRuns.findManyByAlgorithm(input.algorithmName)
+        return await tradebot.analyzer.storage.algorithmRuns.findManyByAlgorithmPaginated(
+          input.algorithmName,
+          input.pagination
+        )
       }),
     run: publicProcedure
       .input(

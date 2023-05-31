@@ -1,6 +1,7 @@
 import type { AppType } from 'next/app'
 import { trpc } from '../shared/api/trpc'
 import RootLayout from '../app/layout'
+import { wrapper } from '../app/store'
 
 const MyApp: AppType = ({ Component, pageProps }) => {
   return (
@@ -11,4 +12,7 @@ const MyApp: AppType = ({ Component, pageProps }) => {
     </>
   )
 }
-export default trpc.withTRPC(MyApp)
+
+const MyAppWithRedux = wrapper.withRedux(MyApp)
+
+export default trpc.withTRPC(MyAppWithRedux)

@@ -1,0 +1,4 @@
+/* TODO: Add firefox support */
+progress.countdown-progress[value]::-webkit-progress-value {
+  transition: width linear var(--countdown-progress-duration);
+}

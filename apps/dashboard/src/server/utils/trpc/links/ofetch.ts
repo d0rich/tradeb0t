@@ -15,10 +15,9 @@ export const createOFetchLink: <TRouter extends AnyRouter>(opts: {
       // this is when passing the result to the next link
       // each link needs to return an observable which propagates results
       return observable((observer) => {
-        console.log('performing operation:', op)
         ofetch(`${url}/${op.path}`, {
           method: op.type === 'query' ? 'GET' : 'POST',
-          params: op.type === 'query' ? (op.input as object) : {},
+          params: op.type === 'query' ? { input: JSON.stringify(op.input as object) } : {},
           body: op.type === 'query' ? undefined : (op.input as object),
           headers: {
             Authorization: token ? `Bearer ${token}` : ''
@@ -28,7 +27,9 @@ export const createOFetchLink: <TRouter extends AnyRouter>(opts: {
             observer.next(res)
             observer.complete()
           })
-          .catch((cause) => observer.error(TRPCClientError.from(cause)))
+          .catch((cause) => {
+            observer.error(TRPCClientError.from(cause))
+          })
         return () => {}
       })
     }

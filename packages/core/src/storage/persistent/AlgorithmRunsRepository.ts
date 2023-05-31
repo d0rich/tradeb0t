@@ -1,5 +1,7 @@
-import { In, Not, Repository } from 'typeorm'
+import { In, Not, Repository, type FindOptionsWhere } from 'typeorm'
 import { AlgorithmRun, AlgorithmRunStatus } from 'src/domain'
+import { PaginationOptions } from 'src/api'
+import { getPaginationSelector, getTotalPages } from '../utils'
 
 export class AlgorithmRunsRepository extends Repository<AlgorithmRun> {
   async runOne(algorithmName: string, inputs: unknown, state: unknown = inputs): Promise<AlgorithmRun> {
@@ -66,6 +68,29 @@ export class AlgorithmRunsRepository extends Repository<AlgorithmRun> {
     })
   }
 
+  async findManyByAlgorithmPaginated(algorithmName: string, pagination: PaginationOptions) {
+    const filter: FindOptionsWhere<AlgorithmRun> = { algorithmName }
+    const paginationSelector = getPaginationSelector(pagination)
+    const items = await this.find({
+      where: filter,
+      order: { id: 'DESC' },
+      ...paginationSelector
+    })
+    return {
+      items,
+      pagination: {
+        ...pagination,
+        totalPages: await getTotalPages(this, pagination.perPage, filter)
+      }
+    }
+  }
+
+  /**
+   * This method is used to find all unfinished algorithm runs.
+   * It is used to resume unfinished algorithm runs on startup and should not be used externally.
+   *
+   * @returns AlgorithmRuns that are not finished, stopped or errored
+   */
   async findAllUnfinished(): Promise<AlgorithmRun[]> {
     return this.find({
       where: {
