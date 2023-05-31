@@ -9,6 +9,11 @@ async function main() {
   const stubApi = new StubExchangeApi()
   await stubApi.initialize()
   runTradeBot({
+    config: {
+      auth: {
+        required: false
+      }
+    },
     exchangeConnector: new ExchangeConnector({
       modules: {
         domainMapper: new DomainMapper(),
