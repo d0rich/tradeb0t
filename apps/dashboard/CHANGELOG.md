@@ -1,5 +1,14 @@
 # @tradeb0t/dashboard
 
+## 0.1.1
+
+### Patch Changes
+
+- 4dfd2c4: Notifications and algorithm runs control panel
+- 4dfd2c4: Automatically close notifications
+- Updated dependencies [4dfd2c4]
+  - @tradeb0t/core@0.3.4
+
 ## 0.1.0
 
 ### Minor Changes

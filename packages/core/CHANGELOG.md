@@ -1,5 +1,11 @@
 # @tradeb0t/core
 
+## 0.3.4
+
+### Patch Changes
+
+- 4dfd2c4: Add pagination for algorithm runs on API level
+
 ## 0.3.3
 
 ### Patch Changes
