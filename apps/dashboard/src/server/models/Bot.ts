@@ -1,7 +1,7 @@
 import { createTRPCProxyClient, httpBatchLink } from '@trpc/client'
-import type { TRPCRouterHTTP, TRPCRouterWS } from '@tradeb0t/core'
+import { type TRPCRouterHTTP, type TRPCRouterWS, initWSClient } from '@tradeb0t/core'
 import { createOFetchLink } from '../utils/trpc/links/ofetch'
-
+import { eventEmitter } from '../routers/ws/eventEmitter'
 export interface BotInitOptions {
   name: string
   host: string
@@ -17,7 +17,7 @@ export class Bot {
   readonly port: number
   readonly token?: string
   readonly httpClient: ReturnType<typeof createTRPCProxyClient<TRPCRouterHTTP>>
-  //readonly wsClient: ReturnType<typeof initWSClient>
+  readonly wsClient: ReturnType<typeof initWSClient>
 
   constructor({ name, host, port, token }: BotInitOptions) {
     this.name = name
@@ -32,7 +32,16 @@ export class Bot {
         })
       ]
     })
-    //this.wsClient = initWSClient({ host, port })
+    this.wsClient = initWSClient({ host, port })
+    this.wsClient.log.onEvent.subscribe(
+      { auth: { token: this.token } },
+      {
+        onData(value) {
+          eventEmitter.emit(`log:${host}:${port}`, value)
+          eventEmitter.emit(`log:all`, value)
+        }
+      }
+    )
   }
 
   toExport(): BotInitOptions {
