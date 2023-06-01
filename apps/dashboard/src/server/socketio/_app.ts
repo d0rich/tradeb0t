@@ -5,7 +5,7 @@ import { eventEmitter } from './eventEmitter';
 export function configureSocketIO(io: Server) {
   const ns = io.of('/united-logs')
 
-  ns.on('connection', (socket) => {
+  io.on('connection', (socket) => {
     console.log('a user connected');
     socket.on('disconnect', () => {
       console.log('user disconnected');
@@ -13,6 +13,6 @@ export function configureSocketIO(io: Server) {
   })
 
   eventEmitter.on('log:all', (data: LogObject) => {
-    ns.emit('log', data)
+    io.emit('log', data)
   })
 }
