@@ -1,5 +1,6 @@
 import { io, type Socket } from 'socket.io-client'
 import { useEffect, useState } from 'react'
+import type { LogObject } from 'consola'
 
 function useSocket(url: string) {
   const [socket, setSocket] = useState<Socket | null>(null)
@@ -11,7 +12,6 @@ function useSocket(url: string) {
       })
       socketio.on('connect', () => {
         console.log('connect')
-        socketio.emit('hello')
       })
       socketio.on('disconnect', () => {
         console.log('disconnect')
@@ -31,7 +31,12 @@ export interface UnitedLogsModalProps {
 }
 
 export default function UnitedLogsModal({ className = '' }: UnitedLogsModalProps) {
-  useSocket('/api/logs/united')
+  const socket = useSocket('/api/logs/united')
+  const [logs, setLogs] = useState<LogObject[]>([])
+
+  socket?.on('log', (log: LogObject) => {
+    setLogs((logs) => [...logs, log])
+  })
 
   return <button className={`btn w-1/2 ${className}`}>United Logs</button>
 }

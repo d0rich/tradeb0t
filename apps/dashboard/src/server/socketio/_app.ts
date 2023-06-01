@@ -7,12 +7,14 @@ export function configureSocketIO(io: Server) {
 
   io.on('connection', (socket) => {
     console.log('a user connected')
+
     socket.on('disconnect', () => {
       console.log('user disconnected')
     })
   })
 
-  eventEmitter.on('log:all', (data: LogObject) => {
-    io.emit('log', data)
-  })
+  // eventEmitter.addListener('log:all', (data: LogObject) => {
+  //   io.emit('log', data)
+  //   console.log('log:all', data)
+  // })
 }

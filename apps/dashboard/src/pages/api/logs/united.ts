@@ -14,12 +14,6 @@ const SocketHandler = (req: NextApiRequest, res: NextApiResponse) => {
       addTrailingSlash: false
     })
     configureSocketIO(io)
-    io.on('connection', (socket) => {
-      console.log('a user connected')
-      socket.on('disconnect', () => {
-        console.log('user disconnected')
-      })
-    })
     // @ts-ignore
     res.socket.server.io = io
   }
