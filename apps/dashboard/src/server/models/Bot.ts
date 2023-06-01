@@ -33,7 +33,6 @@ export class Bot {
       ]
     })
     this.wsClient = initWSClient({ host, port })
-    // FIXME: Bot instance is created several times, so it subscribes several times
     this.wsClient.log.onEvent.subscribe(
       { auth: { token: this.token } },
       {
