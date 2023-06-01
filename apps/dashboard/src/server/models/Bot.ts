@@ -1,7 +1,7 @@
 import { createTRPCProxyClient, httpBatchLink } from '@trpc/client'
 import { type TRPCRouterHTTP, type TRPCRouterWS, initWSClient } from '@tradeb0t/core'
 import { createOFetchLink } from '../utils/trpc/links/ofetch'
-import { eventEmitter } from '../routers/ws/eventEmitter'
+import { eventEmitter } from '../socketio/eventEmitter'
 export interface BotInitOptions {
   name: string
   host: string
