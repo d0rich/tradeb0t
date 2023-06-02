@@ -40,7 +40,7 @@ export default function Navbar() {
   useEffect(() => {
     setActiveButtons(getActiveButtons())
     setBreadcrumbs(getBreadcrumbs())
-  }, [router.pathname])
+  }, [router.asPath])
 
   return (
     <div className="w-4/5 mx-auto mt-20">
