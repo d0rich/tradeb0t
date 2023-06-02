@@ -1,5 +1,5 @@
 import { Job } from 'node-schedule'
-import { AbstractTradeAlgorithm, CreateOrderOptions, InputTypes } from '@tradeb0t/core'
+import { AbstractTradeAlgorithm, CreateOrderOptions, InputTypes, AlgorithmRun } from '@tradeb0t/core'
 import type { StubExchangeApi } from '../exchange'
 
 export interface HammerInput {
@@ -29,29 +29,17 @@ export class HammerAlgorithm extends AbstractTradeAlgorithm<HammerInput, HammerS
     }
   }
 
-  async sendUntilNotRejected(order: CreateOrderOptions, run_id: number) {
-    try {
-      const status = await this.trader.sendOrder(order, this.name, run_id)
-      if (status === 'rejected') await this.sendUntilNotRejected(order, run_id)
-    } catch (e) {
-      await this.commitError(run_id, e as Error)
-    }
-  }
-
   async main(inputs: HammerInput) {
     const { order, seconds_before, date } = inputs
-    const { trader } = this
 
     const send_date = this.addSecondsToDate(new Date(date), -seconds_before)
-
     const algorithmRun = await this.commitStart(inputs, { send_date })
 
-    const job = trader.scheduleAction(async () => {
-      await this.sendUntilNotRejected(order, algorithmRun.id)
-      await this.commitFinish(algorithmRun.id)
-    }, send_date)
-
-    this.stopState.set(algorithmRun.id, { job })
+    try {
+      this.initialize(algorithmRun, { send_date, order })
+    } catch (e) {
+      return this.commitError(algorithmRun.id, e as Error)
+    }
 
     return algorithmRun
   }
@@ -60,7 +48,32 @@ export class HammerAlgorithm extends AbstractTradeAlgorithm<HammerInput, HammerS
     const algorithmRun = await this.loadProgress(id)
     const { order } = algorithmRun.inputs
     const { send_date } = algorithmRun.state
+
+    try {
+      this.initialize(algorithmRun, { send_date, order })
+    } catch (e) {
+      return this.commitError(algorithmRun.id, e as Error)
+    }
+
+    return this.commitContinue(id)
+  }
+
+  async stop(id: number) {
+    const stopData = this.stopState.get(id)
+    if (!stopData) throw new Error(`Algorithm run with id:${id} was not found.`)
+    stopData?.job?.cancel()
+    return this.commitStop(id)
+  }
+
+  private initialize(
+    algorithmRun: AlgorithmRun,
+    opts: {
+      send_date: Date
+      order: CreateOrderOptions
+    }
+  ) {
     const { trader } = this
+    const { send_date, order } = opts
 
     const job = trader.scheduleAction(async () => {
       await this.sendUntilNotRejected(order, algorithmRun.id)
@@ -69,14 +82,17 @@ export class HammerAlgorithm extends AbstractTradeAlgorithm<HammerInput, HammerS
 
     this.stopState.set(algorithmRun.id, { job })
 
-    return await this.commitContinue(id)
+    if (new Date(send_date) < new Date())
+      throw new Error(`Hammer run with id:${algorithmRun.id} can't send orders in the past.`)
   }
 
-  async stop(id: number) {
-    const stopData = this.stopState.get(id)
-    if (!stopData) throw new Error(`Algorithm run with id:${id} was not found.`)
-    stopData?.job?.cancel()
-    return await this.commitStop(id)
+  private async sendUntilNotRejected(order: CreateOrderOptions, run_id: number) {
+    try {
+      const status = await this.trader.sendOrder(order, this.name, run_id)
+      if (status === 'rejected') await this.sendUntilNotRejected(order, run_id)
+    } catch (e) {
+      await this.commitError(run_id, e as Error)
+    }
   }
 
   private addSecondsToDate(date: Date, seconds: number) {

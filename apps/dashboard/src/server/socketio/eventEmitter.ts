@@ -9,8 +9,8 @@ if (!global.eventEmitter) {
   // @ts-ignore
   global.eventEmitter = eventEmitter
   eventEmitter.on('log:all', (data) => {
-  console.log('log:all', data)
-})
+    console.log('log:all', data)
+  })
 } else {
   // @ts-ignore
   eventEmitter = global.eventEmitter

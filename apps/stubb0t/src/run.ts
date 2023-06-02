@@ -23,6 +23,7 @@ async function main() {
       api: stubApi
     }),
     initAlgorithmsCallback(analyzer) {
+      const logger = analyzer.tradebot.logger
       return [new HammerAlgorithm(analyzer), new SlicingAlgorithm(analyzer)]
     }
   })
