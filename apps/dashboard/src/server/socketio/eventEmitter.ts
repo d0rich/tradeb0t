@@ -1,8 +1,19 @@
 import { EventEmitter } from 'events'
 
 // create a global event emitter (could be replaced by redis, etc)
-export const eventEmitter = new EventEmitter()
+let eventEmitter: EventEmitter
 
-eventEmitter.on('log:all', (data) => {
+// @ts-ignore
+if (!global.eventEmitter) {
+  eventEmitter = new EventEmitter()
+  // @ts-ignore
+  global.eventEmitter = eventEmitter
+  eventEmitter.on('log:all', (data) => {
   console.log('log:all', data)
 })
+} else {
+  // @ts-ignore
+  eventEmitter = global.eventEmitter
+}
+
+export { eventEmitter }
