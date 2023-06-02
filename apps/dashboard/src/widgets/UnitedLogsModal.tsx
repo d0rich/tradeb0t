@@ -1,25 +1,6 @@
-import { io, type Socket } from 'socket.io-client'
 import { useEffect, useState } from 'react'
 import type { LogObject } from 'consola'
-
-function useSocket(url: string) {
-  'use client'
-  const [socket, setSocket] = useState<Socket | null>(null)
-  useEffect(() => {
-    fetch(url).finally(() => {
-      const socketio = io({
-        path: url,
-        addTrailingSlash: false
-      })
-      setSocket(socketio)
-    })
-    function cleanup() {
-      socket?.disconnect()
-    }
-    return cleanup
-  }, [])
-  return socket
-}
+import { useSocket } from '@/src/shared/api/socket'
 
 export interface UnitedLogsModalProps {
   className?: string
