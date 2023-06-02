@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import type { LogObject } from 'consola'
 import { useSocket } from '@/src/shared/api/socket'
+import LogsOutput from '@/src/entities/logs/ui/LogsOutput'
 
 export interface UnitedLogsModalProps {
   className?: string
@@ -24,26 +25,11 @@ export default function UnitedLogsModal({ className = '' }: UnitedLogsModalProps
       </label>
       <input type="checkbox" id={modalId} className="modal-toggle" />
       <div className="modal">
-        <div className="modal-box bg-base-200 relative">
+        <div className="modal-box bg-base-200 relative !max-w-none w-screen">
           <label htmlFor={modalId} className="btn btn-sm btn-circle absolute right-2 top-2">
             ✕
           </label>
-          {logs.map((log, index) => {
-            return (
-              <div key={index} className="modal-box bg-base-200 relative">
-                <div className="modal-header">
-                  <div className="flex-1">
-                    <h2 className="text-lg font-bold">
-                      [{log.level}] {log.message}
-                    </h2>
-                  </div>
-                </div>
-                <div className="modal-body">
-                  <p>{JSON.stringify(log.args)}</p>
-                </div>
-              </div>
-            )
-          })}
+          <LogsOutput logs={logs} />
         </div>
       </div>
     </>
