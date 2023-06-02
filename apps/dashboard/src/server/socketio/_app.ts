@@ -3,18 +3,7 @@ import type { LogObject } from 'consola'
 import { eventEmitter } from './eventEmitter'
 
 export function configureSocketIO(io: Server) {
-  const ns = io.of('/united-logs')
-
-  io.on('connection', (socket) => {
-    console.log('a user connected')
-
-    socket.on('disconnect', () => {
-      console.log('user disconnected')
-    })
+  eventEmitter.addListener('log:all', (data: LogObject) => {
+    io.emit('log', data)
   })
-
-  // eventEmitter.addListener('log:all', (data: LogObject) => {
-  //   io.emit('log', data)
-  //   console.log('log:all', data)
-  // })
 }
