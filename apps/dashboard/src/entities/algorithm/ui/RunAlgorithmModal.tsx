@@ -1,6 +1,7 @@
 import { createPortal } from 'react-dom'
 import type { Algorithm } from '@tradeb0t/core'
 import RunAlgorithmForm, { RunAlgorithmFormProps } from './RunAlgorithmForm'
+import { useRef } from 'react'
 
 export interface RunAlgorithmModalProps {
   algorithm: Algorithm
@@ -9,6 +10,17 @@ export interface RunAlgorithmModalProps {
 
 export default function RunAlgorithmModal({ algorithm, runAlgorithm }: RunAlgorithmModalProps) {
   const modalId = `run-algorithm-modal-checkbox-${algorithm.name}`
+  const checkbox = useRef<HTMLInputElement>(null)
+
+  function closeModal() {
+    checkbox.current?.click()
+  }
+
+  function onSubmit(inputs: Parameters<RunAlgorithmFormProps['onSubmit']>[0]) {
+    runAlgorithm(inputs)
+    closeModal()
+  }
+
   return (
     <>
       {/* The button to open modal */}
@@ -19,12 +31,12 @@ export default function RunAlgorithmModal({ algorithm, runAlgorithm }: RunAlgori
       {/* Put this part before </body> tag */}
       {createPortal(
         <>
-          <input type="checkbox" id={modalId} className="modal-toggle" />
+          <input ref={checkbox} type="checkbox" id={modalId} className="modal-toggle" />
           <div className="modal">
             <RunAlgorithmForm
               className="modal-box bg-base-200 relative"
               algorithm={algorithm}
-              onSubmit={runAlgorithm}
+              onSubmit={onSubmit}
               closeComponent={
                 <label htmlFor={modalId} className="btn btn-sm btn-circle absolute right-2 top-2">
                   ✕

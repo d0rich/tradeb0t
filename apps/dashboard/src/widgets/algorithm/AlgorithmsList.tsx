@@ -13,7 +13,7 @@ export default function AlgorithmsList({ bot }: AlgorithmsListProps) {
   return (
     <>
       {algorithms?.map((algorithm) => (
-        <InteractiveCard className="my-4" key={algorithm.name} bot={bot} algorithm={algorithm} />
+        <InteractiveCard key={algorithm.name} bot={bot} algorithm={algorithm} />
       ))}
     </>
   )
