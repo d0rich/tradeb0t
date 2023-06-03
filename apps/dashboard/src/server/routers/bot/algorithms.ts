@@ -2,8 +2,7 @@ import { z } from 'zod'
 import { BotsRepository } from '../../repositories'
 import { procedure, router } from '../../trpc'
 import { ZAlgorithmName, ZInputs, ZRunId, ZPaginationOptions } from '@tradeb0t/core'
-
-const ZUrl = z.string()
+import { ZUrl } from '../schemas'
 
 export const botAlgorithmsRouter = router({
   list: procedure
