@@ -2,6 +2,7 @@ import { trpc } from '@/src/shared/api/trpc'
 import { useRouter } from 'next/router'
 import BotHeaderDescriptor from '@/src/widgets/bot/BotHeaderDescriptor'
 import OrdersTable from '@/src/widgets/OrdersTable'
+import OrdersFilter from '@/src/features/order/ui/OrdersFilter'
 
 export default function AlgorithmRunsPage() {
   const {
@@ -17,6 +18,11 @@ export default function AlgorithmRunsPage() {
   return (
     <>
       <BotHeaderDescriptor bot={bot} />
+      <OrdersFilter
+        onChange={(v) => {
+          console.log(v)
+        }}
+      />
       <OrdersTable botUrl={String(botUrl)} />
     </>
   )

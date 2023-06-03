@@ -1,7 +1,7 @@
-import type { OperationType } from '@tradeb0t/core'
-import { EInputType, EOperationType } from '@tradeb0t/core/dist/enums'
+import { EInputType } from '@tradeb0t/core/dist/enums'
 import { InputHTMLAttributes, useRef } from 'react'
 import { TypeFromInputType } from '../model/TypeFromInputType'
+import OperationSelect from '@/src/shared/ui/OperationSelect'
 
 export type InputFieldProps<T extends `${EInputType}`> = {
   name: string
@@ -56,20 +56,14 @@ function InputFieldOrderDetails({ name, value, onUpdate }: InputFieldOrderDetail
         />
         <label className="!input-group">
           <span className="label-text">Operation</span>
-          <select
+          <OperationSelect
             defaultValue={orderDetails.current.operation}
-            className="select select-sm select-bordered"
-            onChange={(e) => {
-              orderDetails.current.operation = e.target.value as OperationType
+            className="select-sm select-bordered"
+            onUpdate={(value) => {
+              orderDetails.current.operation = value!
               onUpdate(orderDetails.current)
             }}
-          >
-            {Object.values(EOperationType).map((operation) => (
-              <option key={operation} value={operation}>
-                {operation}
-              </option>
-            ))}
-          </select>
+          />
         </label>
         <InputFieldGeneric<EInputType.NUMBER>
           inputAttrs={{ type: 'number', className: inputClass }}

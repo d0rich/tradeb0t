@@ -36,10 +36,7 @@ export class OrdersRepository extends Repository<Order> {
 
   async search(options: GetOrdersOptions): Promise<GetOrderType<CommonDomain>[]> {
     const query: FindOptionsWhere<Order> = {
-      updatedAt: Between(
-        options.from ?? new Date(0),
-        options.to ?? new Date()
-      )
+      updatedAt: Between(options.from ?? new Date(0), options.to ?? new Date())
     }
     if (options.operation) {
       query.operation = options.operation
