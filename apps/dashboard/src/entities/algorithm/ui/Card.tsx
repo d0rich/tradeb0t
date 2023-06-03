@@ -8,11 +8,11 @@ export interface CardProps {
   className?: string
 }
 
-export default function Card({ algorithm, goToRunsComponent, runAlgorithmComponent, className }: CardProps) {
+export default function Card({ algorithm, goToRunsComponent, runAlgorithmComponent, className = '' }: CardProps) {
   return (
     <div className={`card card-compact bg-base-200 ${className}`}>
       <div className="card-body">
-        <h2 className="card-title">{algorithm.name}</h2>
+        <h3 className="card-title">{algorithm.name}</h3>
         <p className="my-2">{algorithm.description}</p>
         <InputsDescriptor inputs={algorithm.inputTypes} />
         <div className="card-actions justify-end">

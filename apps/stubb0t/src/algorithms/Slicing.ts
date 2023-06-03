@@ -1,4 +1,4 @@
-import { AbstractTradeAlgorithm, CreateOrderOptions } from '@tradeb0t/core'
+import { AbstractTradeAlgorithm, CreateOrderOptions, AlgorithmRun } from '@tradeb0t/core'
 import { Job } from 'node-schedule'
 import type { StubExchangeApi } from '../exchange'
 
@@ -51,26 +51,12 @@ export class SlicingAlgorithm extends AbstractTradeAlgorithm<
     }
 
     const algorithmRun = await this.commitStart(inputs, { orders_sended: 0, lots_in_orders: lotsInOrders })
-    const stopData: SlicingStopData = { jobs: [] }
 
-    const startPoint = this.addSecondsToDate(new Date(), 10)
-    for (let i = 0; i < lotsInOrders.length; i++) {
-      const lots = lotsInOrders[i]
-      const sendOrderTime: Date = this.addMinutesToDate(startPoint, (minutes / (parts - 1)) * i)
-      const newJob = trader.scheduleAction(async () => {
-        try {
-          console.log('Slicing', { ...order, lots }, this.name, algorithmRun.id)
-          await trader.sendOrder({ ...order, lots }, this.name, algorithmRun.id)
-          if (i < lotsInOrders.length - 1)
-            await this.saveProgress(algorithmRun.id, { orders_sended: i + 1, lots_in_orders: lotsInOrders })
-          else await this.commitFinish(algorithmRun.id)
-        } catch (e) {
-          await this.commitError(algorithmRun.id, e as Error)
-        }
-      }, sendOrderTime)
-      stopData.jobs.push(newJob)
+    try {
+      await this.initialize(algorithmRun, { orders_sended: 0, lots_in_orders: lotsInOrders, parts, minutes, order })
+    } catch (e) {
+      return this.commitError(algorithmRun.id, e as Error)
     }
-    this.stopState.set(algorithmRun.id, stopData)
 
     return algorithmRun
   }
@@ -78,11 +64,31 @@ export class SlicingAlgorithm extends AbstractTradeAlgorithm<
     const algorithmRun = await this.loadProgress(id)
     const { order, parts, minutes } = algorithmRun.inputs
     const { orders_sended, lots_in_orders } = algorithmRun.state
-    const { trader } = this
-    const stopData: SlicingStopData = { jobs: [] }
 
-    const minutesRemain = minutes * (1 - orders_sended / parts)
+    try {
+      await this.initialize(algorithmRun, { orders_sended, lots_in_orders, parts, minutes, order })
+    } catch (e) {
+      return this.commitError(algorithmRun.id, e as Error)
+    }
+
+    return this.commitContinue(id)
+  }
+
+  private async initialize(
+    algorithmRun: AlgorithmRun,
+    opts: {
+      orders_sended: number
+      parts: number
+      lots_in_orders: number[]
+      minutes: number
+      order: CreateOrderOptions
+    }
+  ) {
+    const { trader } = this
+    const { orders_sended, parts, lots_in_orders, minutes, order } = opts
+    const stopData: SlicingStopData = { jobs: [] }
     const startPoint = this.addSecondsToDate(new Date(), 10)
+    const minutesRemain = minutes * (1 - orders_sended / parts)
     for (let i = orders_sended; i < lots_in_orders.length; i++) {
       const lots = lots_in_orders[i]
       const sendOrderTime: Date = this.addMinutesToDate(startPoint, (minutesRemain / (parts - 1)) * i)
@@ -99,7 +105,7 @@ export class SlicingAlgorithm extends AbstractTradeAlgorithm<
       stopData.jobs.push(newJob)
     }
     this.stopState.set(algorithmRun.id, stopData)
-    return await this.commitContinue(id)
+    if (parts < 1) throw new Error('Parts must be greater than 0')
   }
 
   async stop(id: number) {

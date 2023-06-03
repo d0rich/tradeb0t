@@ -9,6 +9,11 @@ async function main() {
   const stubApi = new StubExchangeApi()
   await stubApi.initialize()
   runTradeBot({
+    config: {
+      auth: {
+        required: false
+      }
+    },
     exchangeConnector: new ExchangeConnector({
       modules: {
         domainMapper: new DomainMapper(),
@@ -18,6 +23,7 @@ async function main() {
       api: stubApi
     }),
     initAlgorithmsCallback(analyzer) {
+      const logger = analyzer.tradebot.logger
       return [new HammerAlgorithm(analyzer), new SlicingAlgorithm(analyzer)]
     }
   })

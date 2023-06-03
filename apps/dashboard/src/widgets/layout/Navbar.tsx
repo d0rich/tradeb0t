@@ -1,6 +1,7 @@
 import { useRouter } from 'next/router'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
+import { UnitedBoxModalButton } from '@/src/features/logs/ui/UnitedLogsModal'
 
 interface Breadcrumb {
   href: string
@@ -39,7 +40,7 @@ export default function Navbar() {
   useEffect(() => {
     setActiveButtons(getActiveButtons())
     setBreadcrumbs(getBreadcrumbs())
-  }, [router.pathname])
+  }, [router.asPath])
 
   return (
     <div className="w-4/5 mx-auto mt-20">
@@ -47,7 +48,9 @@ export default function Navbar() {
         <Link className={`btn w-1/2 ${activeButtons.bots ? 'btn-active' : ''}`} href="/bots">
           Bots
         </Link>
-        <button className={`btn w-1/2 ${activeButtons.unitedLogs ? 'btn-active' : ''}`}>United Logs</button>
+        <UnitedBoxModalButton className={`w-1/2 ${activeButtons.unitedLogs ? 'btn-active' : ''}`}>
+          United Logs
+        </UnitedBoxModalButton>
       </nav>
       <nav className="text-sm breadcrumbs">
         <ul>

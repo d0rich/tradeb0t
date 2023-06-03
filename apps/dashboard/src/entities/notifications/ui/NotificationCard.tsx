@@ -1,22 +1,12 @@
 import { useEffect, useRef } from 'react'
 import type { Notification } from '../model/Notification'
 import CountdownProgressBar from '@/src/shared/ui/CountdownProgressBar'
+import { getTimeString } from '@/src/shared/utils/date'
 
 export interface NotificationCardProps {
   notification: Notification
   className?: string
   onClose?: (notification: Notification) => void
-}
-
-function getTwoDigitString(number: number) {
-  return number < 10 ? `0${number}` : `${number}`
-}
-
-function getTimeString(dateAsNumber: number) {
-  const date = new Date(dateAsNumber)
-  return `${getTwoDigitString(date.getHours())}:${getTwoDigitString(date.getMinutes())}:${getTwoDigitString(
-    date.getSeconds()
-  )}`
 }
 
 export default function NotificationCard({ notification, className = '', onClose }: NotificationCardProps) {
@@ -38,7 +28,7 @@ export default function NotificationCard({ notification, className = '', onClose
   return (
     <div className={`alert ${variantClass} flex-row ${className}`}>
       <div className="block">
-        <time className="text-xs">{getTimeString(notification.createdAt)}</time>
+        <time className="text-xs">{getTimeString(new Date(notification.createdAt))}</time>
         <div dangerouslySetInnerHTML={{ __html: notification.content }} />
         <CountdownProgressBar className="mt-2" duration={timeBeforeClose} />
       </div>

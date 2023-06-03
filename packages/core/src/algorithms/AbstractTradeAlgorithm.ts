@@ -96,6 +96,7 @@ export abstract class AbstractTradeAlgorithm<
   protected async commitError(id: number, error: Error): Promise<AlgorithmRun> {
     const { name, analyzer, logger } = this
     await this.stop(id)
+    console.error(error)
     const run = await analyzer.storage.algorithmRuns.storeError(id, error)
     logger.fail(`Error in algorithm "${name}": `, {
       name,

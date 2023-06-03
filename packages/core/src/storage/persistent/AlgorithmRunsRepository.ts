@@ -48,7 +48,7 @@ export class AlgorithmRunsRepository extends Repository<AlgorithmRun> {
 
   async storeError(id: number, error: Error): Promise<AlgorithmRun> {
     const run = await this.findOneBy({ id })
-    const state = { stateBeforeError: run?.state, error: Object(error) }
+    const state = { stateBeforeError: run?.state, error: this.errorToJSON(error) }
     await this.update(
       { id },
       {
@@ -97,5 +97,11 @@ export class AlgorithmRunsRepository extends Repository<AlgorithmRun> {
         status: Not(In<AlgorithmRunStatus>(['finished', 'stopped', 'error']))
       }
     })
+  }
+
+  private errorToJSON(error: Error) {
+    return Object.getOwnPropertyNames(error).reduce((acc, key) => {
+      return { ...acc, [key]: error[key as keyof Error] }
+    }, {})
   }
 }

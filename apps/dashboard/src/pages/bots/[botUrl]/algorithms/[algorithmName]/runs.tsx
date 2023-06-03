@@ -8,7 +8,7 @@ import AlgorithmHeaderDescriptor from '@/src/widgets/algorithm/AlgorithmHeaderDe
 
 export default function AlgorithmRunsPage() {
   const {
-    query: { url: botUrl, algorithmName, page }
+    query: { botUrl, algorithmName, page }
   } = useRouter()
 
   const { data: bot } = trpc.repository.findBot.useQuery({ url: String(botUrl) })
