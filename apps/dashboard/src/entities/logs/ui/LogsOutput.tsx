@@ -14,7 +14,7 @@ export default function LogsOutput({ logs, className = '', hideTags }: LogsOutpu
     <div className={`mockup-code ${className}`}>
       {logs.map((log, index) => {
         return (
-          <pre key={index} data-prefix=">" className="text-lg font-bold whitespace-normal break-all">
+          <pre key={index} data-prefix=">" className="text-sm font-bold whitespace-normal break-all">
             { hideTags ? null : <TagView tag={log.tag} />} <TypeView type={log.type} /> {log.message} <ArgsView args={log.args} />
           </pre>
         )
