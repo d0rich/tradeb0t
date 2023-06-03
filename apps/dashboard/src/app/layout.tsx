@@ -1,10 +1,12 @@
 import { memo } from 'react'
+import Head from 'next/head'
 
 import './globals.css'
-import Header from '../widgets/layout/Header'
-import Navbar from '../widgets/layout/Navbar'
-import Head from 'next/head'
-import Notifications from '../widgets/layout/Notifications'
+
+import Header from '@/src/widgets/layout/Header'
+import Navbar from '@/src/widgets/layout/Navbar'
+import Notifications from '@/src/widgets/layout/Notifications'
+import UnitedLogsModal from '@/src/features/logs/ui/UnitedLogsModal'
 
 const HeaderMemo = memo(Header)
 const NavbarMemo = memo(Navbar)
@@ -20,6 +22,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <NavbarMemo />
       <main className="max-w-screen-xl mx-auto px-3">{children}</main>
       <NotificationsMemo />
+      <UnitedLogsModal />
     </>
   )
 }

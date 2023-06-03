@@ -1,7 +1,7 @@
 import { useRouter } from 'next/router'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
-import UnitedLogsModal from '../UnitedLogsModal'
+import { UnitedBoxModalButton } from '@/src/features/logs/ui/UnitedLogsModal'
 
 interface Breadcrumb {
   href: string
@@ -48,7 +48,9 @@ export default function Navbar() {
         <Link className={`btn w-1/2 ${activeButtons.bots ? 'btn-active' : ''}`} href="/bots">
           Bots
         </Link>
-        <UnitedLogsModal className={activeButtons.unitedLogs ? 'btn-active' : ''} />
+        <UnitedBoxModalButton className={`w-1/2 ${activeButtons.unitedLogs ? 'btn-active' : ''}`}>
+          United Logs
+        </UnitedBoxModalButton>
       </nav>
       <nav className="text-sm breadcrumbs">
         <ul>
