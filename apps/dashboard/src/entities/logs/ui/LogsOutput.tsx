@@ -5,15 +5,17 @@ import TypeView from './TypeView'
 
 export interface LogsOutputProps {
   logs: LogObject[]
+  className?: string
+  hideTags?: boolean
 }
 
-export default function LogsOutput({ logs }: LogsOutputProps) {
+export default function LogsOutput({ logs, className = '', hideTags }: LogsOutputProps) {
   return (
-    <div className="mockup-code max-h-[70vh] overflow-y-auto">
+    <div className={`mockup-code ${className}`}>
       {logs.map((log, index) => {
         return (
           <pre key={index} data-prefix=">" className="text-lg font-bold whitespace-normal break-all">
-            <TagView tag={log.tag} /> <TypeView type={log.type} /> {log.message} <ArgsView args={log.args} />
+            { hideTags ? null : <TagView tag={log.tag} />} <TypeView type={log.type} /> {log.message} <ArgsView args={log.args} />
           </pre>
         )
       })}

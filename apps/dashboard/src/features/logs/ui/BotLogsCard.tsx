@@ -1,17 +1,10 @@
 import { useEffect, useState } from 'react'
+import BotLogsCardWothoutConnection from "@/src/entities/logs/ui/BotLogsCard"
 import type { LogObject } from '@/src/entities/logs/models/LogObject'
 import { useSocket } from '@/src/shared/api/socket'
-import UnitedLogsModalWithoutConnection, {
-  UnitedBoxModalButton,
-  type UnitedBoxModalButtonProps
-} from '@/src/entities/logs/ui/UnitedLogsModal'
 
-export { UnitedBoxModalButton, UnitedBoxModalButtonProps }
-export interface UnitedLogsModalProps {
-  className?: string
-}
+export default function BotLogsCard() {
 
-export default function UnitedLogsModal() {
   const socket = useSocket('/api/logs/united')
   const [logs, setLogs] = useState<LogObject[]>([])
 
@@ -21,5 +14,10 @@ export default function UnitedLogsModal() {
     })
   }, [socket])
 
-  return <UnitedLogsModalWithoutConnection logs={logs} />
+  return (
+    <BotLogsCardWothoutConnection
+      header={<h2>Logs</h2>}
+      logs={logs}
+    />
+  )
 }
