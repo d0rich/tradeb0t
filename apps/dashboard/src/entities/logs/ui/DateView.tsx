@@ -1,4 +1,4 @@
-import { getTimeString } from "@/src/shared/utils/date"
+import { getTimeString } from '@/src/shared/utils/date'
 
 export interface DateViewProps {
   date: Date | string | number

@@ -1,5 +1,5 @@
-import type { LogObject } from "../models/LogObject"
-import LogsOutput from "./LogsOutput"
+import type { LogObject } from '../models/LogObject'
+import LogsOutput from './LogsOutput'
 
 export interface CardProps {
   logs: LogObject[]

@@ -6,7 +6,7 @@ import BotLogsCard from '@/src/features/logs/ui/BotLogsCard'
 
 export default function BotDetailsPage() {
   const {
-    query: { url: botUrl }
+    query: { botUrl }
   } = useRouter()
   const { data: bot } = trpc.repository.findBot.useQuery({ url: String(botUrl) })
   if (!bot) {
@@ -15,8 +15,8 @@ export default function BotDetailsPage() {
   return (
     <>
       <BotHeaderDescriptor bot={bot} />
-      <BotLogsCard />
-      <h2 className='text-3xl font-bold my-5'>Algorithms</h2>
+      <BotLogsCard botUrl={botUrl as string} />
+      <h2 className="text-3xl font-bold my-5">Algorithms</h2>
       <AlgorithmsList bot={bot} />
     </>
   )

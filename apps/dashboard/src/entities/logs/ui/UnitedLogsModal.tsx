@@ -32,7 +32,7 @@ export default function UnitedLogsModal({ logs }: UnitedLogsModalProps) {
               ✕
             </label>
           </div>
-          <LogsOutput className='max-h-[70vh] overflow-y-auto' logs={logs} />
+          <LogsOutput className="max-h-[70vh] overflow-y-auto" logs={logs} />
         </div>
       </div>
     </>

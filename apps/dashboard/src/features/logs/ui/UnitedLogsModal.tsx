@@ -12,7 +12,7 @@ export interface UnitedLogsModalProps {
 }
 
 export default function UnitedLogsModal() {
-  const socket = useSocket('/api/logs/united')
+  const socket = useSocket('/api/logs/socket')
   const [logs, setLogs] = useState<LogObject[]>([])
 
   useEffect(() => {

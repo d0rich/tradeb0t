@@ -12,7 +12,7 @@ const SocketHandler = (req: NextApiRequest, res: NextApiResponse) => {
     console.log('Socket is initializing')
     // @ts-ignore
     const io = new Server(res.socket.server, {
-      path: '/api/logs/united',
+      path: '/api/logs/socket',
       addTrailingSlash: false
     })
     configureSocketIO(io)
