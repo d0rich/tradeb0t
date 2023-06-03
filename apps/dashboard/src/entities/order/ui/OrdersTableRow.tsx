@@ -7,8 +7,8 @@ export interface OrdersTableRowProps {
 export default function OrdersTableRow({ order }: OrdersTableRowProps) {
   return (
     <tr>
-      <td>{order.exchangeId}</td>
-      <td>{order.algorithmRunId}</td>
+      <td><code className="kbd kbd-sm">{order.exchangeId}</code></td>
+      <td><code className="kbd kbd-sm">{order.algorithmRunId}</code></td>
       <td>{order.status}</td>
       <td>{order.operation}</td>
       <td>{order.securityTicker}</td>

@@ -12,7 +12,7 @@ export default function OrdersTable({ orders }: OrdersTableProps) {
         <thead>
           <tr>
             <th>ID</th>
-            <th>Algorithm Run</th>
+            <th>Run ID</th>
             <th>Status</th>
             <th>Operation</th>
             <th>Security Ticker</th>
