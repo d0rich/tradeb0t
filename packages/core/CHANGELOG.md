@@ -1,5 +1,11 @@
 # @tradeb0t/core
 
+## 0.3.6
+
+### Patch Changes
+
+- 43513a3: TRPC methods for securities and currencies in portfolio
+
 ## 0.3.5
 
 ### Patch Changes
