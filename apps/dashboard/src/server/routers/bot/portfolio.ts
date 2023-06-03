@@ -1,6 +1,6 @@
 import { z } from 'zod'
-import { BotsRepository } from '../../repositories'
-import { procedure, router } from '../../trpc'
+import { BotsRepository } from '@/src/server/repositories'
+import { procedure, router } from '@/src/server/trpc'
 import { ZUrl } from '../schemas'
 
 export const botPortfolioRouter = router({
