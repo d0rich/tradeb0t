@@ -2,6 +2,7 @@ import { trpc } from '@/src/shared/api/trpc'
 import { useRouter } from 'next/router'
 import AlgorithmsList from '@/src/widgets/algorithm/AlgorithmsList'
 import BotHeaderDescriptor from '@/src/widgets/bot/BotHeaderDescriptor'
+import BotNavigation from '@/src/widgets/bot/BotNavigation'
 import BotLogsCard from '@/src/features/logs/ui/BotLogsCard'
 import BotPortfolioCard from '@/src/features/portfolio/ui/BotPortfolioCard'
 
@@ -16,6 +17,7 @@ export default function BotDetailsPage() {
   return (
     <>
       <BotHeaderDescriptor bot={bot} />
+      <BotNavigation botUrl={botUrl as string} />
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 my-3 items-start">
         <BotPortfolioCard botUrl={botUrl as string} />
         <BotLogsCard botUrl={botUrl as string} />
