@@ -1,5 +1,11 @@
 # @tradeb0t/core
 
+## 0.3.5
+
+### Patch Changes
+
+- f3a4671: Fix error handling in algorithms
+
 ## 0.3.4
 
 ### Patch Changes
