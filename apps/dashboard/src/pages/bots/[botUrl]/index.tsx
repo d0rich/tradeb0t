@@ -16,8 +16,10 @@ export default function BotDetailsPage() {
   return (
     <>
       <BotHeaderDescriptor bot={bot} />
-      <BotPortfolioCard botUrl={botUrl as string} className="my-3" />
-      <BotLogsCard botUrl={botUrl as string} />
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 my-3 items-start">
+        <BotPortfolioCard botUrl={botUrl as string} />
+        <BotLogsCard botUrl={botUrl as string} />
+      </div>
       <h2 className="text-3xl font-bold my-5">Algorithms</h2>
       <AlgorithmsList bot={bot} />
     </>
