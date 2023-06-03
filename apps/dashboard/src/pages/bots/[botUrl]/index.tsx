@@ -21,7 +21,9 @@ export default function BotDetailsPage() {
         <BotLogsCard botUrl={botUrl as string} />
       </div>
       <h2 className="text-3xl font-bold my-5">Algorithms</h2>
-      <AlgorithmsList bot={bot} />
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 my-4">
+        <AlgorithmsList bot={bot} />
+      </div>
     </>
   )
 }
