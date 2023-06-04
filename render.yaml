@@ -12,6 +12,9 @@ services:
         value: development
       - key: DEMO_STUB_TOKEN
         value: qwerty123
+    buildFilter:
+      - packages/core/src/**/*.ts
+      - apps/stubb0t/src/**/*.ts
 
   - name: tradeb0t-dashboard
     type: web
@@ -31,3 +34,7 @@ services:
         value: 80
       - key: DEMO_STUB_TOKEN
         value: qwerty123
+    buildFilter:
+      - packages/core/src/**/*.ts
+      - apps/dashboard/src/**/*.ts
+      - apps/dashboard/src/**/*.tsx
