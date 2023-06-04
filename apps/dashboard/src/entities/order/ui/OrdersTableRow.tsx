@@ -18,7 +18,7 @@ export default function OrdersTableRow({ order }: OrdersTableRowProps) {
       <td>{order.securityTicker}</td>
       <td>{order.lots}</td>
       <td>{order.price}</td>
-      <td>{order.updatedAt}</td>
+      <td>{order.updatedAt?.toISOString()}</td>
     </tr>
   )
 }
