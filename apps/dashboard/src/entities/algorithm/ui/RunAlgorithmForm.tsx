@@ -6,7 +6,7 @@ import { useRef } from 'react'
 
 export interface RunAlgorithmFormProps {
   algorithm: Algorithm
-  closeComponent: JSX.Element
+  closeComponent?: JSX.Element
   actionsComponent: JSX.Element
   onSubmit: (model: Record<string, TypeFromInputType<EInputType>>) => void
   className?: string
@@ -27,21 +27,23 @@ export default function RunAlgorithmForm({
   return (
     <form onSubmit={handleSubmit} className={`card card-compact bg-base-200 ${className}`}>
       {closeComponent}
-      <h2 className="card-title">Run {algorithm.name}</h2>
-      <div className="form-control gap-y-2">
-        {Object.keys(algorithm.inputTypes).map((inputName) => (
-          <InputField
-            key={inputName}
-            name={inputName}
-            value={model.current[inputName]}
-            type={algorithm.inputTypes[inputName]}
-            onUpdate={(value) => {
-              model.current[inputName] = value
-            }}
-          />
-        ))}
+      <div className="card-body">
+        <h2 className="card-title">Run {algorithm.name}</h2>
+        <div className="form-control gap-y-2">
+          {Object.keys(algorithm.inputTypes).map((inputName) => (
+            <InputField
+              key={inputName}
+              name={inputName}
+              value={model.current[inputName]}
+              type={algorithm.inputTypes[inputName]}
+              onUpdate={(value) => {
+                model.current[inputName] = value
+              }}
+            />
+          ))}
+        </div>
+        {actionsComponent}
       </div>
-      {actionsComponent}
     </form>
   )
 }

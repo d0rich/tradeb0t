@@ -3,13 +3,17 @@ import { useState } from 'react'
 import type { AlgorithmRun } from '@tradeb0t/core'
 import AlgorithmRunStateView from './AlgorithmRunStateView'
 
-export interface AlgorithmRunTableRowProps {
+export interface AlgorithmRunTableRowFrameProps {
   algorithmRun: AlgorithmRun
   actions: JSX.Element
   className?: string
 }
 
-export default function AlgorithmRunTableRow({ algorithmRun, className = '', actions }: AlgorithmRunTableRowProps) {
+export default function AlgorithmRunTableRowFrame({
+  algorithmRun,
+  className = '',
+  actions
+}: AlgorithmRunTableRowFrameProps) {
   const [isExpanded, setIsExpanded] = useState(false)
 
   return (

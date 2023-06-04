@@ -1,5 +1,6 @@
 import { trpc } from '@/src/shared/api/trpc'
-import BotPortfolioCardWithoutData from '@/src/entities/portfolio/ui/BotPortfolioCard'
+import BotPortfolioCardFrame from '@/src/entities/portfolio/ui/BotPortfolioCardFrame'
+import { useEffect } from 'react'
 
 export interface BotPortfolioCardProps {
   botUrl: string
@@ -7,8 +8,38 @@ export interface BotPortfolioCardProps {
 }
 
 export default function BotPortfolioCard({ botUrl, className = '' }: BotPortfolioCardProps) {
-  const { data: currencies } = trpc.control.portfolio.getCurrencies.useQuery({ url: botUrl })
-  const { data: securities } = trpc.control.portfolio.getSecurities.useQuery({ url: botUrl })
+  const { data: currencies, refetch: refetchCurrencies } = trpc.control.portfolio.getCurrencies.useQuery({
+    url: botUrl
+  })
+  const { data: securities, refetch: refetchSecurities } = trpc.control.portfolio.getSecurities.useQuery({
+    url: botUrl
+  })
 
-  return <BotPortfolioCardWithoutData currencies={currencies!} securities={securities!} className={className} />
+  // TODO: use socket to refetch
+  useEffect(() => {
+    const timer = setInterval(() => {
+      refetchCurrencies()
+      refetchSecurities()
+    }, 3000)
+    return () => clearInterval(timer)
+  }, [currencies, securities])
+
+  return (
+    <BotPortfolioCardFrame
+      actions={
+        <button
+          className="btn btn-primary btn-circle text-xl btn-sm"
+          onClick={() => {
+            refetchCurrencies()
+            refetchSecurities()
+          }}
+        >
+          ⟳
+        </button>
+      }
+      currencies={currencies!}
+      securities={securities!}
+      className={className}
+    />
+  )
 }

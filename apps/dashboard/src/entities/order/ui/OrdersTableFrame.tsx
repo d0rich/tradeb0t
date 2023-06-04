@@ -1,11 +1,11 @@
 import { Order } from '../model/Order'
 import OrdersTableRow from './OrdersTableRow'
 
-export interface OrdersTableProps {
+export interface OrdersTableFrameProps {
   orders: Order[]
 }
 
-export default function OrdersTable({ orders }: OrdersTableProps) {
+export default function OrdersTableFrame({ orders }: OrdersTableFrameProps) {
   return (
     <div className="overflow-x-auto">
       <table className="table">

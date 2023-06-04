@@ -1,5 +1,3 @@
-import type { Algorithm } from '@tradeb0t/core'
-
 import { trpc } from '@/src/shared/api/trpc'
 import { useRouter } from 'next/router'
 import { AlgorithmRunsTable } from '@/src/widgets/AlgorithmRunsTable'
@@ -12,10 +10,7 @@ export default function AlgorithmRunsPage() {
   } = useRouter()
 
   const { data: bot } = trpc.repository.findBot.useQuery({ url: String(botUrl) })
-  // FIXME: Provide serialized type for Algorithm
-  const { data: algorithms } = trpc.control.algorithms.list.useQuery({ url: String(botUrl) }) as {
-    data: Algorithm[] | undefined
-  }
+  const { data: algorithms } = trpc.control.algorithms.list.useQuery({ url: String(botUrl) })
 
   const algorithm = algorithms?.find((algorithm) => algorithm.name === algorithmName)
 
@@ -30,7 +25,8 @@ export default function AlgorithmRunsPage() {
   return (
     <>
       <BotHeaderDescriptor bot={bot} />
-      <AlgorithmHeaderDescriptor algorithm={algorithm} />
+      <AlgorithmHeaderDescriptor botUrl={bot.url} algorithm={algorithm} />
+      <h2 className="text-3xl font-bold my-7">Algorithm runs</h2>
       <AlgorithmRunsTable
         pageLinkPattern={pageLinkPattern}
         page={Number.isInteger(Number(page)) ? Number(page) : undefined}

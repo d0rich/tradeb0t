@@ -1,11 +1,11 @@
-import { useCallback, memo } from 'react'
+import { useCallback, memo, useEffect } from 'react'
 
-import InteractiveAlgorithmRunTableRow from '@/src/features/algorithm-runs/ui/InteractiveAlgorithmRunTableRow'
+import AlgorithmRunsTableRow from '@/src/features/algorithm-runs/ui/AlgorithmRunsTableRow'
 import Pagination, { PaginationProps } from '../shared/ui/Pagination'
 import { trpc } from '@/src/shared/api/trpc'
 import type { AlgorithmRun } from '@tradeb0t/core'
 
-const InteractiveAlgorithmRunTableRowMemo = memo(InteractiveAlgorithmRunTableRow)
+const AlgorithmRunsTableRowMemo = memo(AlgorithmRunsTableRow)
 
 export interface AlgorithmRunsTableProps {
   botUrl: string
@@ -24,6 +24,14 @@ export function AlgorithmRunsTable({ botUrl, algorithmName, page = 1, pageLinkPa
       perPage
     }
   })
+
+  // TODO: use socket to refetch
+  useEffect(() => {
+    const timer = setInterval(() => {
+      refetch()
+    }, 3000)
+    return () => clearInterval(timer)
+  }, [algorithmRuns])
 
   const onDataUpdate = useCallback(() => {
     refetch()
@@ -53,7 +61,7 @@ export function AlgorithmRunsTable({ botUrl, algorithmName, page = 1, pageLinkPa
           </thead>
           <tbody>
             {algorithmRuns?.items.map((algorithmRun) => (
-              <InteractiveAlgorithmRunTableRowMemo
+              <AlgorithmRunsTableRowMemo
                 key={algorithmRun.id}
                 onUpdate={onDataUpdate}
                 className="hover"
