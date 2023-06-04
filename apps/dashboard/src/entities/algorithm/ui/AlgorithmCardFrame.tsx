@@ -19,7 +19,7 @@ export default function AlgorithmCardFrame({
       <div className="card-body">
         <h3 className="card-title">{algorithm.name}</h3>
         <p className="my-2">{algorithm.description}</p>
-        <InputsDescriptor inputs={algorithm.inputTypes} />
+        <InputsDescriptor className="bg-base-100" inputs={algorithm.inputTypes} />
         <div className="card-actions justify-end">
           {goToRunsComponent}
           {runAlgorithmComponent}

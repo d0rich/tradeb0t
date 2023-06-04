@@ -6,6 +6,8 @@ import { BotDesciption } from '@/src/entities/bot/model/BotDesciption'
 import { trpc } from '@/src/shared/api/trpc'
 import { useAppDispatch } from '@/src/shared/model/hooks'
 import { pushNotification } from '@/src/entities/notifications/model/notificationsSlice'
+import { algorithmRunSuccessNotification } from '@/src/entities/algorithm/notifications/algorithmRunSuccessNotification'
+import { algorithmRunErrorNotification } from '@/src/entities/algorithm/notifications/algorithmRunErrorNotification'
 
 export interface AlgorithmCardProps {
   bot: BotDesciption
@@ -17,12 +19,10 @@ export default function AlgorithmCard({ bot, algorithm, className }: AlgorithmCa
   const dispatch = useAppDispatch()
   const runAlgorithmMutation = trpc.control.algorithms.run.useMutation({
     onSuccess: (result) => {
-      dispatch(
-        pushNotification({
-          type: 'success',
-          content: `Algorithm <code class="kbd kbd-sm text-white">${algorithm.name}</code> is running successfully with id: <code class="kbd kbd-sm text-white">${result.id}</code>!`
-        })
-      )
+      dispatch(pushNotification(algorithmRunSuccessNotification(algorithm, result)))
+    },
+    onError: (error) => {
+      dispatch(pushNotification(algorithmRunErrorNotification(algorithm)))
     }
   })
 
@@ -33,7 +33,7 @@ export default function AlgorithmCard({ bot, algorithm, className }: AlgorithmCa
         algorithm={algorithm}
         goToRunsComponent={
           <Link href={`/bots/${bot.url}/algorithms/${algorithm.name}`} className="btn btn-primary btn-sm">
-            Runs
+            Details
           </Link>
         }
         runAlgorithmComponent={

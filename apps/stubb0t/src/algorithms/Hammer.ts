@@ -19,7 +19,7 @@ export class HammerAlgorithm extends AbstractTradeAlgorithm<HammerInput, HammerS
     return 'hammer'
   }
   get description(): string {
-    return 'hammer'
+    return 'Hammer algorithm sends predefined order at specified time. If order is rejected, it will be sent again until order is placed.'
   }
   get inputs(): InputTypes {
     return {

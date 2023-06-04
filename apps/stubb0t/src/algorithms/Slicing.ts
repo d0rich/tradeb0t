@@ -25,7 +25,7 @@ export class SlicingAlgorithm extends AbstractTradeAlgorithm<
     return 'slicing'
   }
   get description(): string {
-    return 'slicing'
+    return 'Slicing algorithm splits defined order into multiple smaller orders and sends them during continuous time interval.'
   }
   get inputs(): any {
     return {
