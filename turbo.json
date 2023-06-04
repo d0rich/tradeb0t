@@ -18,7 +18,9 @@
       "cache": false,
       "persistent": true
     },
-    "@tradeb0t/core#build": {},
+    "@tradeb0t/core#build": {
+      "outputs": ["dist/**"]
+    },
     "stubb0t#dev": {
       "cache": false,
       "persistent": true
