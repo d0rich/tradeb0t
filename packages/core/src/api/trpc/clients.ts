@@ -16,6 +16,7 @@ export const initWSClient = ({ host, port }: ClientOptions) => {
   const wsClient = createWSClient({
     url: `ws://${host}:${port}`
   })
+  console.log(`ws://${host}:${port} client created`)
   return createTRPCProxyClient<WSRouter>({
     transformer: superjson,
     links: [

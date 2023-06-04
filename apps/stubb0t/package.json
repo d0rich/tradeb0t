@@ -4,6 +4,7 @@
   "scripts": {
     "dev": "nodemon ./src/run.ts",
     "build": "tsc",
+    "start": "ts-node ./src/run.ts",
     "lint:js": "eslint --ext \".ts\" --ignore-path ../../.gitignore ./src",
     "lint:prettier": "prettier --check ./src",
     "lint": "npm run lint:js && npm run lint:prettier",
