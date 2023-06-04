@@ -18,7 +18,8 @@ export default function OrdersTableRow({ order }: OrdersTableRowProps) {
       <td>{order.securityTicker}</td>
       <td>{order.lots}</td>
       <td>{order.price}</td>
-      <td>{order.updatedAt?.toISOString()}</td>
+      {/* FIXME: SuperJSON fails to deserialize nested Date */}
+      <td>{order.updatedAt as unknown as string | undefined}</td>
     </tr>
   )
 }
