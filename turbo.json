@@ -26,9 +26,7 @@
       "persistent": true
     },
     "stubb0t#start": {
-      "dependsOn": ["@tradeb0t/core#build"],
-      "cache": false,
-      "persistent": true
+      "dependsOn": ["@tradeb0t/core#build"]
     },
     "@tradeb0t/dashboard#dev": {
       "cache": false,
