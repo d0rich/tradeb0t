@@ -18,6 +18,7 @@ export class LoggerService {
         date: true
       }
     }).withTag(this.tradebot.config.meta.id)
+    this.consoleLogger.level = 999
     this.createLogsDirIfNotExist()
     this.fileLogger = createRollingFileLogger({
       logDirectory: this.tradebot.config.logs.directory,
