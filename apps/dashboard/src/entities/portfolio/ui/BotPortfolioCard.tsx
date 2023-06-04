@@ -7,13 +7,19 @@ export interface BotPortfolioCardProps {
   currencies: CurrencyBalance[]
   securities: SecurityBalance[]
   className?: string
+  header?: JSX.Element
 }
 
-export default function BotPortfolioCard({ currencies, securities, className = '' }: BotPortfolioCardProps) {
+export default function BotPortfolioCard({
+  currencies,
+  securities,
+  className = '',
+  header = <>Portfolio</>
+}: BotPortfolioCardProps) {
   return (
     <div className={`card card-compact bg-base-200 ${className}`}>
       <div className="card-body">
-        <h3 className="card-title">Portfolio</h3>
+        <h3 className="card-title">{header}</h3>
         <h4 className="text-lg font-bold">Currencies</h4>
         <div className="card bg-base-100">
           <div className="flex gap-4 p-3">

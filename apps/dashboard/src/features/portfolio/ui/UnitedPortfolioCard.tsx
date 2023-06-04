@@ -9,5 +9,12 @@ export default function UnitedPortfolioCard({ className = '' }: UnitedPortfolioC
   const { data: currencies } = trpc.control.portfolio.getAllBotsCurrencies.useQuery()
   const { data: securities } = trpc.control.portfolio.getAllBotsSecurities.useQuery()
 
-  return <BotPortfolioCardWithoutData currencies={currencies!} securities={securities!} className={className} />
+  return (
+    <BotPortfolioCardWithoutData
+      header={<>United portfolio</>}
+      currencies={currencies!}
+      securities={securities!}
+      className={className}
+    />
+  )
 }
