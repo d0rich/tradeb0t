@@ -1,6 +1,6 @@
-import { useCallback, useState } from 'react'
+import { useState } from 'react'
 import { trpc } from '@/src/shared/api/trpc'
-import OrdersTableWithoutData from '@/src/entities/order/ui/OrdersTable'
+import OrdersTableFrame from '@/src/entities/order/ui/OrdersTableFrame'
 import OrdersFilter from '@/src/features/order/ui/OrdersFilter'
 import type { GetOrdersOptions } from '@tradeb0t/core'
 
@@ -15,10 +15,6 @@ export default function OrdersTable({ botUrl }: OrdersTableProps) {
     options: filter
   })
 
-  const onDataUpdate = useCallback(() => {
-    refetch()
-  }, [])
-
   return (
     <>
       <OrdersFilter
@@ -28,7 +24,7 @@ export default function OrdersTable({ botUrl }: OrdersTableProps) {
           refetch()
         }}
       />
-      <OrdersTableWithoutData orders={orders ?? []} />
+      <OrdersTableFrame orders={orders ?? []} />
     </>
   )
 }
