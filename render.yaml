@@ -3,6 +3,7 @@ services:
     type: web
     env: node
     region: frankfurt
+    buildCommand: npm install
     startCommand: npx turbo run stubb0t#start
     envVars:
       - key: NODE_VERSION
@@ -16,6 +17,7 @@ services:
     type: web
     env: node
     region: frankfurt
+    buildCommand: npm install
     startCommand: npx turbo run @tradeb0t/dashboard#start
     envVars:
       - key: NODE_VERSION
