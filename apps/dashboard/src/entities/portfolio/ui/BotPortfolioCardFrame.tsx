@@ -8,18 +8,23 @@ export interface BotPortfolioCardFrameProps {
   securities: SecurityBalance[]
   className?: string
   header?: JSX.Element
+  actions?: JSX.Element
 }
 
 export default function BotPortfolioCardFrame({
   currencies,
   securities,
   className = '',
-  header = <>Portfolio</>
+  header = <>Portfolio</>,
+  actions
 }: BotPortfolioCardFrameProps) {
   return (
     <div className={`card card-compact bg-base-200 ${className}`}>
       <div className="card-body">
-        <h3 className="card-title">{header}</h3>
+        <div className="flex justify-between">
+          <h3 className="card-title">{header}</h3>
+          <div>{actions}</div>
+        </div>
         <h4 className="text-lg font-bold">Currencies</h4>
         <div className="card bg-base-100">
           <div className="flex gap-4 p-3">
