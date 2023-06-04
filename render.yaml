@@ -5,6 +5,8 @@ services:
     region: frankfurt
     startCommand: npx turbo run stubb0t#start
     envVars:
+      - key: NODE_VERSION
+        value: 16.15.0
       - key: NODE_ENV
         value: development
       - key: DEMO_STUB_TOKEN
@@ -16,6 +18,8 @@ services:
     region: frankfurt
     startCommand: npx turbo run @tradeb0t/dashboard#start
     envVars:
+      - key: NODE_VERSION
+        value: 16.15.0
       - key: DEMO_STUB_HOST
         fromService:
           name: stubb0t
