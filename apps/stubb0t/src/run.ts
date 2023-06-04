@@ -10,8 +10,11 @@ async function main() {
   await stubApi.initialize()
   runTradeBot({
     config: {
+      api: {
+        port: process.env.PORT || 4268
+      },
       auth: {
-        required: false
+        token: process.env.DEMO_STUB_TOKEN || 'qwerty123'
       }
     },
     exchangeConnector: new ExchangeConnector({
@@ -23,7 +26,6 @@ async function main() {
       api: stubApi
     }),
     initAlgorithmsCallback(analyzer) {
-      const logger = analyzer.tradebot.logger
       return [new HammerAlgorithm(analyzer), new SlicingAlgorithm(analyzer)]
     }
   })
