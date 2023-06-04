@@ -37,7 +37,10 @@ export const registerH3Routes = async ({ tradebot, h3App }: { tradebot: ITradeBo
       await h3Handler({
         trpcApiEndpoint: '/api/trpc',
         playgroundEndpoint: '/trpc-playground',
-        router: router
+        router: router,
+        request: {
+          superjson: true
+        }
       })
     )
   }
