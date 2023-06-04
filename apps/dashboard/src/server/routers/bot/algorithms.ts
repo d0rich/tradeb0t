@@ -74,5 +74,38 @@ export const botAlgorithmsRouter = router({
         algorithmName: opts.input.algorithmName,
         runId: opts.input.runId
       })
+    }),
+  listForAllBots: procedure.query(async () => {
+    const algorithmsPromises = BotsRepository.bots.map((bot) => {
+      return bot.httpClient.algorithms.list.query()
+    })
+    const algorithms = await Promise.all(algorithmsPromises)
+    return algorithms.reduce((acc, curr) => {
+      for (const algorithm of curr) {
+        const index = acc.findIndex((accAlgorithm) => {
+          return accAlgorithm.name === algorithm.name
+        })
+        if (index === -1) {
+          acc.push(algorithm)
+        }
+      }
+      return acc
+    }, [])
+  }),
+  runForAllBots: procedure
+    .input(
+      z.object({
+        algorithmName: ZAlgorithmName,
+        inputs: ZInputs
+      })
+    )
+    .mutation(async (opts) => {
+      const runsPromises = BotsRepository.bots.map((bot) => {
+        return bot.httpClient.algorithms.run.mutate({
+          algorithmName: opts.input.algorithmName,
+          inputs: opts.input.inputs
+        })
+      })
+      return Promise.allSettled(runsPromises)
     })
 })

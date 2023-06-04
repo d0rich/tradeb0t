@@ -1,12 +1,14 @@
-import { trpc } from '../shared/api/trpc'
+import UnitedPortfolioCard from '@/src/features/portfolio/ui/UnitedPortfolioCard'
+import UnitedAlgorithmsList from '../widgets/algorithm/UnitedAlgorithmsList'
+
 export default function IndexPage() {
-  const hello = trpc.hello.useQuery({ text: 'client' })
-  if (!hello.data) {
-    return <div>Loading...</div>
-  }
   return (
     <div>
-      <p>{hello.data.greeting}</p>
+      <UnitedPortfolioCard />
+      <h2 className="text-2xl font-bold my-4">All bots algorithms</h2>
+      <div className="grid md:grid-cols-2 gap-4 my-6">
+        <UnitedAlgorithmsList />
+      </div>
     </div>
   )
 }

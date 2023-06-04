@@ -7,9 +7,7 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 const SocketHandler = (req: NextApiRequest, res: NextApiResponse) => {
   // @ts-ignore
   if (res?.socket?.server?.io) {
-    console.log('Socket is already running')
   } else {
-    console.log('Socket is initializing')
     // @ts-ignore
     const io = new Server(res.socket.server, {
       path: '/api/logs/socket',
