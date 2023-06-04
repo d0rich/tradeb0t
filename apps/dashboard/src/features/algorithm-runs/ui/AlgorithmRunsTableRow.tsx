@@ -1,8 +1,7 @@
 import type { AlgorithmRun, AlgorithmRunStatus } from '@tradeb0t/core'
 import AlgorithmRunTableRowFrame from '@/src/entities/algorithm-run/ui/AlgorithmRunTableRowFrame'
 import { trpc } from '@/src/shared/api/trpc'
-import { useAppDispatch } from '@/src/shared/model/hooks'
-import { pushNotification } from '@/src/shared/model/notificationsSlice'
+import { usePushNotification } from '@/src/shared/hooks'
 
 export interface AlgorithmRunsTableRowProps {
   botUrl: string
@@ -20,26 +19,22 @@ export default function AlgorithmRunsTableRow({
   className = '',
   onUpdate
 }: AlgorithmRunsTableRowProps) {
-  const dispatchRedux = useAppDispatch()
+  const pushNotification = usePushNotification()
 
   const dispatchStop = trpc.control.algorithms.stop.useMutation({
     onSuccess: (result) => {
-      dispatchRedux(
-        pushNotification({
-          type: 'success',
-          content: `Algorithm <code class="kbd kbd-sm text-white">${result.algorithmName}</code> run
-          with id <code class="kbd kbd-sm text-white">${result.id}</code> was successfully stopped!`
-        })
-      )
+      pushNotification({
+        type: 'success',
+        content: `Algorithm <code class="kbd kbd-sm text-white">${result.algorithmName}</code> run
+        with id <code class="kbd kbd-sm text-white">${result.id}</code> was successfully stopped!`
+      })
     },
     onError: (error) => {
-      dispatchRedux(
-        pushNotification({
-          type: 'error',
-          content: `Algorithm <code class="kbd kbd-sm text-white">${algorithmRun.algorithmName}</code> run
-          with id <code class="kbd kbd-sm text-white">${algorithmRun.id}</code> failed to stop 😔`
-        })
-      )
+      pushNotification({
+        type: 'error',
+        content: `Algorithm <code class="kbd kbd-sm text-white">${algorithmRun.algorithmName}</code> run
+        with id <code class="kbd kbd-sm text-white">${algorithmRun.id}</code> failed to stop 😔`
+      })
     },
     onSettled: () => {
       if (onUpdate) onUpdate()
@@ -47,22 +42,18 @@ export default function AlgorithmRunsTableRow({
   })
   const dispatchResume = trpc.control.algorithms.resume.useMutation({
     onSuccess: (result) => {
-      dispatchRedux(
-        pushNotification({
-          type: 'success',
-          content: `Algorithm <code class="kbd kbd-sm text-white">${result.algorithmName}</code> run
-          with id <code class="kbd kbd-sm text-white">${result.id}</code> was successfully resumed!`
-        })
-      )
+      pushNotification({
+        type: 'success',
+        content: `Algorithm <code class="kbd kbd-sm text-white">${result.algorithmName}</code> run
+        with id <code class="kbd kbd-sm text-white">${result.id}</code> was successfully resumed!`
+      })
     },
     onError: (error) => {
-      dispatchRedux(
-        pushNotification({
-          type: 'error',
-          content: `Algorithm <code class="kbd kbd-sm text-white">${algorithmRun.algorithmName}</code> run
-          with id <code class="kbd kbd-sm text-white">${algorithmRun.id}</code> failed to resume 😔`
-        })
-      )
+      pushNotification({
+        type: 'error',
+        content: `Algorithm <code class="kbd kbd-sm text-white">${algorithmRun.algorithmName}</code> run
+        with id <code class="kbd kbd-sm text-white">${algorithmRun.id}</code> failed to resume 😔`
+      })
     },
     onSettled: () => {
       if (onUpdate) onUpdate()
