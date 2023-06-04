@@ -3,7 +3,7 @@ import InputsDescriptor from './InputsDescriptor'
 
 export interface CardProps {
   algorithm: Algorithm
-  goToRunsComponent: JSX.Element
+  goToRunsComponent?: JSX.Element
   runAlgorithmComponent: JSX.Element
   className?: string
 }
