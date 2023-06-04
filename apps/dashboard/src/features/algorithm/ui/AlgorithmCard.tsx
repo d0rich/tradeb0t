@@ -7,13 +7,13 @@ import { trpc } from '@/src/shared/api/trpc'
 import { useAppDispatch } from '@/src/shared/model/hooks'
 import { pushNotification } from '@/src/entities/notifications/model/notificationsSlice'
 
-export interface InteractiveCardProps {
+export interface AlgorithmCardProps {
   bot: BotDesciption
   algorithm: Algorithm
   className?: string
 }
 
-export default function InteractiveCard({ bot, algorithm, className }: InteractiveCardProps) {
+export default function AlgorithmCard({ bot, algorithm, className }: AlgorithmCardProps) {
   const dispatch = useAppDispatch()
   const runAlgorithmMutation = trpc.control.algorithms.run.useMutation({
     onSuccess: (result) => {

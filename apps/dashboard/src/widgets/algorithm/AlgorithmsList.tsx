@@ -1,19 +1,17 @@
 import { BotDesciption } from '@/src/entities/bot/model/BotDesciption'
 import { trpc } from '@/src/shared/api/trpc'
-import InteractiveCard from '@/src/features/algorithm/ui/InteractiveCard'
-import type { Algorithm } from '@tradeb0t/core'
+import AlgorithmCard from '@/src/features/algorithm/ui/AlgorithmCard'
 
 export interface AlgorithmsListProps {
   bot: BotDesciption
 }
 
 export default function AlgorithmsList({ bot }: AlgorithmsListProps) {
-  // FIXME: This is a workaround for Algorithm type not correctly transformed by trpc
-  const { data: algorithms } = trpc.control.algorithms.list.useQuery({ url: bot.url }) as { data: Algorithm[] }
+  const { data: algorithms } = trpc.control.algorithms.list.useQuery({ url: bot.url })
   return (
     <>
       {algorithms?.map((algorithm) => (
-        <InteractiveCard key={algorithm.name} bot={bot} algorithm={algorithm} />
+        <AlgorithmCard key={algorithm.name} bot={bot} algorithm={algorithm} />
       ))}
     </>
   )
