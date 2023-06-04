@@ -2,11 +2,11 @@ import Link from 'next/link'
 import ListItem from '@/src/entities/bot/ui/ListItem'
 import type { BotDesciption } from '@/src/entities/bot/model/BotDesciption'
 
-export interface InteractiveListItemProps {
+export interface BotListItemProps {
   bot: BotDesciption
 }
 
-export default function InteractiveListItem({ bot }: InteractiveListItemProps) {
+export default function BotListItem({ bot }: BotListItemProps) {
   return (
     <ListItem
       bot={bot}
