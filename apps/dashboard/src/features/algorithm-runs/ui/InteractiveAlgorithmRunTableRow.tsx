@@ -1,5 +1,5 @@
 import type { AlgorithmRun, AlgorithmRunStatus } from '@tradeb0t/core'
-import AlgorithmRunTableRow from '@/src/entities/algorithm-run/ui/AlgorithmRunTableRow'
+import AlgorithmRunTableRowFrame from '@/src/entities/algorithm-run/ui/AlgorithmRunTableRowFrame'
 import { trpc } from '@/src/shared/api/trpc'
 import { useAppDispatch } from '@/src/shared/model/hooks'
 import { pushNotification } from '@/src/entities/notifications/model/notificationsSlice'
@@ -78,7 +78,7 @@ export default function InteractiveAlgorithmRunTableRow({
   }
 
   return (
-    <AlgorithmRunTableRow
+    <AlgorithmRunTableRowFrame
       className={className}
       algorithmRun={algorithmRun}
       actions={
