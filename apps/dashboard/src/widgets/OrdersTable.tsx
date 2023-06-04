@@ -10,7 +10,6 @@ export interface OrdersTableProps {
 
 export default function OrdersTable({ botUrl }: OrdersTableProps) {
   const [filter, setFilter] = useState<GetOrdersOptions>(getDefaultFilter())
-  console.log(filter)
   const { data: orders, refetch } = trpc.control.orders.search.useQuery({
     url: botUrl,
     options: filter
