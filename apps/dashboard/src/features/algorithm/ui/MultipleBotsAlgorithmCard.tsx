@@ -1,5 +1,5 @@
 import type { Algorithm } from '@tradeb0t/core'
-import Card from '@/src/entities/algorithm/ui/Card'
+import AlgorithmCardFrame from '@/src/entities/algorithm/ui/AlgorithmCardFrame'
 import RunAlgorithmModal from '@/src/entities/algorithm/ui/RunAlgorithmModal'
 import { trpc } from '@/src/shared/api/trpc'
 import { useAppDispatch } from '@/src/shared/model/hooks'
@@ -27,7 +27,7 @@ export default function MultipleBotsAlgorithmCard({ algorithm, className }: Mult
 
   return (
     <>
-      <Card
+      <AlgorithmCardFrame
         className={className}
         algorithm={algorithm}
         runAlgorithmComponent={

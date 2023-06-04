@@ -1,6 +1,6 @@
 import type { Algorithm } from '@tradeb0t/core'
 import Link from 'next/link'
-import Card from '@/src/entities/algorithm/ui/Card'
+import AlgorithmCardFrame from '@/src/entities/algorithm/ui/AlgorithmCardFrame'
 import RunAlgorithmModal from '@/src/entities/algorithm/ui/RunAlgorithmModal'
 import { BotDesciption } from '@/src/entities/bot/model/BotDesciption'
 import { trpc } from '@/src/shared/api/trpc'
@@ -28,7 +28,7 @@ export default function InteractiveCard({ bot, algorithm, className }: Interacti
 
   return (
     <>
-      <Card
+      <AlgorithmCardFrame
         className={className}
         algorithm={algorithm}
         goToRunsComponent={
