@@ -4,11 +4,15 @@ import { AlgorithmRunsTable } from '@/src/widgets/AlgorithmRunsTable'
 import BotHeaderDescriptor from '@/src/widgets/bot/BotHeaderDescriptor'
 import AlgorithmHeaderDescriptor from '@/src/widgets/algorithm/AlgorithmHeaderDescriptor'
 import Loading from '@/src/shared/ui/Loading'
+import { usePushNotification } from '@/src/shared/hooks'
+import { failedQueryNotification } from '@/src/shared/notifications/failedQueryNotification'
 
 export default function AlgorithmRunsPage() {
   const {
     query: { botUrl, algorithmName, page }
   } = useRouter()
+
+  const pushNotification = usePushNotification()
 
   const {
     data: bot,
@@ -24,6 +28,12 @@ export default function AlgorithmRunsPage() {
   const algorithm = algorithms?.find((algorithm) => algorithm.name === algorithmName)
 
   if (isErrorAlgorithm || isErrorBot) {
+    if (isErrorAlgorithm) {
+      pushNotification(failedQueryNotification('trpc.control.algorithms.list'))
+    }
+    if (isErrorBot) {
+      pushNotification(failedQueryNotification('trpc.repository.findBot'))
+    }
     return <h1 className="font-bold text-3xl m-5 text-error">Bot not found</h1>
   }
 

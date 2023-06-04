@@ -1,4 +1,4 @@
-import type { NotificationToPush } from '@/src/entities/notifications/model/NotificationToPush'
+import type { NotificationToPush } from '@/src/shared/model/NotificationToPush'
 import type { Algorithm, AlgorithmRun } from '@tradeb0t/core'
 
 export function algorithmRunSuccessNotification(algorithm: Algorithm, algorithmRun: AlgorithmRun): NotificationToPush {

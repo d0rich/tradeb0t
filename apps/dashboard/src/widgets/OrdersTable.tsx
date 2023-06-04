@@ -3,6 +3,8 @@ import { trpc } from '@/src/shared/api/trpc'
 import OrdersTableFrame from '@/src/entities/order/ui/OrdersTableFrame'
 import OrdersFilter from '@/src/features/order/ui/OrdersFilter'
 import type { GetOrdersOptions } from '@tradeb0t/core'
+import { usePushNotification } from '@/src/shared/hooks'
+import { failedQueryNotification } from '@/src/shared/notifications/failedQueryNotification'
 
 export interface OrdersTableProps {
   botUrl: string
@@ -10,15 +12,21 @@ export interface OrdersTableProps {
 
 export default function OrdersTable({ botUrl }: OrdersTableProps) {
   const [filter, setFilter] = useState<GetOrdersOptions>(getDefaultFilter())
+  const pushNotification = usePushNotification()
   const {
     data: orders,
     refetch,
     isLoading,
-    isFetching
+    isFetching,
+    isError
   } = trpc.control.orders.search.useQuery({
     url: botUrl,
     options: filter
   })
+
+  if (isError) {
+    pushNotification(failedQueryNotification('trpc.control.orders.search'))
+  }
 
   // TODO: use socket to refetch
   useEffect(() => {

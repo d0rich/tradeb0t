@@ -4,6 +4,8 @@ import AlgorithmRunsTableRow from '@/src/features/algorithm-runs/ui/AlgorithmRun
 import Pagination, { PaginationProps } from '../shared/ui/Pagination'
 import { trpc } from '@/src/shared/api/trpc'
 import type { AlgorithmRun } from '@tradeb0t/core'
+import { usePushNotification } from '@/src/shared/hooks'
+import { failedQueryNotification } from '@/src/shared/notifications/failedQueryNotification'
 
 const AlgorithmRunsTableRowMemo = memo(AlgorithmRunsTableRow)
 const PaginationMemo = memo(Pagination)
@@ -17,11 +19,13 @@ export interface AlgorithmRunsTableProps {
 
 export function AlgorithmRunsTable({ botUrl, algorithmName, page = 1, pageLinkPattern }: AlgorithmRunsTableProps) {
   const perPage = 10
+  const pushNotification = usePushNotification()
   const {
     data: algorithmRuns,
     refetch,
     isLoading,
-    isFetching
+    isFetching,
+    isError
   } = trpc.control.algorithms.listRuns.useQuery({
     url: botUrl,
     algorithmName: algorithmName,
@@ -30,6 +34,10 @@ export function AlgorithmRunsTable({ botUrl, algorithmName, page = 1, pageLinkPa
       perPage
     }
   })
+
+  if (isError) {
+    pushNotification(failedQueryNotification('trpc.control.algorithms.listRuns'))
+  }
 
   // TODO: use socket to refetch
   useEffect(() => {

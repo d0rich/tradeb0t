@@ -1,5 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { Notification } from './Notification'
+import { NotificationToPush } from './NotificationToPush'
 import { HYDRATE } from 'next-redux-wrapper'
 
 const sliceName = 'notifications'
@@ -16,7 +17,7 @@ export const notificationsSlice = createSlice({
   name: sliceName,
   initialState,
   reducers: {
-    pushNotification(state, action: PayloadAction<Omit<Notification, 'createdAt'>>) {
+    pushNotification(state, action: PayloadAction<NotificationToPush>) {
       const newNotification: Notification = {
         ...action.payload,
         createdAt: new Date().getTime()
