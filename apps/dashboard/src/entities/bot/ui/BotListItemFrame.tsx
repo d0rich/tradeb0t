@@ -1,12 +1,12 @@
 import type { BotDesciption } from '../model/BotDesciption'
 import Avatar from './Avatar'
 
-export interface ListItemProps {
+export interface BotListItemFrameProps {
   bot: BotDesciption
   goToDetailsComponent: React.ReactNode
 }
 
-export default function ListItem({ bot, goToDetailsComponent }: ListItemProps) {
+export default function BotListItemFrame({ bot, goToDetailsComponent }: BotListItemFrameProps) {
   return (
     <li className="card card-side bg-base-300 shadow-xl">
       <div className="flex items-center p-3">
