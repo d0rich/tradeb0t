@@ -17,10 +17,13 @@ services:
     startCommand: npx turbo run @tradeb0t/dashboard#start
     envVars:
       - key: DEMO_STUB_HOST
-        fromService: stubb0t
-        fromKey: host
+        fromService:
+          name: stubb0t
+          type: web
+          property: host
       - key: DEMO_STUB_PORT
-        fromService: stubb0t
-        fromKey: port
+          name: stubb0t
+          type: web
+          property: port
       - key: DEMO_STUB_TOKEN
         value: qwerty123
