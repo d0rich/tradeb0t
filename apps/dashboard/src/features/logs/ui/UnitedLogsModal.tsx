@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react'
 import type { LogObject } from '@/src/entities/logs/models/LogObject'
 import { useSocket } from '@/src/shared/api/socket'
-import UnitedLogsModalWithoutConnection, {
+import UnitedLogsModalFrame, {
   UnitedBoxModalButton,
   type UnitedBoxModalButtonProps
-} from '@/src/entities/logs/ui/UnitedLogsModal'
+} from '@/src/entities/logs/ui/UnitedLogsModalFrame'
 
 export { UnitedBoxModalButton, UnitedBoxModalButtonProps }
 export interface UnitedLogsModalProps {
@@ -21,5 +21,5 @@ export default function UnitedLogsModal() {
     })
   }, [socket])
 
-  return <UnitedLogsModalWithoutConnection logs={logs} />
+  return <UnitedLogsModalFrame logs={logs} />
 }

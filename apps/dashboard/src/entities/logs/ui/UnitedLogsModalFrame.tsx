@@ -16,11 +16,11 @@ export function UnitedBoxModalButton({ className = '', children }: UnitedBoxModa
   )
 }
 
-export interface UnitedLogsModalProps {
+export interface UnitedLogsModalFrameProps {
   logs: LogObject[]
 }
 
-export default function UnitedLogsModal({ logs }: UnitedLogsModalProps) {
+export default function UnitedLogsModalFrame({ logs }: UnitedLogsModalFrameProps) {
   return (
     <>
       <input type="checkbox" id={modalId} className="modal-toggle" />
