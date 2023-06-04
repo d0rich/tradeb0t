@@ -5,7 +5,10 @@ export const ZGetOrdersOptions = z.object({
   from: z.date().optional(),
   to: z.date().optional(),
   securityTicker: z.string().optional(),
-  operation: z.nativeEnum(EOperationType).optional(),
+  operation: z
+    .nativeEnum(EOperationType)
+    .or(z.enum(Object.values(EOperationType) as [`${EOperationType}`, ...`${EOperationType}`[]]))
+    .optional(),
   runId: z.number().int().min(0).optional()
 })
 

@@ -1,6 +1,6 @@
 import { z } from 'zod'
-import { BotsRepository } from '../../repositories'
-import { procedure, router } from '../../trpc'
+import { BotsRepository } from '@/src/server/repositories'
+import { procedure, router } from '@/src/server/trpc'
 import { ZAlgorithmName, ZInputs, ZRunId, ZPaginationOptions } from '@tradeb0t/core'
 import { ZUrl } from '../schemas'
 
