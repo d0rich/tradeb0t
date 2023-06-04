@@ -1,5 +1,5 @@
 import { trpc } from '@/src/shared/api/trpc'
-import BotPortfolioCardWithoutData from '@/src/entities/portfolio/ui/BotPortfolioCard'
+import BotPortfolioCardFrame from '@/src/entities/portfolio/ui/BotPortfolioCardFrame'
 
 export interface UnitedPortfolioCardProps {
   className?: string
@@ -10,7 +10,7 @@ export default function UnitedPortfolioCard({ className = '' }: UnitedPortfolioC
   const { data: securities } = trpc.control.portfolio.getAllBotsSecurities.useQuery()
 
   return (
-    <BotPortfolioCardWithoutData
+    <BotPortfolioCardFrame
       header={<>United portfolio</>}
       currencies={currencies!}
       securities={securities!}

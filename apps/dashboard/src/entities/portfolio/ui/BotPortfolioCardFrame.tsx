@@ -3,19 +3,19 @@ import CurrencyBalanceView from './CurrencyBalanceView'
 import type { CurrencyBalance } from '../model/CurrencyBalance'
 import type { SecurityBalance } from '../model/SecurityBalance'
 
-export interface BotPortfolioCardProps {
+export interface BotPortfolioCardFrameProps {
   currencies: CurrencyBalance[]
   securities: SecurityBalance[]
   className?: string
   header?: JSX.Element
 }
 
-export default function BotPortfolioCard({
+export default function BotPortfolioCardFrame({
   currencies,
   securities,
   className = '',
   header = <>Portfolio</>
-}: BotPortfolioCardProps) {
+}: BotPortfolioCardFrameProps) {
   return (
     <div className={`card card-compact bg-base-200 ${className}`}>
       <div className="card-body">
