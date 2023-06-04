@@ -4,7 +4,7 @@ import { trpc } from '@/src/shared/api/trpc'
 import { useAppDispatch } from '@/src/shared/model/hooks'
 import { pushNotification } from '@/src/entities/notifications/model/notificationsSlice'
 
-export interface InteractiveAlgorithmRunTableRowProps {
+export interface AlgorithmRunsTableRowProps {
   botUrl: string
   algorithmRun: AlgorithmRun
   className?: string
@@ -14,12 +14,12 @@ export interface InteractiveAlgorithmRunTableRowProps {
 const stoppableStatuses: AlgorithmRunStatus[] = ['running', 'resumed']
 const resumableStatuses: AlgorithmRunStatus[] = ['stopped']
 
-export default function InteractiveAlgorithmRunTableRow({
+export default function AlgorithmRunsTableRow({
   algorithmRun,
   botUrl,
   className = '',
   onUpdate
-}: InteractiveAlgorithmRunTableRowProps) {
+}: AlgorithmRunsTableRowProps) {
   const dispatchRedux = useAppDispatch()
 
   const dispatchStop = trpc.control.algorithms.stop.useMutation({
