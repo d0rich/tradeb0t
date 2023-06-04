@@ -1,4 +1,6 @@
 import { WSRouter, HTTPRouter } from './routers'
+import superjson from 'superjson'
+import fetch from 'node-fetch'
 import { createTRPCProxyClient, createWSClient, httpLink, wsLink, CreateTRPCProxyClient } from '@trpc/client'
 
 type ClientOptions = {
@@ -15,6 +17,7 @@ export const initWSClient = ({ host, port }: ClientOptions) => {
     url: `ws://${host}:${port}`
   })
   return createTRPCProxyClient<WSRouter>({
+    transformer: superjson,
     links: [
       wsLink({
         client: wsClient
@@ -25,12 +28,28 @@ export const initWSClient = ({ host, port }: ClientOptions) => {
 
 export const initHTTPClient = ({ host, port, token }: HTTPClientOptions): CreateTRPCProxyClient<HTTPRouter> => {
   return createTRPCProxyClient<HTTPRouter>({
+    transformer: superjson,
     links: [
       httpLink({
         url: `http://${host}:${port}/api/trpc`,
         headers: {
           Authorization: token ? `Bearer ${token}` : undefined
         }
+      })
+    ]
+  })
+}
+
+export const initHTTPServerClient = ({ host, port, token }: HTTPClientOptions): CreateTRPCProxyClient<HTTPRouter> => {
+  return createTRPCProxyClient<HTTPRouter>({
+    transformer: superjson,
+    links: [
+      httpLink({
+        url: `http://${host}:${port}/api/trpc`,
+        headers: {
+          Authorization: token ? `Bearer ${token}` : undefined
+        },
+        fetch: fetch
       })
     ]
   })
