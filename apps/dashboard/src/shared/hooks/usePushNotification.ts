@@ -1,4 +1,4 @@
-import { useAppDispatch } from '@/src/shared/model/hooks'
+import { useAppDispatch } from '@/src/shared/hooks'
 import { pushNotification } from '@/src/shared/model/notificationsSlice'
 import { NotificationToPush } from '../model/NotificationToPush'
 
