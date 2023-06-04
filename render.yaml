@@ -22,8 +22,6 @@ services:
           type: web
           property: host
       - key: DEMO_STUB_PORT
-          name: stubb0t
-          type: web
-          property: port
+        value: 80
       - key: DEMO_STUB_TOKEN
         value: qwerty123
