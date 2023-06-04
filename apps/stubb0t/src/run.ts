@@ -14,7 +14,8 @@ async function main() {
         port: process.env.PORT || 4268
       },
       auth: {
-        token: process.env.DEMO_STUB_TOKEN || 'qwerty123'
+        token: process.env.DEMO_STUB_TOKEN || 'qwerty123',
+        required: false
       }
     },
     exchangeConnector: new ExchangeConnector({
