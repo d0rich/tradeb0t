@@ -1,5 +1,15 @@
 # @tradeb0t/core
 
+## 0.4.0
+
+### Minor Changes
+
+- 49f9935: Use superjson transformer. Specify TRPC HTTP client for server.
+
+### Patch Changes
+
+- 49f9935: [Fix] rewrite orders selector
+
 ## 0.3.6
 
 ### Patch Changes
