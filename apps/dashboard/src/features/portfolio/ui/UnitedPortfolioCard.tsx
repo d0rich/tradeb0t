@@ -10,6 +10,7 @@ export default function UnitedPortfolioCard({ className = '' }: UnitedPortfolioC
   const { data: currencies, refetch: refetchCurrencies } = trpc.control.portfolio.getAllBotsCurrencies.useQuery()
   const { data: securities, refetch: refetchSecurities } = trpc.control.portfolio.getAllBotsSecurities.useQuery()
 
+  // TODO: use socket to refetch
   useEffect(() => {
     const timer = setInterval(() => {
       refetchCurrencies()

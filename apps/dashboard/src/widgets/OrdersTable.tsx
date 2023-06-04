@@ -15,6 +15,7 @@ export default function OrdersTable({ botUrl }: OrdersTableProps) {
     options: filter
   })
 
+  // TODO: use socket to refetch
   useEffect(() => {
     const timer = setInterval(() => {
       refetch()
@@ -27,7 +28,7 @@ export default function OrdersTable({ botUrl }: OrdersTableProps) {
       <OrdersFilter
         defaultValue={filter}
         onChange={(v) => {
-          setFilter({ ...v})
+          setFilter({ ...v })
           refetch()
         }}
       />

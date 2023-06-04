@@ -25,6 +25,7 @@ export function AlgorithmRunsTable({ botUrl, algorithmName, page = 1, pageLinkPa
     }
   })
 
+  // TODO: use socket to refetch
   useEffect(() => {
     const timer = setInterval(() => {
       refetch()

@@ -15,6 +15,7 @@ export default function BotPortfolioCard({ botUrl, className = '' }: BotPortfoli
     url: botUrl
   })
 
+  // TODO: use socket to refetch
   useEffect(() => {
     const timer = setInterval(() => {
       refetchCurrencies()
