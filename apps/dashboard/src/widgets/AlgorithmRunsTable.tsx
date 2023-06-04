@@ -1,4 +1,4 @@
-import { useCallback, memo } from 'react'
+import { useCallback, memo, useEffect } from 'react'
 
 import AlgorithmRunsTableRow from '@/src/features/algorithm-runs/ui/AlgorithmRunsTableRow'
 import Pagination, { PaginationProps } from '../shared/ui/Pagination'
@@ -24,6 +24,13 @@ export function AlgorithmRunsTable({ botUrl, algorithmName, page = 1, pageLinkPa
       perPage
     }
   })
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      refetch()
+    }, 3000)
+    return () => clearInterval(timer)
+  }, [algorithmRuns])
 
   const onDataUpdate = useCallback(() => {
     refetch()
