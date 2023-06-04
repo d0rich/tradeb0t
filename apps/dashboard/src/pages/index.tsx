@@ -1,12 +1,9 @@
-import { trpc } from '../shared/api/trpc'
+import UnitedPortfolioCard from '@/src/features/portfolio/ui/UnitedPortfolioCard'
+
 export default function IndexPage() {
-  const hello = trpc.hello.useQuery({ text: 'client' })
-  if (!hello.data) {
-    return <div>Loading...</div>
-  }
   return (
     <div>
-      <p>{hello.data.greeting}</p>
+      <UnitedPortfolioCard />
     </div>
   )
 }
