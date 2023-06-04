@@ -10,7 +10,12 @@ export interface OrdersTableProps {
 
 export default function OrdersTable({ botUrl }: OrdersTableProps) {
   const [filter, setFilter] = useState<GetOrdersOptions>(getDefaultFilter())
-  const { data: orders, refetch } = trpc.control.orders.search.useQuery({
+  const {
+    data: orders,
+    refetch,
+    isLoading,
+    isFetching
+  } = trpc.control.orders.search.useQuery({
     url: botUrl,
     options: filter
   })
@@ -32,7 +37,7 @@ export default function OrdersTable({ botUrl }: OrdersTableProps) {
           refetch()
         }}
       />
-      <OrdersTableFrame orders={orders ?? []} />
+      <OrdersTableFrame loading={isLoading || isFetching} orders={orders ?? []} />
     </>
   )
 }
