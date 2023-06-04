@@ -5,7 +5,7 @@ import RunAlgorithmModal from '@/src/entities/algorithm/ui/RunAlgorithmModal'
 import { BotDesciption } from '@/src/entities/bot/model/BotDesciption'
 import { trpc } from '@/src/shared/api/trpc'
 import { useAppDispatch } from '@/src/shared/model/hooks'
-import { pushNotification } from '@/src/entities/notifications/model/notificationsSlice'
+import { pushNotification } from '@/src/shared/model/notificationsSlice'
 import { algorithmRunSuccessNotification } from '@/src/entities/algorithm/notifications/algorithmRunSuccessNotification'
 import { algorithmRunErrorNotification } from '@/src/entities/algorithm/notifications/algorithmRunErrorNotification'
 

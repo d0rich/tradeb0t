@@ -2,7 +2,7 @@ import type { AlgorithmRun, AlgorithmRunStatus } from '@tradeb0t/core'
 import AlgorithmRunTableRowFrame from '@/src/entities/algorithm-run/ui/AlgorithmRunTableRowFrame'
 import { trpc } from '@/src/shared/api/trpc'
 import { useAppDispatch } from '@/src/shared/model/hooks'
-import { pushNotification } from '@/src/entities/notifications/model/notificationsSlice'
+import { pushNotification } from '@/src/shared/model/notificationsSlice'
 
 export interface AlgorithmRunsTableRowProps {
   botUrl: string
