@@ -5,8 +5,10 @@ services:
     region: frankfurt
     startCommand: npx turbo run stubb0t#start
     envVars:
-      NODE_ENV: development
-      DEMO_STUB_TOKEN: qwerty123
+      - key: NODE_ENV
+        value: development
+      - key: DEMO_STUB_TOKEN
+        value: qwerty123
 
   - name: dashboard
     type: web
@@ -14,6 +16,11 @@ services:
     region: frankfurt
     startCommand: npx turbo run @tradeb0t/dashboard#start
     envVars:
-      DEMO_STUB_HOST: stubb0t.onrender.com
-      DEMO_STUB_PORT: 80
-      DEMO_STUB_TOKEN: qwerty123
+      - key: DEMO_STUB_HOST
+        fromService: stubb0t
+        fromKey: host
+      - key: DEMO_STUB_PORT
+        fromService: stubb0t
+        fromKey: port
+      - key: DEMO_STUB_TOKEN
+        value: qwerty123
