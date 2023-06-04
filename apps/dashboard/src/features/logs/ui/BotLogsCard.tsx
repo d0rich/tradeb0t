@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import BotLogsCardWithoutConnection from '@/src/entities/logs/ui/BotLogsCard'
+import BotLogsCardFrame from '@/src/entities/logs/ui/BotLogsCardFrame'
 import type { LogObject } from '@/src/entities/logs/models/LogObject'
 import { useSocket } from '@/src/shared/api/socket'
 
@@ -17,5 +17,5 @@ export default function BotLogsCard({ botUrl }: BotLogsCardProps) {
     })
   }, [socket])
 
-  return <BotLogsCardWithoutConnection header={<>Logs</>} logs={logs} />
+  return <BotLogsCardFrame header={<>Logs</>} logs={logs} />
 }
