@@ -9,7 +9,11 @@ export interface AlgorithmRunTableRowFrameProps {
   className?: string
 }
 
-export default function AlgorithmRunTableRowFrame({ algorithmRun, className = '', actions }: AlgorithmRunTableRowFrameProps) {
+export default function AlgorithmRunTableRowFrame({
+  algorithmRun,
+  className = '',
+  actions
+}: AlgorithmRunTableRowFrameProps) {
   const [isExpanded, setIsExpanded] = useState(false)
 
   return (

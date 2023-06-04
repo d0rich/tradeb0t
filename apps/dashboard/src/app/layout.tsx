@@ -20,7 +20,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </Head>
       <HeaderMemo />
       <NavbarMemo />
-      <main className="max-w-screen-xl mx-auto px-3">{children}</main>
+      <main className="max-w-screen-xl mx-auto px-3 pb-[50vh]">{children}</main>
       <NotificationsMemo />
       <UnitedLogsModal />
     </>

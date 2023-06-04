@@ -32,7 +32,7 @@ export default function AlgorithmCard({ bot, algorithm, className }: AlgorithmCa
         className={className}
         algorithm={algorithm}
         goToRunsComponent={
-          <Link href={`/bots/${bot.url}/algorithms/${algorithm.name}/runs`} className="btn btn-primary btn-sm">
+          <Link href={`/bots/${bot.url}/algorithms/${algorithm.name}`} className="btn btn-primary btn-sm">
             Runs
           </Link>
         }
