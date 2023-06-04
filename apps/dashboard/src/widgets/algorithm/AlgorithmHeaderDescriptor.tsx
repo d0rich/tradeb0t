@@ -1,8 +1,7 @@
 import type { Algorithm } from '@tradeb0t/core'
 import InputsDescriptor from '@/src/entities/algorithm/ui/InputsDescriptor'
 import { trpc } from '@/src/shared/api/trpc'
-import { useAppDispatch } from '@/src/shared/model/hooks'
-import { pushNotification } from '@/src/entities/notifications/model/notificationsSlice'
+import { usePushNotification } from '@/src/shared/hooks'
 import { algorithmRunSuccessNotification } from '@/src/entities/algorithm/notifications/algorithmRunSuccessNotification'
 import { algorithmRunErrorNotification } from '@/src/entities/algorithm/notifications/algorithmRunErrorNotification'
 import RunAlgorithmForm from '@/src/entities/algorithm/ui/RunAlgorithmForm'
@@ -13,13 +12,13 @@ export interface AlgorithmHeaderDescriptorProps {
 }
 
 export default function AlgorithmHeaderDescriptor({ algorithm, botUrl }: AlgorithmHeaderDescriptorProps) {
-  const dispatch = useAppDispatch()
+  const pushNotification = usePushNotification()
   const runAlgorithmMutation = trpc.control.algorithms.run.useMutation({
     onSuccess: (result) => {
-      dispatch(pushNotification(algorithmRunSuccessNotification(algorithm, result)))
+      pushNotification(algorithmRunSuccessNotification(algorithm, result))
     },
     onError: (error) => {
-      dispatch(pushNotification(algorithmRunErrorNotification(algorithm)))
+      pushNotification(algorithmRunErrorNotification(algorithm))
     }
   })
 

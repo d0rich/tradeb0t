@@ -1,13 +1,19 @@
+import { memo } from 'react'
 import { Order } from '../model/Order'
 import OrdersTableRow from './OrdersTableRow'
+import LoadingLine from '@/src/shared/ui/LoadingLine'
+
+const OrdersTableRowMemo = memo(OrdersTableRow)
 
 export interface OrdersTableFrameProps {
   orders: Order[]
+  loading?: boolean
 }
 
-export default function OrdersTableFrame({ orders }: OrdersTableFrameProps) {
+export default function OrdersTableFrame({ orders, loading }: OrdersTableFrameProps) {
   return (
     <div className="overflow-x-auto">
+      <LoadingLine className={`${loading ? '' : 'opacity-0'}`} />
       <table className="table">
         <thead>
           <tr>
@@ -23,7 +29,7 @@ export default function OrdersTableFrame({ orders }: OrdersTableFrameProps) {
         </thead>
         <tbody>
           {orders.map((order) => (
-            <OrdersTableRow key={order.exchangeId} order={order} />
+            <OrdersTableRowMemo key={order.exchangeId} order={order} />
           ))}
         </tbody>
       </table>

@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react'
-import type { Notification } from '../model/Notification'
+import type { Notification } from '../../../shared/model/Notification'
 import CountdownProgressBar from '@/src/shared/ui/CountdownProgressBar'
 import { getTimeString } from '@/src/shared/utils/date'
 

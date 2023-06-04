@@ -1,9 +1,9 @@
 import { memo, useCallback } from 'react'
 
 import NotificationCard from '@/src/entities/notifications/ui/NotificationCard'
-import { useAppSelector, useAppDispatch } from '@/src/shared/model/hooks'
-import { removeNotification } from '@/src/entities/notifications/model/notificationsSlice'
-import { Notification } from '@/src/entities/notifications/model/Notification'
+import { useAppSelector, useAppDispatch } from '@/src/shared/hooks'
+import { removeNotification } from '@/src/shared/model/notificationsSlice'
+import { Notification } from '@/src/shared/model/Notification'
 
 const NotificationCardMemo = memo(NotificationCard)
 

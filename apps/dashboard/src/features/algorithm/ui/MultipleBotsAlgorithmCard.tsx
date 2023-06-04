@@ -2,8 +2,7 @@ import type { Algorithm } from '@tradeb0t/core'
 import AlgorithmCardFrame from '@/src/entities/algorithm/ui/AlgorithmCardFrame'
 import RunAlgorithmModal from '@/src/entities/algorithm/ui/RunAlgorithmModal'
 import { trpc } from '@/src/shared/api/trpc'
-import { useAppDispatch } from '@/src/shared/model/hooks'
-import { pushNotification } from '@/src/entities/notifications/model/notificationsSlice'
+import { usePushNotification } from '@/src/shared/hooks'
 
 export interface MultipleBotsAlgorithmCard {
   algorithm: Algorithm
@@ -11,17 +10,15 @@ export interface MultipleBotsAlgorithmCard {
 }
 
 export default function MultipleBotsAlgorithmCard({ algorithm, className }: MultipleBotsAlgorithmCard) {
-  const dispatch = useAppDispatch()
+  const pushNotification = usePushNotification()
   const runAlgorithmMutation = trpc.control.algorithms.runForAllBots.useMutation({
     onSuccess: (result) => {
       const successCount = result.filter((r) => r.status === 'fulfilled').length
-      dispatch(
-        pushNotification({
-          type: 'success',
-          content: `Algorithm <code class="kbd kbd-sm text-white">${algorithm.name}</code>
-                    is running successfully at ${successCount} instances!`
-        })
-      )
+      pushNotification({
+        type: 'success',
+        content: `Algorithm <code class="kbd kbd-sm text-white">${algorithm.name}</code>
+                  is running successfully at ${successCount} instances!`
+      })
     }
   })
 

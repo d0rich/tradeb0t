@@ -1,6 +1,6 @@
 import { configureStore } from '@reduxjs/toolkit'
 import { createWrapper } from 'next-redux-wrapper'
-import notificationsReducer from '@/src/entities/notifications/model/notificationsSlice'
+import notificationsReducer from '@/src/shared/model/notificationsSlice'
 
 const createStore = () =>
   configureStore({
