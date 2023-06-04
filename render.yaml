@@ -13,7 +13,7 @@ services:
       - key: DEMO_STUB_TOKEN
         value: qwerty123
 
-  - name: dashboard
+  - name: tradeb0t-dashboard
     type: web
     env: node
     region: frankfurt
