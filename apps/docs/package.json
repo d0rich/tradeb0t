@@ -1,10 +1,11 @@
 {
   "private": true,
   "scripts": {
-    "uml": "node .scripts/build-uml.mjs"
+    "uml": "node .scripts/build-uml.mjs",
+    "dev": "nuxi dev"
   },
   "dependencies": {
-    "d0xigen": "^0.2.0"
+    "d0xigen": "^0.2.3"
   },
   "devDependencies": {
     "node-plantuml": "^0.9.0",
