@@ -56,22 +56,55 @@ abstract class AbstractExchangeConnector<Domain extends DomainTemplate, TExchang
     #isAccountInitialized: boolean
     -_isAccountInitialized: boolean
 }
+enum EInputType {
+    STRING
+    NUMBER
+    ORDER_DETAILS
+    DATE
+}
 class Algorithm {
     +name: string
     +description: string
     +inputTypes: InputTypes
     +algorithmRuns?: AlgorithmRun<any, any>[]
 }
+enum EOrderStatus {
+    NOT_PROCESSED
+    TO_BE_PROCESSED
+    PLACED
+    UNITS_ALLOCATED
+    UNITS_REDEEMED
+    REJECTED
+    CANCELLED
+    EXPIRED
+    UNDEFINED
+}
+enum EOperationType {
+    LIMIT_BUY
+    LIMIT_SELL
+    MARKET_BUY
+    MARKET_SELL
+    BUY_OR_CANCEL
+    SELL_OR_CANCEL
+    UNDEFINED
+}
 class Order {
     +exchangeId: string
     +securityTicker: string
     +status: OrderStatus
-    +operation: any
+    +operation: OperationType
     +lots: number
     +price: number
     +updatedAt?: Date
     +algorithmRunId?: number
     +algorithmRun?: AlgorithmRun<any, any>
+}
+enum EAlgorithmRunStatus {
+    RUNNING
+    STOPPED
+    RESUMED
+    FINISHED
+    ERROR
 }
 class AlgorithmRun<InputType, StateType> {
     +id: number
@@ -123,7 +156,7 @@ abstract class AbstractDomainMapper<Domain extends DomainTemplate<unknown, unkno
     +{abstract} securityBalance(portfolio: GetSecurityBalanceType<Domain>): Promise<SecurityBalance>
     +{abstract} order(order: GetOrderType<Domain>): Promise<Order>
     +{abstract} orderStatus(order: GetOrderType<Domain>): OrderStatus
-    +{abstract} orderOperation(order: GetOrderType<Domain>): any
+    +{abstract} orderOperation(order: GetOrderType<Domain>): OperationType
 }
 interface IDomainMapper<Domain extends DomainTemplate> {
     +currency(currency: GetCurrencyType<Domain>): Promise<GetCurrencyType<CommonDomain>>

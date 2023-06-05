@@ -1,6 +1,6 @@
 @startuml
 interface ITypedTransformer<TEntity, TDatabase> {
-    +to: (entityValue: TEntity) => TDatabase
+    +to: (entityValue: TEntity | undefined) => TDatabase
     +from: (databaseValue: TDatabase) => TEntity
 }
 class AlgorithmsRepository extends Repository
@@ -13,14 +13,16 @@ class AlgorithmRunsRepository extends Repository {
     +finishOne(id: number): Promise<AlgorithmRun>
     +storeError(id: number, error: Error): Promise<AlgorithmRun>
     +findManyByAlgorithm(algorithmName: string): Promise<AlgorithmRun[]>
+    +findManyByAlgorithmPaginated(algorithmName: string, pagination: PaginationOptions): Promise<{ items: AlgorithmRun[]; pagination: any; }>
     +findAllUnfinished(): Promise<AlgorithmRun[]>
+    -errorToJSON(error: Error): {}
 }
 interface IOrdersRepositoryHooks {
-    +beforeSaveOne: (ticker: string) => Promise<void>
+    +beforeSaveOne: (ticker: string) => MaybePromise<void>
 }
 class OrdersRepository extends Repository {
     +hooks: Hookable<IOrdersRepositoryHooks, "beforeSaveOne">
-    +saveOne(order: GetOrderType<CommonDomain>, operation: OperationType, runId?: number): Promise<GetOrderType<CommonDomain>>
+    +saveOne(order: GetOrderType<CommonDomain>, operation: OperationType, runId: number): Promise<GetOrderType<CommonDomain>>
     +search(options: GetOrdersOptions): Promise<GetOrderType<CommonDomain>[]>
 }
 interface IPersistentStorage {
@@ -28,7 +30,7 @@ interface IPersistentStorage {
     +algorithms: AlgorithmsRepository
     +algorithmRuns: AlgorithmRunsRepository
     +isInitialized: boolean
-    +initialize(): Promise<void>
+    +initialize(loggerService?: LoggerService): Promise<void>
 }
 class PersistentStorage implements IPersistentStorage {
     +isInitialized: boolean
@@ -39,7 +41,7 @@ class PersistentStorage implements IPersistentStorage {
     -_algorithms: AlgorithmsRepository
     -_algorithmRuns: AlgorithmRunsRepository
     -id: string
-    +initialize(): Promise<void>
+    +initialize(loggerService?: LoggerService): Promise<void>
     -datasource: DataSource
 }
 class SecuritiesRepository extends Repository {
@@ -64,7 +66,7 @@ interface IInMemoryStorage {
     +portfolio: PortfolioRepository
     +currencies: CurrenciesRepository
     +isInitialized: boolean
-    +initialize(): Promise<void>
+    +initialize(loggerService?: LoggerService): Promise<void>
 }
 class InMemoryStorage implements IInMemoryStorage {
     +isInitialized: boolean
@@ -75,7 +77,7 @@ class InMemoryStorage implements IInMemoryStorage {
     -_portfolio: PortfolioRepository
     -_currencies: CurrenciesRepository
     -datasource: DataSource
-    +initialize(): Promise<void>
+    +initialize(loggerService?: LoggerService): Promise<void>
 }
 class UnitedStorage implements IPersistentStorage, IInMemoryStorage {
     +isInitialized: boolean
@@ -88,7 +90,7 @@ class UnitedStorage implements IPersistentStorage, IInMemoryStorage {
     -_persistent: IPersistentStorage
     -_memory: IInMemoryStorage
     -id: string
-    +initialize(): Promise<void>
+    +initialize(loggerService?: LoggerService): Promise<void>
 }
 OrdersRepository --> "1" IOrdersRepositoryHooks
 IPersistentStorage --> "1" OrdersRepository
