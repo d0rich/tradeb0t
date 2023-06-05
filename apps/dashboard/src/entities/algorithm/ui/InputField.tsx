@@ -38,7 +38,7 @@ type InputFieldOrderDetailsProps = Omit<InputFieldProps<EInputType.ORDER_DETAILS
 function InputFieldOrderDetails({ name, value, onUpdate }: InputFieldOrderDetailsProps) {
   const orderDetails = useRef(value)
 
-  const inputClass = 'input input-bordered input-sm'
+  const inputClass = 'input input-bordered input-xs md:input-sm flex-1'
 
   return (
     <label className="input-group input-group-sm input-group-vertical">
@@ -58,7 +58,7 @@ function InputFieldOrderDetails({ name, value, onUpdate }: InputFieldOrderDetail
           <span className="label-text">Operation</span>
           <OperationSelect
             defaultValue={orderDetails.current.operation}
-            className="select-sm select-bordered"
+            className="select-sm select-bordered flex-1"
             onUpdate={(value) => {
               orderDetails.current.operation = value!
               onUpdate(orderDetails.current)
@@ -110,11 +110,12 @@ function InputFieldGeneric<T extends `${EInputType}`>({
   }
 
   return (
-    <label className="!input-group">
+    <label className="!input-group !input-group-sm md:!input-group-md">
       <span className="label-text">{name}</span>
       <input
-        className="input input-bordered"
+        className="input input-bordered flex-1 input-sm md:input-md"
         placeholder={name}
+        size={1}
         defaultValue={valueToString(value)}
         onChange={onChange}
         {...inputAttrs}

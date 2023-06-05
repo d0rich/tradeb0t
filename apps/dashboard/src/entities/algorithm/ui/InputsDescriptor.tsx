@@ -13,7 +13,13 @@ export default function InputsDescriptor({ inputs, className = '' }: InputsDescr
         {Object.keys(inputs).map((input) => (
           <label className="input-group input-group-sm" key={input}>
             <span>{input}</span>
-            <input type="text" value={inputs[input]} readOnly className="input input-sm input-bordered" />
+            <input
+              type="text"
+              value={inputs[input]}
+              readOnly
+              size={1}
+              className="input input-sm input-bordered flex-1"
+            />
           </label>
         ))}
       </div>

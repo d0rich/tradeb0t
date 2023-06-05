@@ -29,7 +29,7 @@ export default function RunAlgorithmForm({
       {closeComponent}
       <div className="card-body">
         <h2 className="card-title">Run {algorithm.name}</h2>
-        <div className="form-control gap-y-2">
+        <div className="form-control gap-y-2 overflow-x-auto">
           {Object.keys(algorithm.inputTypes).map((inputName) => (
             <InputField
               key={inputName}

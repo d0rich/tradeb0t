@@ -31,7 +31,7 @@ export default function BotPortfolioCardFrame({
         </div>
         <h4 className="text-lg font-bold">Currencies</h4>
         <div className="card bg-base-100">
-          <div className="flex gap-4 p-3">
+          <div className="flex flex-wrap justify-center gap-4 p-3">
             {currencies?.map((item) => (
               <CurrencyBalanceViewMemo key={item.assetTicker} item={item} />
             ))}

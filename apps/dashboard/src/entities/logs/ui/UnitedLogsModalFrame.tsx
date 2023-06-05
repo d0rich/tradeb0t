@@ -25,7 +25,7 @@ export default function UnitedLogsModalFrame({ logs }: UnitedLogsModalFrameProps
     <>
       <input type="checkbox" id={modalId} className="modal-toggle" />
       <div className="modal">
-        <div className="modal-box bg-base-200 relative !max-w-screen-xl w-[90vw]">
+        <div className="modal-box bg-base-200 relative p-2 md:p-6 !max-w-screen-xl w-[90vw]">
           <div className="flex justify-between m-3">
             <h2 className="text-xl font-bold">United Logs</h2>
             <label htmlFor={modalId} className="btn btn-sm !btn-circle">

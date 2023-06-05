@@ -6,12 +6,20 @@ export interface OperationSelectProps {
   onUpdate?: (value?: OperationType) => void
   className?: string
   nullable?: boolean
+  size?: number
 }
 
-export default function OperationSelect({ defaultValue, onUpdate, className = '', nullable }: OperationSelectProps) {
+export default function OperationSelect({
+  defaultValue,
+  onUpdate,
+  className = '',
+  nullable,
+  size
+}: OperationSelectProps) {
   return (
     <select
       defaultValue={defaultValue}
+      size={size}
       className={`select ${className}`}
       onChange={(e) => {
         if (onUpdate) {

@@ -29,22 +29,25 @@ export default function BotNavigation({ botUrl, className = '' }: BotNavigationP
     <div className={`join ${className}`}>
       <Link
         href={`/bots/${botUrl}/portfolio`}
-        className={`btn join-item ${activeButton === 'portfolio' ? 'btn-active' : ''}`}
+        className={`btn btn-sm sm:btn-md join-item ${activeButton === 'portfolio' ? 'btn-active' : ''}`}
       >
         Portfolio
       </Link>
-      <Link href={`/bots/${botUrl}/logs`} className={`btn join-item ${activeButton === 'logs' ? 'btn-active' : ''}`}>
+      <Link
+        href={`/bots/${botUrl}/logs`}
+        className={`btn btn-sm sm:btn-md join-item ${activeButton === 'logs' ? 'btn-active' : ''}`}
+      >
         Logs
       </Link>
       <Link
         href={`/bots/${botUrl}/algorithms`}
-        className={`btn join-item ${activeButton === 'algorithms' ? 'btn-active' : ''}`}
+        className={`btn btn-sm sm:btn-md join-item ${activeButton === 'algorithms' ? 'btn-active' : ''}`}
       >
         Algorithms
       </Link>
       <Link
         href={`/bots/${botUrl}/orders`}
-        className={`btn join-item ${activeButton === 'orders' ? 'btn-active' : ''}`}
+        className={`btn btn-sm sm:btn-md join-item ${activeButton === 'orders' ? 'btn-active' : ''}`}
       >
         Orders
       </Link>

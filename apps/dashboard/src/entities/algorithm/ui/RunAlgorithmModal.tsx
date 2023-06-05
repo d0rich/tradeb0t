@@ -34,7 +34,7 @@ export default function RunAlgorithmModal({ algorithm, runAlgorithm }: RunAlgori
           <input ref={checkbox} type="checkbox" id={modalId} className="modal-toggle" />
           <div className="modal">
             <RunAlgorithmForm
-              className="modal-box bg-base-200 relative"
+              className="modal-box p-2 md:p-6 bg-base-200 relative"
               algorithm={algorithm}
               onSubmit={onSubmit}
               closeComponent={
