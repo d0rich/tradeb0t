@@ -26,13 +26,13 @@ export default function NotificationCard({ notification, className = '', onClose
   }, [])
 
   return (
-    <div className={`alert ${variantClass} flex-row ${className}`}>
-      <div className="block">
-        <time className="text-xs">{getTimeString(new Date(notification.createdAt))}</time>
-        <div dangerouslySetInnerHTML={{ __html: notification.content }} />
-        <CountdownProgressBar className="mt-2" duration={timeBeforeClose} />
-      </div>
-      <div className="flex-none">
+    <div className={`alert ${variantClass} ${className} whitespace-normal`}>
+      <div className="flex gap-3 items-center">
+        <div className="block text-left">
+          <time className="text-xs">{getTimeString(new Date(notification.createdAt))}</time>
+          <div dangerouslySetInnerHTML={{ __html: notification.content }} />
+          <CountdownProgressBar className="mt-2" duration={timeBeforeClose} />
+        </div>
         <button
           onClick={() => {
             if (onClose) {
