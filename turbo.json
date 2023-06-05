@@ -48,6 +48,10 @@
     "docs#dev": {
       "dependsOn": ["docs#uml"],
       "persistent": true
+    },
+    "docs#generate": {
+      "dependsOn": ["docs#uml"],
+      "outputs": ["dist/**"]
     }
   }
 }
