@@ -6,7 +6,7 @@
     "dev": "nuxi dev"
   },
   "dependencies": {
-    "d0xigen": "^0.2.3"
+    "d0xigen": "^0.2.5"
   },
   "devDependencies": {
     "node-plantuml": "^0.9.0",
