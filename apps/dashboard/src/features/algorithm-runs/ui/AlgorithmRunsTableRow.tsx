@@ -25,15 +25,15 @@ export default function AlgorithmRunsTableRow({
     onSuccess: (result) => {
       pushNotification({
         type: 'success',
-        content: `Algorithm <code class="kbd kbd-sm text-white">${result.algorithmName}</code> run
-        with id <code class="kbd kbd-sm text-white">${result.id}</code> was successfully stopped!`
+        content: `Algorithm <code class="kbd kbd-sm text-base-content">${result.algorithmName}</code> run
+        with id <code class="kbd kbd-sm text-base-content">${result.id}</code> was successfully stopped!`
       })
     },
     onError: (error) => {
       pushNotification({
         type: 'error',
-        content: `Algorithm <code class="kbd kbd-sm text-white">${algorithmRun.algorithmName}</code> run
-        with id <code class="kbd kbd-sm text-white">${algorithmRun.id}</code> failed to stop 😔`
+        content: `Algorithm <code class="kbd kbd-sm text-base-content">${algorithmRun.algorithmName}</code> run
+        with id <code class="kbd kbd-sm text-base-content">${algorithmRun.id}</code> failed to stop 😔`
       })
     },
     onSettled: () => {
@@ -44,15 +44,15 @@ export default function AlgorithmRunsTableRow({
     onSuccess: (result) => {
       pushNotification({
         type: 'success',
-        content: `Algorithm <code class="kbd kbd-sm text-white">${result.algorithmName}</code> run
-        with id <code class="kbd kbd-sm text-white">${result.id}</code> was successfully resumed!`
+        content: `Algorithm <code class="kbd kbd-sm text-base-content">${result.algorithmName}</code> run
+        with id <code class="kbd kbd-sm text-base-content">${result.id}</code> was successfully resumed!`
       })
     },
     onError: (error) => {
       pushNotification({
         type: 'error',
-        content: `Algorithm <code class="kbd kbd-sm text-white">${algorithmRun.algorithmName}</code> run
-        with id <code class="kbd kbd-sm text-white">${algorithmRun.id}</code> failed to resume 😔`
+        content: `Algorithm <code class="kbd kbd-sm text-base-content">${algorithmRun.algorithmName}</code> run
+        with id <code class="kbd kbd-sm text-base-content">${algorithmRun.id}</code> failed to resume 😔`
       })
     },
     onSettled: () => {

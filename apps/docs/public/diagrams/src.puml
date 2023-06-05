@@ -15,11 +15,11 @@ interface ITradeAlgorithmsEngine {
     +resumeAlgorithm(name: string, run_id: number): Promise<AlgorithmRun>
     +stopAlgorithm(name: string, run_id: number): Promise<AlgorithmRun>
 }
-interface IExchangeTraderHooks<Domain extends DomainTemplate> {
-    +orderSent: (order: GetOrderType<Domain>, operation_type: OperationType, runId?: number) => void
+interface IExchangeTraderHooks {
+    +orderSent: (order: GetOrderType<CommonDomain>, operation_type: OperationType, runId: number) => void
 }
-interface IExchangeTrader<Domain extends DomainTemplate> {
-    +hooks: Hookable<IExchangeTraderHooks<Domain>, "orderSent">
+interface IExchangeTrader {
+    +hooks: Hookable<IExchangeTraderHooks, "orderSent">
     +scheduleAction(action: JobCallback, date: Date): Job
     +scheduleOrder(date: Date, order: CreateOrderOptions, algorithm_name?: string, run_id?: number): Job
     +sendOrder(orderDetails: CreateOrderOptions, algorithm_name?: string, run_id?: number): Promise<OrderStatus>
@@ -37,7 +37,7 @@ interface IExchangeAnalyzer<Domain extends DomainTemplate, TExchangeApi> {
     +tradeAlgos: ITradeAlgorithmsEngine
     +storage: any
     +tradebot: ITradeBot<Domain, TExchangeApi>
-    +trader: IExchangeTrader<Domain>
+    +trader: IExchangeTrader
     +watcher: IExchangeWatcher
     +initialize(): Promise<void>
     +updateCurrencies(): Promise<GetCurrencyType<CommonDomain>[]>
@@ -90,7 +90,7 @@ interface ITradeBot<Domain extends DomainTemplate<unknown, unknown, unknown, unk
     +config: ITradeBotConfig
     +exchangeConnector: IExchangeConnector<Domain, TExchangeApi>
     +analyzer: IExchangeAnalyzer<Domain, TExchangeApi>
-    +trader: IExchangeTrader<Domain>
+    +trader: IExchangeTrader
     +watcher: IExchangeWatcher
     +api: ApiService
     +logger: LoggerService
@@ -110,25 +110,25 @@ interface TradeBotSetupOptions<Domain extends DomainTemplate<unknown, unknown, u
 }
 interface GetOrdersOptions extends ZGetOrdersOptions
 interface ITypedTransformer<TEntity, TDatabase> {
-    +to: (entityValue: TEntity) => TDatabase
+    +to: (entityValue: TEntity | undefined) => TDatabase
     +from: (databaseValue: TDatabase) => TEntity
 }
 interface IOrdersRepositoryHooks {
-    +beforeSaveOne: (ticker: string) => Promise<void>
+    +beforeSaveOne: (ticker: string) => MaybePromise<void>
 }
 interface IPersistentStorage {
     +orders: OrdersRepository
     +algorithms: AlgorithmsRepository
     +algorithmRuns: AlgorithmRunsRepository
     +isInitialized: boolean
-    +initialize(): Promise<void>
+    +initialize(loggerService?: LoggerService): Promise<void>
 }
 interface IInMemoryStorage {
     +securities: SecuritiesRepository
     +portfolio: PortfolioRepository
     +currencies: CurrenciesRepository
     +isInitialized: boolean
-    +initialize(): Promise<void>
+    +initialize(loggerService?: LoggerService): Promise<void>
 }
 IExchangeTrader --> "1" IExchangeTraderHooks
 IExchangeAnalyzer --> "1" ITradeAlgorithmsEngine

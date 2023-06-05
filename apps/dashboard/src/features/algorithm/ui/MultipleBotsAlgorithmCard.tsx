@@ -16,7 +16,7 @@ export default function MultipleBotsAlgorithmCard({ algorithm, className }: Mult
       const successCount = result.filter((r) => r.status === 'fulfilled').length
       pushNotification({
         type: 'success',
-        content: `Algorithm <code class="kbd kbd-sm text-white">${algorithm.name}</code>
+        content: `Algorithm <code class="kbd kbd-sm text-base-content">${algorithm.name}</code>
                   is running successfully at ${successCount} instances!`
       })
     }

@@ -1,0 +1,18 @@
+{
+  "name": "docs",
+  "private": true,
+  "scripts": {
+    "uml": "node .scripts/build-uml.mjs",
+    "dev": "nuxi dev",
+    "generate": "nuxi generate"
+  },
+  "dependencies": {
+    "d0xigen": "^0.2.6"
+  },
+  "devDependencies": {
+    "tplant": "^3.1.0"
+  },
+  "optionalDependencies": {
+    "node-plantuml": "^0.9.0"
+  }
+}

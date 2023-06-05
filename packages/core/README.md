@@ -6,20 +6,20 @@ See [tradeb0t](https://github.com/d0rich/tradeb0t)
 
 ## Getting started
 
-Install core: 
+Install [core](https://www.npmjs.com/package/@tradeb0t/core): 
 
 ```sh
-npm install tradeb0t/core
+npm install @tradeb0t/core
 ```
 
-### Describe your domain
+## Describe your domain
 
 Domain includes types of entities in the integrated exchange. 
 
 Technically, you can provide `any` types for `DomainTemplate`. But it is not recommended, as these types will be helpful in process of creating other modules.
 
 ```ts
-import {DomainTemplate} from 'tradeb0t/core'
+import {DomainTemplate} from '@tradeb0t/core'
 import {
     CurrencyType,
     CurrencyBalanceType,
@@ -32,7 +32,7 @@ import {
 export type Domain = DomainTemplate<CurrencyType, CurrencyBalanceType, SecurityType, SecurityBalanceType, OrderType>
 ```
 
-### Implement ExchangeConnector
+## Implement ExchangeConnector
 
 `ExchangeConnector` is layer between exchange and tradebot internal logic. 
 
@@ -45,7 +45,7 @@ You can access `ExchangeConnector` instance with `this.exchangeConnector` from t
 
 Note, that you can provide object containing API methods to exchange (`API` in example). It will be available in `ExchangeConnector` instance as `api`.
 
-#### DomainMapper
+### DomainMapper
 
 Also, you should implement `DomainMapper` to make it possible for tradebot to understand types of your exchange. 
 
@@ -58,7 +58,7 @@ import {OperationType, OrderStatus, CommonDomain,
     GetCurrencyType,
     GetOrderType,
     GetSecurityBalanceType,
-    GetSecurityType} from 'tradeb0t/core'
+    GetSecurityType} from '@tradeb0t/core'
 import type API from '@exchange/sdk'
 
 import {Domain} from "../Domain";
@@ -77,10 +77,10 @@ Note, that you can extract specific domains types from `Domain` or `ExchangeConn
 - `GetSecurityBalanceType<T>`
 - `GetOrderType<T>`
 
-#### InfoModule
+### InfoModule
 
 ```ts
-import {AbstractInfoModule} from 'tradeb0t/core'
+import {AbstractInfoModule} from '@tradeb0t/core'
 import type API from '@exchange/sdk'
 
 import {Domain} from '../Domain'
@@ -88,10 +88,10 @@ import {Domain} from '../Domain'
 export class InfoModule extends AbstractInfoModule<Domain, API>{/*...*/}
 ```
 
-#### TradeModule
+### TradeModule
 
 ```ts
-import {AbstractTradeModule} from 'tradeb0t/core'
+import {AbstractTradeModule} from '@tradeb0t/core'
 import type API from '@exchange/sdk'
 
 import {Domain} from '../Domain'
@@ -99,10 +99,10 @@ import {Domain} from '../Domain'
 export class TradeModule extends AbstractTradeModule<Domain, API>{/*...*/}
 ```
 
-#### ExchangeConnector
+### ExchangeConnector
 
 ```ts
-import {AbstractExchangeConnector} from 'tradeb0t/core'
+import {AbstractExchangeConnector} from '@tradeb0t/core'
 import API from '@exchange/sdk'
 
 import {Domain} from '../Domain'
@@ -111,7 +111,6 @@ import {InfoModule} from './InfoModule'
 import {DomainMapper} from "./DomainMapper"
 
 export class ExchangeConnector extends AbstractExchangeConnector<Domain, API>{
-
     protected async initAccount(){
         const { api } = this
         // Something to prepare your client
@@ -124,12 +123,12 @@ export class ExchangeConnector extends AbstractExchangeConnector<Domain, API>{
 }
 ```
 
-### Start tradebot
+## Start tradebot
 
 Finally, start tradebot with `runTradeBot` function:
 
 ```typescript
-import {runTradeBot} from 'tradeb0t/core'
+import {runTradeBot} from '@tradeb0t/core'
 import API from '@exchange/sdk'
 
 import { DomainMapper, ExchangeConnector, InfoModule, TradeModule } from './bot'

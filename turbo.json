@@ -40,6 +40,18 @@
       "dependsOn": ["@tradeb0t/dashboard#build"],
       "cache": false,
       "persistent": true
+    },
+    "docs#uml": {
+      "inputs": ["../../packages/core/src/**/*.ts"],
+      "outputs": ["public/diagrams/**"]
+    },
+    "docs#dev": {
+      "dependsOn": ["docs#uml"],
+      "persistent": true
+    },
+    "docs#generate": {
+      "dependsOn": ["docs#uml"],
+      "outputs": ["dist/**"]
     }
   }
 }
