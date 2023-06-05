@@ -1,4 +1,95 @@
 @startuml
+enum EInputType {
+    STRING
+    NUMBER
+    ORDER_DETAILS
+    DATE
+}
+class Algorithm {
+    +name: string
+    +description: string
+    +inputTypes: InputTypes
+    +algorithmRuns?: AlgorithmRun<any, any>[]
+}
+enum EOrderStatus {
+    NOT_PROCESSED
+    TO_BE_PROCESSED
+    PLACED
+    UNITS_ALLOCATED
+    UNITS_REDEEMED
+    REJECTED
+    CANCELLED
+    EXPIRED
+    UNDEFINED
+}
+enum EOperationType {
+    LIMIT_BUY
+    LIMIT_SELL
+    MARKET_BUY
+    MARKET_SELL
+    BUY_OR_CANCEL
+    SELL_OR_CANCEL
+    UNDEFINED
+}
+class Order {
+    +exchangeId: string
+    +securityTicker: string
+    +status: OrderStatus
+    +operation: OperationType
+    +lots: number
+    +price: number
+    +updatedAt?: Date
+    +algorithmRunId?: number
+    +algorithmRun?: AlgorithmRun<any, any>
+}
+enum EAlgorithmRunStatus {
+    RUNNING
+    STOPPED
+    RESUMED
+    FINISHED
+    ERROR
+}
+class AlgorithmRun<InputType, StateType> {
+    +id: number
+    +algorithmName: string
+    +inputs: InputType
+    +status: AlgorithmRunStatus
+    +state: StateType
+    +updatedAt: Date
+    +createdAt: Date
+    +algorithm: Algorithm
+    +orders: Order[]
+}
+class AssetBalance {
+    +assetTicker: string
+    +asset: Asset
+    +amount: number
+    +updatedAt: Date
+}
+class Asset {
+    +ticker: string
+    +name: string
+    +balance: AssetBalance
+    +updatedAt: Date
+}
+class SecurityBalance extends AssetBalance {
+    +asset: Security
+}
+class Security extends Asset {
+    +price: number
+    +currency: Currency
+    +currencyTicker: string
+    +balance: SecurityBalance
+    +isFollowed: boolean
+}
+class CurrencyBalance extends AssetBalance {
+    +asset: Currency
+}
+class Currency extends Asset {
+    +exchangeTicker?: string
+    +securities: Security[]
+    +balance: CurrencyBalance
+}
 interface ITradeModule<Domain extends DomainTemplate> {
     +sell(options: CreateOrderOptions): Promise<GetOrderType<Domain>>
     +buy(options: CreateOrderOptions): Promise<GetOrderType<Domain>>
@@ -56,63 +147,14 @@ abstract class AbstractExchangeConnector<Domain extends DomainTemplate, TExchang
     #isAccountInitialized: boolean
     -_isAccountInitialized: boolean
 }
-class Algorithm {
-    +name: string
-    +description: string
-    +inputTypes: InputTypes
-    +algorithmRuns?: AlgorithmRun<any, any>[]
-}
-class Order {
-    +exchangeId: string
-    +securityTicker: string
-    +status: OrderStatus
-    +operation: any
-    +lots: number
-    +price: number
-    +updatedAt?: Date
-    +algorithmRunId?: number
-    +algorithmRun?: AlgorithmRun<any, any>
-}
-class AlgorithmRun<InputType, StateType> {
-    +id: number
-    +algorithmName: string
-    +inputs: InputType
-    +status: AlgorithmRunStatus
-    +state: StateType
-    +updatedAt: Date
-    +createdAt: Date
-    +algorithm: Algorithm
-    +orders: Order[]
-}
-class AssetBalance {
-    +assetTicker: string
-    +asset: Asset
-    +amount: number
-    +updatedAt: Date
-}
-class Asset {
-    +ticker: string
-    +name: string
-    +balance: AssetBalance
-    +updatedAt: Date
-}
-class SecurityBalance extends AssetBalance {
-    +asset: Security
-}
-class Security extends Asset {
-    +price: number
-    +currency: Currency
-    +currencyTicker: string
-    +balance: SecurityBalance
-    +isFollowed: boolean
-}
-class CurrencyBalance extends AssetBalance {
-    +asset: Currency
-}
-class Currency extends Asset {
-    +exchangeTicker?: string
-    +securities: Security[]
-    +balance: CurrencyBalance
+interface IDomainMapper<Domain extends DomainTemplate> {
+    +currency(currency: GetCurrencyType<Domain>): Promise<GetCurrencyType<CommonDomain>>
+    +currencyBalance(currency: GetCurrencyBalanceType<Domain>): Promise<GetCurrencyBalanceType<CommonDomain>>
+    +security(security: GetSecurityType<Domain>): Promise<GetSecurityType<CommonDomain>>
+    +securityBalance(security: GetSecurityBalanceType<Domain>): Promise<GetSecurityBalanceType<CommonDomain>>
+    +order(order: GetOrderType<Domain>): Promise<GetOrderType<CommonDomain>>
+    +orderStatus(order: GetOrderType<Domain>): OrderStatus
+    +orderOperation(order: GetOrderType<Domain>): OperationType
 }
 abstract class AbstractDomainMapper<Domain extends DomainTemplate<unknown, unknown, unknown, unknown, unknown>, TExchangeApi> implements IDomainMapper {
     #exchangeConnector: IExchangeConnector<Domain, TExchangeApi>
@@ -123,25 +165,8 @@ abstract class AbstractDomainMapper<Domain extends DomainTemplate<unknown, unkno
     +{abstract} securityBalance(portfolio: GetSecurityBalanceType<Domain>): Promise<SecurityBalance>
     +{abstract} order(order: GetOrderType<Domain>): Promise<Order>
     +{abstract} orderStatus(order: GetOrderType<Domain>): OrderStatus
-    +{abstract} orderOperation(order: GetOrderType<Domain>): any
+    +{abstract} orderOperation(order: GetOrderType<Domain>): OperationType
 }
-interface IDomainMapper<Domain extends DomainTemplate> {
-    +currency(currency: GetCurrencyType<Domain>): Promise<GetCurrencyType<CommonDomain>>
-    +currencyBalance(currency: GetCurrencyBalanceType<Domain>): Promise<GetCurrencyBalanceType<CommonDomain>>
-    +security(security: GetSecurityType<Domain>): Promise<GetSecurityType<CommonDomain>>
-    +securityBalance(security: GetSecurityBalanceType<Domain>): Promise<GetSecurityBalanceType<CommonDomain>>
-    +order(order: GetOrderType<Domain>): Promise<GetOrderType<CommonDomain>>
-    +orderStatus(order: GetOrderType<Domain>): OrderStatus
-    +orderOperation(order: GetOrderType<Domain>): OperationType
-}
-IExchangeConnector --> "1" ITradeModule
-IExchangeConnector --> "1" IInfoModule
-IExchangeConnector --> "1" IDomainMapper
-AbstractTradeModule --> "1" IExchangeConnector
-AbstractInfoModule --> "1" IExchangeConnector
-AbstractExchangeConnector --> "1" ITradeModule
-AbstractExchangeConnector --> "1" IInfoModule
-AbstractExchangeConnector --> "1" IDomainMapper
 Algorithm --> "1" AlgorithmRun
 Order --> "1" AlgorithmRun
 AlgorithmRun --> "1" Algorithm
@@ -154,6 +179,14 @@ Security --> "1" SecurityBalance
 CurrencyBalance --> "1" Currency
 Currency --> "*" Security
 Currency --> "1" CurrencyBalance
+IExchangeConnector --> "1" ITradeModule
+IExchangeConnector --> "1" IInfoModule
+IExchangeConnector --> "1" IDomainMapper
+AbstractTradeModule --> "1" IExchangeConnector
+AbstractInfoModule --> "1" IExchangeConnector
+AbstractExchangeConnector --> "1" ITradeModule
+AbstractExchangeConnector --> "1" IInfoModule
+AbstractExchangeConnector --> "1" IDomainMapper
 AbstractDomainMapper --> "1" IExchangeConnector
 AbstractDomainMapper --> "1" Currency
 AbstractDomainMapper --> "1" CurrencyBalance

@@ -1,0 +1,1 @@
+[{"_path":"/domain","title":"Domain model","description":"Tradeb0t operates with specific domain model in order to provide a unified way to work with different exchanges and assets."},{"_path":"/algorithms/hammer","title":"Hammer example","description":"Hammer is a simple algorithm, which tries to place order first in trading day. You can see example code below."}]

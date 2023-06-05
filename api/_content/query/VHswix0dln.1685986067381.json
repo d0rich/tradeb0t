@@ -1,0 +1,1 @@
+[{"_path":"/architecture","title":"Architecture","description":"The whole tradeb0t project is divided into several layers:"},{"_path":"/algorithms/overview","title":"Overview","description":"Tradeb0t provides abstract classes for trading algorithms. It is designed to make it possible to reuse the same code for different exchanges."}]
