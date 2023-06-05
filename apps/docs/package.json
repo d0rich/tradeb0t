@@ -7,7 +7,7 @@
     "generate": "nuxi generate"
   },
   "dependencies": {
-    "d0xigen": "^0.2.5"
+    "d0xigen": "^0.2.6"
   },
   "devDependencies": {
     "tplant": "^3.1.0"
