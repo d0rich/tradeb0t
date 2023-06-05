@@ -1,5 +1,11 @@
 # @tradeb0t/core
 
+## 0.4.1
+
+### Patch Changes
+
+- b85c50a: Update package.json meta info
+
 ## 0.4.0
 
 ### Minor Changes
