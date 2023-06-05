@@ -1,17 +1,40 @@
 # tradeb0t 🤖
 
-Tradebot is the library for creating trading bots for exchanges. 
+> See documentation: https://d0rich.github.io/tradeb0t/
 
-Main features:
+Tradebot is the small ecosystem for creating trading bots for exchanges. 
+
+This project is used to be my diploma project, and you can check its orginal repository [here](https://github.com/badlabs/tradebot-core). Now I'm trying to make it more useful for other people.
+
+## Main features
+
 - **Standardized** - tradebot is based on common domain description for exchanges. It allows to create algorithms for different exchanges without changing them.
 - **Scoped** - each tradebot instance is isolated from other instances. It allows to run multiple bots on the same machine.
 - **Manageable** - tradebot have its own API based on [TRPC](https://trpc.io/). It allows to quickly create UI for managing bots.
 
-This project is used to be my diploma project, and you can check its orginal repository [here](https://github.com/badlabs/tradebot-core). Now I'm trying to make it more useful for other people.
+## Demo
 
-## Roadmap 🚗
+tradeb0t is built using mono-repository approach. It also contains several applications:
+- [stubb0t](https://github.com/d0rich/tradeb0t/tree/master/apps/stubb0t) - stub implementation of tradeb0t for testing purposes
+- [dashboard](https://github.com/d0rich/tradeb0t/tree/master/apps/dashboard) - dashboard for managing bots, built with [Next.js](https://nextjs.org/)
 
-- [ ]  Implement script for running several instances in multiple processes
-- [ ]  Make `AbstractTradeAlgorithm` domain-agnostic
-- [ ]  Create Binance implementation
-- [ ]  Write [JSDoc](https://www.typescriptlang.org/docs/handbook/jsdoc-supported-types.html)
+### stubb0t
+
+Stubb0t is deployed on render and available for usage: https://stubb0t.onrender.com/
+
+It have no web interface, but you can use with TRPC client. For this purpose TRPC playground is available: https://stubb0t.onrender.com/trpc-playground. @tradeb0t/core provides it from the box in development mode. 
+
+Try this query to get list of currencies in portfolio:
+
+```ts
+await trpc.currencies.listBalances.query()
+export {}
+```
+
+### dashboard
+
+Dashboard is full-stack application for managing bots. It connects privately to bots on server side and provides user-friendly interface for managing them.
+Dashboard connected to stubb0t is deployed on render and available for usage: https://tradeb0t-dashboard.onrender.com/.
+
+
+> Current implementetion of dashboard can't connect by WebSocket to stubb0t being deployed on render. I'm looking for solution. Howeever, real-time logs are available if you will run dashboard locally.
